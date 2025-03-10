@@ -71,16 +71,24 @@ class WLoops(val vm: ForthVM) {
         vm.rstk.push(vm.cend) // start of do loop, so end can come back to us
 
         // a jump just to jump over the next jump
-        vm.appendJump("branch", vm.cend + 3)
+        vm.appendJump("branch", vm.cend + 4)
         // a jump to the end of the loop (will be filled in by `loop`)
         vm.appendJump("branch", 0xffff)
     }
 
     // "do"  adds this to def (this is actually run at runtime)
     fun w_doImpl() {
-//        StackOps.w_swap()   // FIXME: gotta be a fast way
-//        StackOps.w_toL()
-//        StackOps.w_toL()
+        if (D) vm.dbg("w_doImpl")
+        // swap
+        val a = vm.dstk.pop()
+        val b = vm.dstk.pop()
+        vm.dstk.push(a, b)
+
+        // >L
+        vm.lstk.push(vm.dstk.pop())
+
+        // >L
+        vm.lstk.push(vm.dstk.pop())
     }
 
     /**  loop */
@@ -106,10 +114,10 @@ class WLoops(val vm: ForthVM) {
 
     // loop-fn
     fun w_loopImpl() {
-        if (D) vm.dbg("w_loopPlusFn")
-        val incrementBy: Int = vm.dstk.pop()
+        if (D) vm.dbg("w_loopImpl")
+        val incrementBy = vm.dstk.pop()
         vm.lstk.push(vm.lstk.pop() + incrementBy)
-        val loopIdx: Int = vm.lstk.pop()
+        val loopIdx = vm.lstk.pop()
         val limit: Int = vm.lstk.pop()
         if (loopIdx >= limit) {
             if (D) vm.dbg("w_loopFnPlus: done")
@@ -118,7 +126,7 @@ class WLoops(val vm: ForthVM) {
             if (D) vm.dbg("w_loopFnPlus: looping")
             // go to the beginning of the loop
             vm.lstk.push(limit, loopIdx)
-            vm.cptr = vm.mem.get(vm.cptr)
+            vm.cptr = vm.mem[vm.cptr]
         }
     }
 

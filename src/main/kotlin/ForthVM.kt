@@ -3,7 +3,7 @@ package kf
 import kf.Word.Companion.noWord
 import java.util.*
 
-const val D = true;
+const val D = false;
 const val VERSION_STRING = "KPupForth 0.1.0"
 
 enum class CellMeta {
@@ -55,7 +55,7 @@ class ForthVM(
     val dataStart: Int = 0x0200,
     val dataEnd: Int = 0x02ff,
     val dstackStart: Int = 0x0300,
-    val dstackEnd: Int = 0x03ff,
+    val dstackEnd: Int = 0x03df,
     val rstackStart: Int = 0x03e0,
     val rstackEnd: Int = 0x03ef,
     val lstackStart: Int = 0x03f0,
@@ -371,6 +371,7 @@ class ForthVM(
 
 
     // ******************************************************* Interpreter modes
+
     /** Called by w_processToken when InterpretedMode is "compiling":
      *
      * Most parts in the definition and just added directly.
@@ -385,51 +386,46 @@ class ForthVM(
                 throw ForthError("Can't use in compile mode: ${w.name}")
             if (w.immediate) {
                 currentWord = w
-                w.exec(this)
+                w.callable.invoke(this)
+//                w.exec(this)
             } else {
                 appendCode(w.wn!!, CellMeta.word_number)
             }
-            return
+        } else if ((token[0] == '\'')
+            && (token.length == 2 || (token.length == 3 && token[2] == '\''))
+        ) {
+            appendLit(token[1].code)
+        } else {
+            val n: Int = tryAsInt(token, base)
+            appendWord("lit")
+            appendCode(n, CellMeta.number_literal)
         }
-
-        if (token.startsWith("'")) {
-            if (token.length == 2 || (token.length == 3 && token[2] == '\'')) {
-                appendLit(token[1].code)
-                return
-            }
-        }
-
-        val n: Int = tryAsInt(token, base)
-        appendWord("lit")
-        appendCode(n, CellMeta.number_literal)
     }
 
     /**  Called by w_processToken when Interpreter mode is "interpreting":
      *
      * Execute current token: if a word, run it; else, try as number.
      */
+
     fun interpInterpret(token: String) {
         if (D) dbg(3, "vm.execute: %s", token)
         val w: Word? = dict.getSafe(token)
         if (w != null) {
             if (w.compileOnly) throw ForthError("Compile-only: " + w.name)
             currentWord = w
-            w.exec(this)
-            return
+            w.callable.invoke(this)
+//            w.exec(this)
+        } else if ((token[0] == '\'')
+            && (token.length == 2 || (token.length == 3 && token[2] == '\''))
+        ) {
+            dstk.push(token[1].code)
+        } else {
+            dstk.push(tryAsInt(token, base))
         }
-        if (token.startsWith("'")) {
-            if (token.length == 2
-                || (token.length == 3 && token[2] == '\'')
-            ) {
-                dstk.push(token[1].code)
-                return
-            }
-        }
-        dstk.push(tryAsInt(token, base))
     }
 
 
-    // *************************************************** the Forth interpreter
+// *************************************************** the Forth interpreter
     /** Instructions for the VM for the Forth interpreter
      *
      * This is poked into memory during the reboot process; this is the
@@ -484,15 +480,6 @@ class ForthVM(
         appendJump("branch", startAddr + 8)
     }
 
-    fun testProgram() {
-        appendLit(10)
-        appendLit(20)
-        appendWord("+")
-        appendWord(".")
-        appendWord("brk")
-    }
-
-
     fun dbg(lvl: Int, format: String, vararg args: Any?) {
         if (verbosity > lvl) return
         when (lvl) {
@@ -502,7 +489,6 @@ class ForthVM(
     }
 
     fun dbg(format: String, vararg args: Any?) = dbg(2, format, *args)
-
 
     fun getToken(): String {
         if (D) dbg(3, "getToken")
