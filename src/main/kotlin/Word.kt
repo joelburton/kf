@@ -14,8 +14,13 @@ class Word(
     val callable: (ForthVM) -> Unit,
 ) {
    companion object {
-       val NO_ADDR: Int = 0xffff
+       const val NO_ADDR: Int = 0xffff
        val noWord = Word("noWord", hidden=true, callable = { _: ForthVM -> })
+       /**  Explanation for header strings */
+       const val HEADER_STR: String =
+           " IMmediate Compile-Only Interp-Only REcurse HIdden Code Data"
+
+
    }
 
     override fun toString() = name;

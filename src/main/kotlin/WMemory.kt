@@ -41,7 +41,7 @@ class WMemory(val vm: ForthVM) {
 
     private fun w_unused() {
         vm.dbg("w_unused")
-        vm.dstk.push(vm.dateEnd - vm.dend + 1)
+        vm.dstk.push(vm.dataEnd - vm.dend + 1)
     }
 
     // addr on  = set to true

@@ -53,7 +53,7 @@ class ForthVM(
     val codeStart: Int = 0x0010,
     val codeEnd: Int = 0x01ff,
     val dataStart: Int = 0x0200,
-    val dateEnd: Int = 0x02ff,
+    val dataEnd: Int = 0x02ff,
     val dstackStart: Int = 0x0300,
     val dstackEnd: Int = 0x03ff,
     val rstackStart: Int = 0x03e0,
@@ -109,8 +109,8 @@ class ForthVM(
     var currentWord: Word = Word.noWord
     var cptr: Int = codeStart
     val dstk = FStack(this, "dstk", dstackStart, dstackEnd)
-    val rstk = FStack(this, "lstk", dstackStart, dstackEnd)
-    val lstk = FStack(this, "rstk", dstackStart, dstackEnd)
+    val rstk = FStack(this, "rstk", rstackStart, rstackEnd)
+    val lstk = FStack(this, "lstk", lstackStart, lstackEnd)
 
     fun reboot(includePrimitives: Boolean = true) {
         if (D) dbg(1, "vm.reboot")
@@ -190,12 +190,12 @@ class ForthVM(
         dict.addMany(WCompiling(this).primitives, "Compiling")
         // dep: Functions
         dict.addMany(WIfThen(this).primitives, "IfThen") // dep: Functions
-//        dict.addMany(Looping.primitives, "Looping") // dep: Functions
+        dict.addMany(WLoops(this).primitives, "Looping") // dep: Functions
         dict.addMany(WDoes(this).primitives, "Does") // dep: Functions
         dict.addMany(WMisc(this).primitives, "Misc") // dep: Functions
         dict.addMany(WInternals(this).primitives, "Internals")
-//        dict.addMany(PrimWords.primitives, "Words")
-//        dict.addMany(Strings.primitives, "Strings")
+        dict.addMany(WWords(this).primitives, "Words")
+        dict.addMany(WStrings(this).primitives, "Strings")
     }
 
     /**  Read in a primitive class dynamically

@@ -1,6 +1,6 @@
 package kf
 
-class Strings(val vm: ForthVM) {
+class WStrings(val vm: ForthVM) {
     val primitives: Array<Word> = arrayOf<Word>(
         Word("type") { _ ->
             w_type()

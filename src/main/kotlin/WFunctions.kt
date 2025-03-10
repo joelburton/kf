@@ -43,7 +43,8 @@ class WFunctions(val vm: ForthVM) {
     /**  `return` ( r:n -- : return from current word )
      */
     fun w_return() {
-        if (D) vm.dbg("w_return")
-        vm.cptr = vm.rstk.pop()
+        val retAddr = vm.rstk.pop()
+        if (D) vm.dbg("w_return cptr=$%04x retAddr=$%04x", vm.cptr, retAddr)
+        vm.cptr = retAddr
     }
 }
