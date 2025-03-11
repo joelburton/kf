@@ -8,8 +8,9 @@ import java.util.Scanner
  * These are the primitives required for the interpreter, as well as some
  * things about some words (like `include` for reading Forth files in) that
  * are strongly related to the interpreter. */
-class WInterp(val vm: ForthVM) {
-    val primitives: Array<Word> = arrayOf<Word>(
+class WInterp(val vm: ForthVM): WordClass {
+    override val name = "Interp"
+    override val primitives: Array<Word> = arrayOf<Word>(
         // the interpreter loop (plus stuff in Machine)
         Word("interp-prompt") { _-> w_interpPrompt() },
         Word("interp-refill") { _ -> w_interpRefill() },
@@ -27,8 +28,8 @@ class WInterp(val vm: ForthVM) {
         // useful words for working with interpreter
         Word("state") { _ -> w_stateReg() },
         Word("interp-reload-code") { _ -> w_interpReloadCode() },
-        Word("[", immediate = true, compileOnly = true) { _ -> w_goImmediate() },
-        Word("]", immediate=true) { _ -> w_goCompiled() },
+        Word("[", imm = true, compO = true) { _ -> w_goImmediate() },
+        Word("]", imm=true) { _ -> w_goCompiled() },
     )
 
     // ********************************************** words for interpreter loop
@@ -81,7 +82,6 @@ class WInterp(val vm: ForthVM) {
         if (D) vm.dbg(3, "w_interpProcess: \"%s\"", token)
         if (token.isEmpty()) return  // FIXME: look into this -- could this even happen?
 
-
         if (vm.isCompilingState) vm.interpCompile(token)
         else vm.interpInterpret(token)
     }
@@ -95,7 +95,7 @@ class WInterp(val vm: ForthVM) {
     private fun w_tripleBackSlash() {
         if (D) vm.dbg("w_tripleBackSlash")
         if (vm.io is IOFile) {
-            throw ForthVM.ForthQuitNonInteractive()
+            throw ForthQuitNonInteractive()
         } else {
             vm.dstk.push(0)
         }
@@ -108,7 +108,7 @@ class WInterp(val vm: ForthVM) {
      * moves to the next (exiting if there are no more). */
     private fun w_eof() {
         if (D) vm.dbg("w_eof")
-        throw ForthVM.ForthEOF()
+        throw ForthEOF()
     }
 
 
@@ -129,10 +129,10 @@ class WInterp(val vm: ForthVM) {
 
         try {
             vm.runVM()
-        } catch (e: ForthVM.ForthQuitNonInteractive) {
+        } catch (e: ForthQuitNonInteractive) {
             // Caused by the EOF or \\\ commands --- stop reading this file, but
             // not an error --- will proceed to next file or to console
-        } catch (_: ForthVM.ForthEOF) {
+        } catch (_: ForthEOF) {
         } finally {
             vm.io = prevIO
             vm.verbosity = prevVerbosity

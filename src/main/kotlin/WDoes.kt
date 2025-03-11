@@ -1,14 +1,16 @@
 package kf
 
-class WDoes(val vm: ForthVM) {
-    val primitives: Array<Word> = arrayOf<Word>(
+class WDoes(val vm: ForthVM) : WordClass {
+    override val name = "Does"
+
+    override val primitives: Array<Word> = arrayOf<Word>(
         Word("create") { _->
             w_create()
         },
-        Word("does>", immediate = true, compileOnly = true) { _ -> doesAngle() },
+        Word("does>", imm = true, compO = true) { _ -> doesAngle() },
         Word("does") { _-> w_does() },
-        Word("addr", compileOnly = true) { _ -> w_addr() },
-        Word("addrcall", compileOnly = true) { _ -> w_addrCall() },
+        Word("addr", compO = true) { _ -> w_addr() },
+        Word("addrcall", compO = true) { _ -> w_addrCall() },
     )
 
     /**  does> : inside of compilation, adds "does" + "ret" */
@@ -20,8 +22,8 @@ class WDoes(val vm: ForthVM) {
     /**  does: change most recent word from data to call-fn-with-data-num */
     fun w_does() {
         val w: Word = vm.dict.last
-//        w.callable = vm.dict.get("addrcall")!!.callable  FIXME
-        w.cpos = vm.cptr + 1
+        w.callable = vm.dict.get("addrcall").callable
+        w.cpos = vm.ip + 1
     }
 
     /**  create: add an empty, new word */
@@ -46,7 +48,13 @@ class WDoes(val vm: ForthVM) {
     /**  Used for all "does" words (it's the "function" for a constant) */
     fun w_addrCall() {
         vm.dbg("w_addrCall")
-        w_addr()
-//        w_call(vm)   FIXME
+
+        // push addr
+        val addr: Int = vm.currentWord.dpos
+        vm.dstk.push(addr)
+
+        // call
+        vm.rstk.push(vm.ip)
+        vm.ip = vm.currentWord.cpos
     }
 }

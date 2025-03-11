@@ -1,7 +1,9 @@
 package kf
 
-class WStackOps(val vm: ForthVM) {
-    val primitives: Array<Word> = arrayOf<Word>(
+class
+WStackOps(val vm: ForthVM): WordClass {
+    override val name = "Stack Operations"
+    override val primitives: Array<Word> = arrayOf<Word>(
         Word("dup") { _ -> w_dup() },
         Word("drop") { _ -> w_drop() },
         Word("swap") { _ -> w_swap() },
@@ -38,7 +40,6 @@ class WStackOps(val vm: ForthVM) {
         Word(">L") { _ -> w_toL() },
         Word("L>") { _ -> w_lFrom() },  // L@
         // should these all be C for control stack?
-        // fixme: are our stacks backwards from gforth?
         // clearstacks : clears data & fp, not other things!
 
     )

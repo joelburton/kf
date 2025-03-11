@@ -3,8 +3,9 @@ package kf
 import java.util.*
 import java.util.concurrent.TimeUnit
 
-class WMisc(val vm: ForthVM) {
-    val primitives: Array<Word> = arrayOf(
+class WMisc(val vm: ForthVM): WordClass {
+    override val name = "Misc"
+    override val primitives: Array<Word> = arrayOf(
         Word("millis") { _ -> w_millis() },
         Word("ms") { _ -> w_ms() },
         Word("time&date") { _ -> w_timeAmpDate() },

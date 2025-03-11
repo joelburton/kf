@@ -1,8 +1,9 @@
 package kf
 
 
-class WMemory(val vm: ForthVM) {
-    val primitives: Array<Word> = arrayOf<Word>(
+class WMemory(val vm: ForthVM) : WordClass {
+    override val name = "Memory"
+    override val primitives: Array<Word> = arrayOf<Word>(
         Word("@") { _ -> w_fetch() },
         Word("!") { _ -> w_store() },
         Word("here") { _ -> w_here() },
@@ -41,7 +42,7 @@ class WMemory(val vm: ForthVM) {
 
     private fun w_unused() {
         vm.dbg("w_unused")
-        vm.dstk.push(vm.dataEnd - vm.dend + 1)
+        vm.dstk.push(vm.memConfig.dataEnd - vm.dend + 1)
     }
 
     // addr on  = set to true
@@ -89,7 +90,6 @@ class WMemory(val vm: ForthVM) {
         vm.mem[addr] = num
     }
 
-    // TODO: right now, this is same as "dend"; is that right?
     /**  ( -- n ) Push value of here (section of DATA where will be written) */
     fun w_here() {
         if (D) vm.dbg("w_here")
@@ -104,19 +104,19 @@ class WMemory(val vm: ForthVM) {
     }
 
     fun w_dstart() {
-        vm.dstk.push(vm.dataStart)
+        vm.dstk.push(vm.memConfig.dataStart)
     }
 
     fun w_dend() {
-        vm.dstk.push(vm.REG_DEND)
+        vm.dstk.push(ForthVM.REG_DEND)
     }
 
     fun w_cstart() {
-        vm.dstk.push(vm.codeStart)
+        vm.dstk.push(vm.memConfig.codeStart)
     }
 
     fun w_cend() {
-        vm.dstk.push(vm.REG_CEND)
+        vm.dstk.push(ForthVM.REG_CEND)
     }
 
     fun w_dump() {

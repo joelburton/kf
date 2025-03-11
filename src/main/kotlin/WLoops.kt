@@ -1,26 +1,27 @@
 package kf
 
-class WLoops(val vm: ForthVM) {
-    val primitives: Array<Word> = arrayOf<Word>(
-        Word("begin", immediate = true, compileOnly = true) { _ -> w_begin() },
-        Word("again", immediate=true, compileOnly=true) { _ -> w_again() },
-        Word("until", immediate=true, compileOnly=true) { _ -> w_until() },
-        Word("while", immediate=true, compileOnly=true) { _ -> w_while() },
-        Word("repeat", immediate=true, compileOnly=true) { _ -> w_repeat() },
+class WLoops(val vm: ForthVM): WordClass {
+    override val name = "Loops"
+    override val primitives: Array<Word> = arrayOf<Word>(
+        Word("begin", imm = true, compO = true) { _ -> w_begin() },
+        Word("again", imm=true, compO=true) { _ -> w_again() },
+        Word("until", imm=true, compO=true) { _ -> w_until() },
+        Word("while", imm=true, compO=true) { _ -> w_while() },
+        Word("repeat", imm=true, compO=true) { _ -> w_repeat() },
 
-        Word("do", immediate=true, compileOnly=true) { _ -> w_do() },
-        Word("do-impl", compileOnly = true, hidden = true) { _ -> w_doImpl() },
-        Word("loop", immediate=true, compileOnly=true) { _ -> w_loop() },
-        Word("i", compileOnly=true) { _ -> w_i() },
-        Word("j", compileOnly=true) { _ -> w_j() },
-        Word("k", compileOnly=true) { _ -> w_k() },
-        Word("l", compileOnly=true) { _ -> w_l() },
-        Word("m", compileOnly=true) { _ -> w_m() },
+        Word("do", imm=true, compO=true) { _ -> w_do() },
+        Word("do-impl", compO = true, hidden = true) { _ -> w_doImpl() },
+        Word("loop", imm=true, compO=true) { _ -> w_loop() },
+        Word("i", compO=true) { _ -> w_i() },
+        Word("j", compO=true) { _ -> w_j() },
+        Word("k", compO=true) { _ -> w_k() },
+        Word("l", compO=true) { _ -> w_l() },
+        Word("m", compO=true) { _ -> w_m() },
 
-        Word("loop-impl", compileOnly = true, hidden = true) { _ -> w_loopImpl() },
-        Word("+loop", immediate=true, compileOnly=true) { _ -> w_plusLoop() },
+        Word("loop-impl", compO = true, hidden = true) { _ -> w_loopImpl() },
+        Word("+loop", imm=true, compO=true) { _ -> w_plusLoop() },
 
-        Word("leave", immediate=true, compileOnly=true) { _ -> w_leave() },
+        Word("leave", imm=true, compO=true) { _ -> w_leave() },
 
         Word(".lstk") { _ -> w_lstk() },  // ?do - enter loop if true
         // -do down-counting
@@ -121,12 +122,12 @@ class WLoops(val vm: ForthVM) {
         val limit: Int = vm.lstk.pop()
         if (loopIdx >= limit) {
             if (D) vm.dbg("w_loopFnPlus: done")
-            vm.cptr += 1
+            vm.ip += 1
         } else {
             if (D) vm.dbg("w_loopFnPlus: looping")
             // go to the beginning of the loop
             vm.lstk.push(limit, loopIdx)
-            vm.cptr = vm.mem[vm.cptr]
+            vm.ip = vm.mem[vm.ip]
         }
     }
 

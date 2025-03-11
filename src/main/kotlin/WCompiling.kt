@@ -1,19 +1,22 @@
 package kf
 
-class WCompiling(val  vm: ForthVM) {
-    val primitives: Array<Word> = arrayOf<Word>(
-        Word(":", interpOnly = true) { _ -> w_colon() },
-        Word(";", immediate=true, compileOnly=true) { _ -> w_semicolon() },
-        Word("literal", immediate=true, compileOnly=true) { _ -> w_bracketLiteral() },
-        Word("[literal]", compileOnly=true) { _ -> w_literal() },
-        Word("[']", immediate=true, compileOnly=true) { _ -> w_bracketTick() },
-        Word("immediate", immediate = true) { _ -> w_immediate() },
-        Word("recursive", immediate=true, compileOnly=true) { _ -> w_recursive() },
-        Word("postpone", immediate=true, compileOnly=true) { _ -> w_postpone() },
+class WCompiling(val vm: ForthVM) : WordClass {
+    override val name = "Compiling"
+
+    override val primitives: Array<Word> = arrayOf<Word>(
+        Word(":", interpO = true) { _ -> w_colon() },
+        Word(";", imm = true, compO = true) { _ -> w_semicolon() },
+        Word("[literal]", compO = true) { _ -> w_bracketLiteral() },
+        Word("literal", imm=true, compO = true) { _ -> w_literal() },
+        Word("[']", imm = true, compO = true) { _ -> w_bracketTick() },
+        Word("immediate", imm = true) { _ -> w_immediate() },
+        Word("recursive", imm = true, compO = true) { _ -> w_recursive() },
+        Word("postpone", imm = true, compO = true) { _ -> w_postpone() },
         Word("dolit") { _ -> w_doLit() },
     )
 
-    /**  `:` X ( in:"name" -- : create word 'name' and start compiling mode ) */
+    /**  `:` X ( in:"name" -- : create word 'name' and start compiling mode )
+     */
     fun w_colon() {
         if (D) vm.dbg("w_colon")
 
@@ -30,13 +33,19 @@ class WCompiling(val  vm: ForthVM) {
         // so it can call itself (recurse).
 
         val wCall = vm.dict.get("call")
-        val w = Word(name, cpos=vm.cend, dpos=Word.NO_ADDR, callable = wCall.callable)
+        val w = Word(
+            name,
+            cpos = vm.cend,
+            dpos = Word.NO_ADDR,
+            callable = wCall.callable
+        )
         vm.dict.add(w)
         vm.interpState = vm.INTERP_STATE_COMPILING
         vm.dict.currentlyDefining = w
     }
 
-    /** `;` IC ( -- : complete word definition and exit compiling mode )` */
+    /** `;` IC ( -- : complete word definition and exit compiling mode )`
+     */
     fun w_semicolon() {
         val w: Word = vm.dict.last
         if (D) vm.dbg(2, "w_semicolon: %s", w.name)
@@ -55,6 +64,9 @@ class WCompiling(val  vm: ForthVM) {
     //  : [literal] dolit ,, ,, ;   \ writes lit/stack-top
     //  : literal immediate [literal] ; \ same, but imm mode
     //  : ['] immediate ' [literal] ;
+
+    /** `dolit` ( -- 'lit : push wn for 'lit' onto stack )
+     */
     fun w_doLit() {
         if (D) vm.dbg("w_doLit")
         val wn: Int = vm.dict.getNum("lit")
@@ -89,9 +101,9 @@ class WCompiling(val  vm: ForthVM) {
      * between thw one they wanted to make immediate)
      */
     fun w_immediate() {
-        vm.dbg("w_immediate")
+        if (D) vm.dbg("w_immediate")
         val w: Word = vm.dict.last
-        w.immediate = true
+        w.imm = true
         if (vm.dict.currentlyDefining == null) {
             vm.dbg(
                 0, """Marked '$w' as immediate-mode
@@ -105,35 +117,36 @@ class WCompiling(val  vm: ForthVM) {
     fun w_recursive() {
         val w: Word = vm.dict.currentlyDefining!!
         w.recursive = true
-        vm.dbg("w_recursive: $w")
+        if (D) vm.dbg("w_recursive: $w")
     }
 
 
-    /**  postpone */
+    /**  postpone
+     */
     fun w_postpone() {
         val token: String = vm.getToken()
-        vm.dbg("w_postpone: '%s'", token)
-        val w: Word = vm.dict.get(vm.dict.getNum(token))
-        val me: Word = vm.dict.last // currently defining word?
-// FIXME: need to fix, since callable can't be changed rn
-//        if (w.immediate) {
-//            me.callable = w.callable
-//        } else {
-//            vm.dbg("HUH ? w_postpone: $w")
-//        }
+        if (D) vm.dbg("w_postpone: '%s'", token)
+        val w: Word = vm.dict.get(token)
+        if (w.imm) {
+            vm.dict.last.callable = w.callable
+        } else {
+            vm.io.quiet("??? using `postpone` with non-immediate word")
+        }
     }
 
-    /**  `bracketLiteral` C ( n -- : write lit token & n to code area ) */
+    /**  `bracketLiteral` C ( n -- : write lit token & n to code area )
+     */
     fun w_bracketLiteral() {
-        val `val`: Int = vm.dstk.pop()
-        vm.dbg("w_doLiteral %d", `val`)
-        vm.appendLit(`val`)
+        val v: Int = vm.dstk.pop()
+        if (D) vm.dbg("w_bracketLiteral %d", v)
+        vm.appendLit(v)
     }
 
-    /**  `literal` IC ( n -- : write lit token & n to code area ) */
+    /**  `literal` IC ( n -- : write lit token & n to code area )
+     */
     fun w_literal() {
-        val `val`: Int = vm.dstk.pop()
-        vm.dbg("w_literal %d", `val`)
-        vm.appendLit(`val`)
+        val v: Int = vm.dstk.pop()
+        if (D) vm.dbg("w_literal %d", v)
+        vm.appendLit(v)
     }
 }

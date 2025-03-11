@@ -14,7 +14,13 @@ class IOGateway : IOBase() {
     val bos = ByteArrayOutputStream()
     override val output: PrintStream = PrintStream(bos)
     override val err: PrintStream = output
-    override var input: BufferedReader? = null
+    override var input: BufferedReader = BufferedReader(CharArrayReader(
+        CharArray(0)
+    ))
+
+    override fun readLine(): String? {
+        return input.readLine()
+    }
 
     fun resetAndLoadCommands(cmds: String) {
         bos.reset()

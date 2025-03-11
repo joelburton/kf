@@ -50,6 +50,6 @@ fun tryAsInt(s: String, radix: Int): Int {
     try {
         return s.toInt(radix)
     } catch (e: NumberFormatException) {
-        throw ForthVM.ParseError(s)
+        throw ParseError(s)
     }
 }

@@ -1,7 +1,8 @@
 package kf
 
-class WWords(val vm: ForthVM) {
-    val primitives: Array<Word> = arrayOf<Word>(
+class WWords(val vm: ForthVM) : WordClass {
+    override val name = "Words"
+    override val primitives: Array<Word> = arrayOf<Word>(
         Word("words") { _ -> w_words() },
         Word("synonym") { _ -> w_synonym() },
         Word("forget") { _ -> w_forget() },
@@ -15,8 +16,8 @@ class WWords(val vm: ForthVM) {
         Word("id.") { _ -> w_wordId() },
         Word(".unhide-all") { _ -> w_unhideAll() },
 
-        Word("[defined]", immediate = true) { _ -> w_bracketDefined() },
-        Word("[undefined]", immediate = true) { _ -> w_bracketUndefined() },
+        Word("[defined]", imm = true) { _ -> w_bracketDefined() },
+        Word("[undefined]", imm = true) { _ -> w_bracketUndefined() },
     )
 
     /**  `\[defined\]` I ( in:"name" -- f : is this word defined? )
@@ -112,9 +113,9 @@ class WWords(val vm: ForthVM) {
             callable = curWord.callable,
             cpos = curWord.cpos,
             dpos = curWord.dpos,
-            compileOnly = curWord.compileOnly,
-            immediate = curWord.immediate,
-            interpOnly = curWord.interpOnly,
+            compO = curWord.compO,
+            imm = curWord.imm,
+            interpO = curWord.interpO,
         )
         vm.dict.add(nw)
     }

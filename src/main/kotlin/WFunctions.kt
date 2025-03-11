@@ -1,7 +1,9 @@
 package kf
 
-class WFunctions(val vm: ForthVM) {
-    val primitives: Array<Word> = arrayOf(
+class WFunctions(val vm: ForthVM) : WordClass {
+    override val name = "Functions"
+
+    override val primitives: Array<Word> = arrayOf(
         Word("call") { _ -> w_call() },
         Word("call-by-addr") { _ -> w_callByAddr() },
         Word("execute") { _ -> w_exec() },
@@ -18,8 +20,8 @@ class WFunctions(val vm: ForthVM) {
      */
     fun w_call() {
         if (D) vm.dbg("w_call: ${vm.currentWord.name}")
-        vm.rstk.push(vm.cptr)
-        vm.cptr = vm.currentWord.cpos
+        vm.rstk.push(vm.ip)
+        vm.ip = vm.currentWord.cpos
     }
 
     /**  `call-by-addr` ( addr -- : call addr )
@@ -27,8 +29,8 @@ class WFunctions(val vm: ForthVM) {
     fun w_callByAddr() {
         val addr: Int = vm.dstk.pop()
         if (D) vm.dbg("w_callByAddr: addr=${addr}")
-        vm.rstk.push(vm.cptr)
-        vm.cptr = addr
+        vm.rstk.push(vm.ip)
+        vm.ip = addr
     }
 
     /**  `execute` ( n -- : execute a word by word-num )
@@ -44,7 +46,7 @@ class WFunctions(val vm: ForthVM) {
      */
     fun w_return() {
         val retAddr = vm.rstk.pop()
-        if (D) vm.dbg("w_return cptr=$%04x retAddr=$%04x", vm.cptr, retAddr)
-        vm.cptr = retAddr
+        if (D) vm.dbg("w_return cptr=$%04x retAddr=$%04x", vm.ip, retAddr)
+        vm.ip = retAddr
     }
 }

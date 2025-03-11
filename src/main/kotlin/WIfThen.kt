@@ -1,10 +1,12 @@
 package kf
 
-class WIfThen(val vm: ForthVM) {
-    val primitives: Array<Word> = arrayOf<Word>(
-        Word("if", immediate = true, compileOnly = true) { _ -> w_if() },
-        Word("else", immediate=true, compileOnly = true ) { _-> w_else() },
-        Word("then", immediate=true, compileOnly = true) { _ -> w_then() },
+class WIfThen(val vm: ForthVM) : WordClass {
+    override val name = "IfThen"
+
+    override val primitives: Array<Word> = arrayOf<Word>(
+        Word("if", imm = true, compO = true) { _ -> w_if() },
+        Word("else", imm=true, compO = true ) { _-> w_else() },
+        Word("then", imm=true, compO = true) { _ -> w_then() },
     )
 
     /**  _if */

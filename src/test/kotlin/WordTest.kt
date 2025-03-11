@@ -4,7 +4,7 @@ import org.junit.jupiter.api.Test
 
 import org.junit.jupiter.api.Assertions.*
 
-val dummyFunc: (ForthVM) -> Unit = { it.cptr = 2 }
+val dummyFunc: (ForthVM) -> Unit = { it.ip = 2 }
 
 class WordTest {
 
@@ -26,6 +26,6 @@ class WordTest {
         val vm = ForthVM()
         val word = Word("test", callable = dummyFunc)
         word.exec(vm)
-        assertEquals(2, vm.cptr)
+        assertEquals(2, vm.ip)
     }
 }

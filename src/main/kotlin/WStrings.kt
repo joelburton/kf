@@ -1,7 +1,8 @@
 package kf
 
-class WStrings(val vm: ForthVM) {
-    val primitives: Array<Word> = arrayOf<Word>(
+class WStrings(val vm: ForthVM) : WordClass {
+    override val name = "Strings"
+    override val primitives: Array<Word> = arrayOf<Word>(
         Word("type") { _ ->
             w_type()
         },
@@ -38,7 +39,7 @@ class WStrings(val vm: ForthVM) {
         vm.dstk.push(s.length)
     }
 
-    // FIXME maybe? this is a kludge
+    // TODO maybe? this is a kludge
     // since we keep the lineBuf as a Java string throughout,
     // using source copies it
     // but it should be modifiable, like:

@@ -1,7 +1,8 @@
 package kf
 
-class WTools(val vm: ForthVM) {
-    val primitives: Array<Word> = arrayOf(
+class WTools(val vm: ForthVM) : WordClass {
+    override val name = "Tools"
+    override val primitives: Array<Word> = arrayOf(
         Word(".dstk") { _ -> w_dumpDataStack() },
         Word(".rstk") { _ -> w_dumpReturnStack() },
         Word(".cptr") { _ -> w_cptr() },
@@ -28,8 +29,8 @@ class WTools(val vm: ForthVM) {
     }
 
 
-    fun w_cptr() {  // FIXME: duplicate of "here"
-        vm.dstk.push(vm.cptr)
+    fun w_cptr() {
+        vm.dstk.push(vm.ip)
     }
 
     private fun _dump(vm: ForthVM, k: Int, simple: Boolean) {
@@ -60,13 +61,13 @@ class WTools(val vm: ForthVM) {
 
     /** Dump code area; this powers the ".text" word. */
     fun w_dumpCode() {
-        for (k in vm.codeStart..<vm.cend) {
+        for (k in vm.memConfig.codeStart..<vm.cend) {
             _dump(vm, k, false)
         }
     }
 
     fun w_dumpRegs() {
-        for (k in vm.regsStart..vm.regsEnd) {
+        for (k in vm.memConfig.regsStart..vm.memConfig.regsEnd) {
             _dump(vm, k, false)
         }
     }
@@ -74,7 +75,7 @@ class WTools(val vm: ForthVM) {
 
     /** Dumps data area; this powers the ".data" word. */
     fun w_dumpData() {
-        for (k in vm.dataStart..<vm.dend) {
+        for (k in vm.memConfig.dataStart..<vm.dend) {
             _dump(vm, k, false)
         }
     }

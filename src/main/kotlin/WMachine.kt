@@ -1,7 +1,8 @@
 package kf
 
-class WMachine(val vm: ForthVM) {
-    val primitives: Array<Word> = arrayOf(
+class WMachine(val vm: ForthVM): WordClass {
+    override val name = "Machine"
+    override val primitives: Array<Word> = arrayOf(
         // Keep on top -- this when, if the VM somehow starts running from
         // initialized memory (0), it will try to run word# 0, which will be
         // this, and we'll break.
@@ -16,14 +17,14 @@ class WMachine(val vm: ForthVM) {
         // fundamental machine state
         Word("abort") { _ -> w_abort() },
         Word("abort\"") { _ -> w_abortQuote() },
-        Word("reboot", immediate = true, interpOnly = true,) { _ -> w_reboot() },
-        Word("reboot-raw", immediate = true, interpOnly = true) { _ -> w_rebootRaw() },
+        Word("reboot", imm = true, interpO = true,) { _ -> w_reboot() },
+        Word("reboot-raw", imm = true, interpO = true) { _ -> w_rebootRaw() },
         Word("bye") { _ -> w_bye() },
-        Word("cold", immediate=true, interpOnly = true) { _ -> w_coldStop() },
+        Word("cold", imm=true, interpO = true) { _ -> w_coldStop() },
         Word("quit") { _ -> w_quit() },
 
         // fundamental
-        Word("lit", compileOnly = true) { _ -> w_lit() },  // registers
+        Word("lit", compO = true) { _ -> w_lit() },  // registers
 
         Word("term-width") { _ -> w_termWidth() },
         Word("verbosity") { _ -> w_verbosity() },
@@ -32,12 +33,8 @@ class WMachine(val vm: ForthVM) {
 
     )
 
-
-    // TODO:
-    // quit
-    // Empty return stack, make the user input device the input source,
-    // enter interpret state and start the text interpreter.
     // *************************************************************************
+
     /** `brk` ( -- : Crashes machine )
      *
      * Make sure this is the first word in the dictionary. It's useful to hit
@@ -45,7 +42,7 @@ class WMachine(val vm: ForthVM) {
      */
     fun w_brk() {
         if (D) vm.dbg("w_brk")
-        throw ForthBrk("brk at " + vm.cptr)
+        throw ForthBrk("brk at " + vm.ip)
     }
 
     /** `nop` ( -- : Does nothing )
@@ -65,18 +62,18 @@ class WMachine(val vm: ForthVM) {
         val flag = vm.dstk.pop()
         if (D) vm.dbg(3, "w_0branch: $flag")
         if (flag == 0) {
-            if (D) vm.dbg("w_0branch =0 --> ${vm.cptr}}")
-            vm.cptr = vm.mem.get(vm.cptr)
+            if (D) vm.dbg("w_0branch =0 --> ${vm.ip}}")
+            vm.ip = vm.mem.get(vm.ip)
         } else {
-            vm.cptr += 1
+            vm.ip += 1
         }
     }
 
     /** `branch` ( -- in:addr : Unconditional jump )
      */
     fun w_branch() {
-        if (D) vm.dbg(3, "w_branch: --> ${vm.cptr}")
-        vm.cptr = vm.mem.get(vm.cptr)
+        if (D) vm.dbg(3, "w_branch: --> ${vm.ip}")
+        vm.ip = vm.mem.get(vm.ip)
     }
 
     /** `0rel-branch` ( flag -- in:offset : Jump to cptr+offset if flag=0 )
@@ -85,15 +82,15 @@ class WMachine(val vm: ForthVM) {
      */
     fun w_0relBranch() {
         val flag = vm.dstk.pop()
-        if (D) vm.dbg(3, "w_0branch: %d %04x", flag, vm.cptr)
+        if (D) vm.dbg(3, "w_0branch: %d %04x", flag, vm.ip)
         if (0 == flag) {
             if (D) vm.dbg(
                 "w_0branch =0 --> %04x",
-                vm.mem.get(vm.cptr)
+                vm.mem.get(vm.ip)
             )
-            vm.cptr = vm.mem.get(vm.cptr) + vm.cptr
+            vm.ip = vm.mem.get(vm.ip) + vm.ip
         } else {
-            vm.cptr += 1
+            vm.ip += 1
         }
     }
 
@@ -102,8 +99,8 @@ class WMachine(val vm: ForthVM) {
      * This is not a conventional Forth word, but it's useful.
      */
     fun w_relBranch() {
-        if (D) vm.dbg(3, "w_rbranch: %04x", vm.cptr)
-        vm.cptr = vm.mem.get(vm.cptr) + vm.cptr
+        if (D) vm.dbg(3, "w_rbranch: %04x", vm.ip)
+        vm.ip = vm.mem.get(vm.ip) + vm.ip
     }
 
     // **************************************************** exiting & restarting
@@ -187,12 +184,12 @@ class WMachine(val vm: ForthVM) {
     // *************************************************************** registers
     fun w_termWidth() {
         if (D) vm.dbg("w_termWidth")
-        vm.dstk.push(vm.REG_TERM_WIDTH)
+        vm.dstk.push(ForthVM.REG_TERM_WIDTH)
     }
 
     fun w_verbosity() {
         if (D) vm.dbg("w_verbosity")
-        vm.dstk.push(vm.REG_VERBOSITY)
+        vm.dstk.push(ForthVM.REG_VERBOSITY)
     }
 
     // ************************************************************* fundamental
@@ -200,7 +197,7 @@ class WMachine(val vm: ForthVM) {
      *
      * FIXME: is this something like `number` in the standard? */
     fun w_lit() {
-        val `val`: Int = vm.mem.get(vm.cptr++)
+        val `val`: Int = vm.mem.get(vm.ip++)
         if (D) vm.dbg("w_lit %d", `val`)
         vm.dstk.push(`val`)
     }

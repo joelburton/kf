@@ -3,6 +3,11 @@ package kf
 class WordNotFoundException(msg: String) : Exception(msg)
 class DictFullError() : Exception("Dictionary full")
 
+interface WordClass {
+    val name: String
+    val primitives: Array<Word>
+}
+
 class Dict(val vm: ForthVM, val capacity: Int = 1024) {
     private val words = arrayListOf<Word>()
     var currentlyDefining: Word? = null

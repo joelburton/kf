@@ -6,6 +6,7 @@ import java.util.*
 const val D = false;
 const val VERSION_STRING = "KPupForth 0.1.0"
 
+
 enum class CellMeta {
     unknown,
     word_number,
@@ -38,6 +39,7 @@ enum class CellMeta {
     }
 }
 
+
 open class ForthError(msg: String) : Exception(msg)
 class ForthMissingToken() : ForthError("Missing token")
 class ForthWarning(msg: String) : ForthError(msg)
@@ -47,70 +49,77 @@ class ForthQuit(msg: String) : RuntimeException(msg)
 class ForthBye(msg: String) : RuntimeException(msg)
 class ForthColdStop(msg: String) : RuntimeException(msg)
 
+/**  End-of-file detected (exists current interpreter, both interactive and
+ * non-interactive)
+ */
+class ForthEOF : java.lang.RuntimeException()
+
+/**  When raised, will quit the interpreter *if* this is a non-interactive
+ * interpreter (like when reading a file with `include`)
+ */
+class ForthQuitNonInteractive : java.lang.RuntimeException()
+
+/**  Might be an invalid number or missing word.
+ */
+class ParseError(message: String) : ForthError("Parse error: $message")
+
+class InvalidState(message: String) : ForthError("Invalid state: $message")
+
 class ForthVM(
-    val regsStart: Int = 0x0000,
-    val regsEnd: Int = 0x000f,
-    val codeStart: Int = 0x0010,
-    val codeEnd: Int = 0x01ff,
-    val dataStart: Int = 0x0200,
-    val dataEnd: Int = 0x02ff,
-    val dstackStart: Int = 0x0300,
-    val dstackEnd: Int = 0x03df,
-    val rstackStart: Int = 0x03e0,
-    val rstackEnd: Int = 0x03ef,
-    val lstackStart: Int = 0x03f0,
-    val lstackEnd: Int = 0x03ff,
-    val upperBound: Int = 0x03ff,
+    val memConfig: IMemConfig = SmallMemConfig,
     var io: IOBase = IOBase(),
-    val mem: IntArray = IntArray(upperBound + 1),
+    val mem: IntArray = IntArray(memConfig.upperBound + 1),
 ) {
+
+    companion object {
+        const val REG_BASE = 0
+        const val REG_VERBOSITY = 1
+        const val REG_CEND = 2
+        const val REG_DEND = 3
+        const val REG_TERM_WIDTH = 4
+    }
 
     // *************************************************************** registers
 
-    val REG_BASE = 0
     var base: Int
         get() = mem[REG_BASE]
-        set(v: Int) {
+        set(v) {
             mem[REG_BASE] = v
         }
 
-    val REG_VERBOSITY = 1
     var verbosity: Int
         get() = mem[REG_VERBOSITY]
-        set(v: Int) {
+        set(v) {
             mem[REG_VERBOSITY] = v
         }
 
-    val REG_CEND = 2
     var cend: Int
         get() = mem[REG_CEND]
-        set(v: Int) {
+        set(v) {
             mem[REG_CEND] = v
         }
 
-    val REG_DEND = 3
     var dend: Int
         get() = mem[REG_DEND]
-        set(v: Int) {
+        set(v) {
             mem[REG_DEND] = v
         }
 
-    val REG_TERM_WIDTH = 4
     var termWidth: Int
         get() = mem[REG_TERM_WIDTH]
-        set(v: Int) {
+        set(v) {
             mem[REG_TERM_WIDTH] = v
         }
 
 
     val cellMeta: Array<CellMeta> =
-        Array(upperBound + 1) { CellMeta.unknown }
+        Array(memConfig.upperBound + 1) { CellMeta.unknown }
     val dict: Dict = Dict(this)
     var currentWord: Word = Word.noWord
-    var cptr: Int = codeStart
-    val dstk = FStack(this, "dstk", dstackStart, dstackEnd)
-    val rstk = FStack(this, "rstk", rstackStart, rstackEnd)
-    val lstk = FStack(this, "lstk", lstackStart, lstackEnd)
+    var ip: Int = memConfig.codeStart
+    val dstk = FStack(this, "dstk", memConfig.dstackStart, memConfig.dstackEnd)
+    val rstk = FStack(this, "rstk", memConfig.rstackStart, memConfig.rstackEnd)
+    val lstk = FStack(this, "lstk", memConfig.lstackStart, memConfig.lstackEnd)
 
     fun reboot(includePrimitives: Boolean = true) {
         if (D) dbg(1, "vm.reboot")
@@ -118,17 +127,16 @@ class ForthVM(
         val curVerbosity: Int = verbosity
         val curTermWidth = if (termWidth == 0) 80 else termWidth
 
-
         // Clear memory
-        for (i in 0..upperBound) mem[i] = 0
-        for (i in 0..upperBound) cellMeta[i] = CellMeta.unknown
+        for (i in 0..memConfig.upperBound) mem[i] = 0
+        for (i in 0..memConfig.upperBound) cellMeta[i] = CellMeta.unknown
 
         dict.reset()
         for (i in mem.indices) mem[i] = 0
 
-        cptr = codeStart
-        cend = codeStart
-        dend = dataStart
+        ip = memConfig.codeStart
+        cend = memConfig.codeStart
+        dend = memConfig.dataStart
         currentWord = Word.noWord
 
 
@@ -153,7 +161,7 @@ class ForthVM(
 
         // Do things at the interpreter level that are needed after a reboot
         rebootInterpreter();
-        addInterpreterCode(codeStart)
+        addInterpreterCode(memConfig.codeStart)
 
         if (verbosity > 0) {
             io.output.println(io.green("\nWelcome to ${VERSION_STRING}\n"))
@@ -166,7 +174,7 @@ class ForthVM(
         dstk.reset()
         rstk.reset()
         lstk.reset()
-        cptr = codeStart
+        ip = memConfig.codeStart
 
 
         // Do things at the interpreter level that are need after a reset
@@ -180,22 +188,24 @@ class ForthVM(
      */
     fun addCorePrimitives() {
         if (D) dbg(3, "vm.addCorePrimitives")
-        dict.addMany(WTools(this).primitives, "Tools")
-        dict.addMany(WComments(this).primitives, "Comments")
-        dict.addMany(WInputOutput(this).primitives, "InputOutput")
-        dict.addMany(WStackOps(this).primitives, "StackOps")
-        dict.addMany(WMathLogic(this).primitives, "MathLogic")
-        dict.addMany(WMemory(this).primitives, "Memory")
-        dict.addMany(WFunctions(this).primitives, "Functions")
-        dict.addMany(WCompiling(this).primitives, "Compiling")
-        // dep: Functions
-        dict.addMany(WIfThen(this).primitives, "IfThen") // dep: Functions
-        dict.addMany(WLoops(this).primitives, "Looping") // dep: Functions
-        dict.addMany(WDoes(this).primitives, "Does") // dep: Functions
-        dict.addMany(WMisc(this).primitives, "Misc") // dep: Functions
-        dict.addMany(WInternals(this).primitives, "Internals")
-        dict.addMany(WWords(this).primitives, "Words")
-        dict.addMany(WStrings(this).primitives, "Strings")
+
+        for (prim in arrayOf(
+            WTools(this),
+            WComments(this),
+            WInputOutput(this),
+            WStackOps(this),
+            WMathLogic(this),
+            WMemory(this),
+            WFunctions(this),
+            WCompiling(this),
+            WIfThen(this), // dep: Functions
+            WLoops(this), // dep: Functions
+            WDoes(this), // dep: Functions
+            WMisc(this), // dep: Functions
+            WInternals(this),
+            WWords(this),
+//            WStrings(this),
+        )) dict.addMany(prim.primitives, prim.name)
     }
 
     /**  Read in a primitive class dynamically
@@ -203,11 +213,10 @@ class ForthVM(
     fun readPrimitiveClass(name: String) {
         if (D) dbg(3, "vm.readPrimitiveClass: %s", name)
         try {
-            val cls = Class.forName(name)
-            val field = cls.getDeclaredField("primitives")
-            field.isAccessible = true
-            @Suppress("UNCHECKED_CAST")
-            dict.addMany(field[null] as Array<Word>, name)
+            val cls: Class<*> = Class.forName(name)
+            val o = cls.getConstructor(ForthVM::class.java)
+                .newInstance(this) as WordClass
+            dict.addMany(o.primitives, o.name)
         } catch (e: Exception) {
             when (e) {
                 is ClassNotFoundException,
@@ -236,7 +245,7 @@ class ForthVM(
      */
     fun appendCode(v: Int, cellMeta_val: CellMeta) {
         if (D) dbg(3, "vm.appendText: ${v} ${cellMeta_val}")
-        if (cend > codeEnd) throw ForthError("Code buffer overflow")
+        if (cend > memConfig.codeEnd) throw ForthError("Code buffer overflow")
 
         mem[cend] = v
         cellMeta[cend] = cellMeta_val
@@ -285,9 +294,34 @@ class ForthVM(
         if (D) dbg(3, "vm.run")
 
         while (true) {
-            val wn = mem[cptr++]
-            currentWord = dict.get(wn)
-            currentWord.callable.invoke(this)
+            try {
+                val wn = mem[ip++]
+                currentWord = dict.get(wn)
+                currentWord.callable.invoke(this)
+            } catch (e: ForthQuit) {
+                // For non-interactive (like a file), needs to stop reading all
+                // files --- so rethrow error
+                if (!io.isInteractive) throw e;
+                // otherwise, it just resets call stack
+                rstk.reset();
+            } catch (e: ForthWarning) {
+                io.warn("WARNING: " + e.message);
+            } catch (e: ForthError) {
+                // Any normal error will be ForthError (or a subclass of it);
+                // other errors will continue upward. These will be
+                // ForthBye (which is handled by the caller of this)
+                // or any other unexpected programming errors.
+                //
+                // For ForthErrors, just show the user a message, reset
+                // the machine (empty stacks, etc.), and let them continue.
+                io.error("ERROR: " + e.message);
+                if (verbosity >= 1)
+                    e.printStackTrace();
+                reset();
+            } catch (e: ForthBrk) {
+                io.error("BRK: " + e.message);
+                e.printStackTrace();
+            }
         }
     }
 
@@ -315,20 +349,6 @@ class ForthVM(
         get() = mem[REG_INTERP_STATE] == INTERP_STATE_COMPILING
 
 
-    /**  End-of-file detected (exists current interpreter, both interactive and
-     * non-interactive)
-     */
-    class ForthEOF : java.lang.RuntimeException()
-
-    /**  When raised, will quit the interpreter *if* this is a non-interactive
-     * interpreter (like when reading a file with `include`)
-     */
-    class ForthQuitNonInteractive : java.lang.RuntimeException()
-
-    /**  Might be an invalid number or missing word.
-     */
-    class ParseError(message: String) : ForthError("Parse error: $message")
-
     /**  Buffer holding the most recently read token. */
     var interpToken: String? = null
 
@@ -353,7 +373,7 @@ class ForthVM(
 
         // Poke interpreter code into memory: the VM will start executing
         // code at this location (mem_code_start)
-        addInterpreterCode(codeStart)
+        addInterpreterCode(memConfig.codeStart)
     }
 
     /**  Handle a VM reset at the interpreter layer.
@@ -382,9 +402,9 @@ class ForthVM(
         val w: Word? = dict.getSafeChkRecursion(token, io)
 
         if (w != null) {
-            if (w.interpOnly)
-                throw ForthError("Can't use in compile mode: ${w.name}")
-            if (w.immediate) {
+            if (w.interpO)
+                throw InvalidState("Can't use in compile mode: ${w.name}")
+            if (w.imm) {
                 currentWord = w
                 w.callable.invoke(this)
 //                w.exec(this)
@@ -411,7 +431,7 @@ class ForthVM(
         if (D) dbg(3, "vm.execute: %s", token)
         val w: Word? = dict.getSafe(token)
         if (w != null) {
-            if (w.compileOnly) throw ForthError("Compile-only: " + w.name)
+            if (w.compO) throw InvalidState("Compile-only: " + w.name)
             currentWord = w
             w.callable.invoke(this)
 //            w.exec(this)

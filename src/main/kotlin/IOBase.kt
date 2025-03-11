@@ -5,14 +5,14 @@ import java.io.InputStreamReader
 
 
 open class IOBase {
-    open val input: BufferedReader? =
+    open val input: BufferedReader =
         BufferedReader(InputStreamReader(System.`in`))
     open val output = System.out
     open val err = System.err
     open val isInteractive = true
 
-    fun readLine(): String {
-        return input!!.readLine()
+    open fun readLine(): String? {
+        return input.readLine()
     }
 
     open fun grey(s: String): String = s

@@ -2,14 +2,15 @@ package kf
 
 import kotlin.math.sqrt
 
-class WMathLogic(val vm: ForthVM) {
+class WMathLogic(val vm: ForthVM) : WordClass {
     companion object {
         val MAX_INT: Int = 0x7fffffff
         val TRUE: Int = -1
         val FALSE: Int = 0
     }
 
-    val primitives: Array<Word> = arrayOf<Word>(
+    override val name = "MathLogic"
+    override val primitives: Array<Word> = arrayOf<Word>(
         Word("and") { _ ->
             w_and()
         },
