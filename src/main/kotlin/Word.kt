@@ -10,7 +10,7 @@ class Word(
     var compO: Boolean = false,
     var interpO: Boolean = false,
     var recursive: Boolean = false,
-    var wn: Int? = null,
+    var wn: Int = 0,
     var callable: (ForthVM) -> Unit,
 ) {
    companion object {
@@ -24,7 +24,12 @@ class Word(
    }
 
     override fun toString() = name;
-    fun exec(vm: ForthVM) = callable(vm)
+    fun exec(vm: ForthVM) {
+        if (D) vm.dbg(2, "word.exec $name -->")
+        vm.currentWord = this
+        callable(vm)
+        if (D) vm.dbg(2, "word.exec $name <--")
+    }
 
     /**  Useful for debugging and to support `w_see` and `w_simple-see`. */
     fun getHeaderStr(io: IOBase): String {

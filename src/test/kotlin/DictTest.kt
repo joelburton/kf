@@ -5,106 +5,101 @@ import org.junit.jupiter.api.Assertions.*
 import kotlin.test.assertFailsWith
 
 
-class DictTest {
-    val d: Dict = Dict(ForthVM(), capacity = 3)
+class FakeMod: WordClass {
+    override val name = "FakeMod"
+    override val primitives = arrayOf<Word>(
+        Word("word1", callable = dummyFunc),
+        Word("word2", callable = dummyFunc),
+    )
+}
+
+
+class DictTest  : ForthTestCase() {
+    val dict: Dict = Dict(ForthVM(), capacity = 3)
 
     @Test
     fun reset() {
         val word = Word("word", callable = dummyFunc)
-        d.add(word)
-        d.currentlyDefining = word
-        assertEquals(1, d.size)
-        d.reset()
-        assertEquals(0, d.size)
-        assertNull(d.currentlyDefining)
+        dict.add(word)
+        dict.currentlyDefining = word
+        assertEquals(1, dict.size)
+        dict.reset()
+        assertEquals(0, dict.size)
+        assertNull(dict.currentlyDefining)
     }
 
     @Test
     fun size() {
         val word = Word("word", callable = dummyFunc)
-        d.add(word)
-        assertEquals(1, d.size)
+        dict.add(word)
+        assertEquals(1, dict.size)
     }
 
     @Test
     fun last() {
         val word = Word("word", callable = dummyFunc)
-        d.add(word)
-        assertEquals(word, d.last)
+        dict.add(word)
+        assertEquals(word, dict.last)
     }
 
     @Test
     fun get() {
         val word = Word("word", callable = dummyFunc)
-        d.add(word)
-        assertFailsWith<WordNotFoundException> { d.get("no-word") }
-        assertEquals(word, d.get("word"))
+        dict.add(word)
+        assertFailsWith<WordNotFoundException> { dict.get("no-word") }
+        assertEquals(word, dict.get("word"))
     }
 
     @Test
     fun testGet() {
         val word = Word("word", callable = dummyFunc)
-        d.add(word)
-        assertFailsWith<WordNotFoundException> { d.get(-1) }
-        assertEquals(word, d.get(0))
+        dict.add(word)
+        assertFailsWith<WordNotFoundException> { dict.get(-1) }
+        assertEquals(word, dict.get(0))
     }
 
     @Test
     fun getNum() {
         val word = Word("word", callable = dummyFunc)
-        d.add(word)
-        assertFailsWith<WordNotFoundException> { d.get("no-word") }
-        assertEquals(0, d.getNum("word"))
+        dict.add(word)
+        assertFailsWith<WordNotFoundException> { dict.get("no-word") }
+        assertEquals(0, dict.getNum("word"))
     }
 
     @Test
-    fun addMany() {
-        d.addMany(
-            arrayOf(
-                Word("word1", callable = dummyFunc),
-                Word("word2", callable = dummyFunc),
-            ),
-            "dummy"
-        )
-        assertEquals(2, d.size)
+    fun addModule() {
+        dict.addModule(FakeMod())
+        assertEquals(2, dict.size)
     }
 
     @Test
     fun dictFull() {
-        val tooMany = arrayOf(
-            Word("word1", callable = dummyFunc),
-            Word("word2", callable = dummyFunc),
-            Word("word3", callable = dummyFunc),
-            Word("word4", callable = dummyFunc),
-        )
-        assertFailsWith<DictFullError> { d.addMany(tooMany, "dummy") }
+        val w = Word("word1", callable = dummyFunc)
+        dict.add(w)
+        dict.add(w)
+        dict.add(w)
+        assertFailsWith<DictFullError> { dict.add(w) }
     }
 
     @Test
     fun truncate() {
-        d.addMany(
-            arrayOf(
-                Word("word1", callable = dummyFunc),
-                Word("word2", callable = dummyFunc)
-            ),
-            "dummy"
-        )
-        d.truncateAt(1)
-        assertEquals(1, d.size)
-        d.truncateAt(10) // not an error to truncate more than we have
-        assertEquals(1, d.size)
+        val w = Word("word1", callable = dummyFunc)
+        dict.add(w)
+        dict.add(w)
+        dict.add(w)
+        dict.truncateAt(1)
+        assertEquals(1, dict.size)
+        dict.truncateAt(10) // not an error to truncate more than we have
+        assertEquals(1, dict.size)
     }
 
     @Test
     fun removeLast() {
-        d.addMany(
-            arrayOf(
-                Word("word1", callable = dummyFunc),
-                Word("word2", callable = dummyFunc)
-            ),
-            name = "dummy"
-        )
-        d.removeLast()
-        assertEquals(1, d.size)
+        val w = Word("word1", callable = dummyFunc)
+        dict.add(w)
+        dict.add(w)
+        dict.add(w)
+        dict.removeLast()
+        assertEquals(2, dict.size)
     }
 }

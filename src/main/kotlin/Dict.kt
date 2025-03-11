@@ -13,7 +13,7 @@ class Dict(val vm: ForthVM, val capacity: Int = 1024) {
     var currentlyDefining: Word? = null
 
     fun reset() {
-        if (D) println("dict.reset")
+        if (D) vm.dbg(3, "dict.reset")
         words.clear()
         currentlyDefining = null
     }
@@ -75,16 +75,16 @@ class Dict(val vm: ForthVM, val capacity: Int = 1024) {
     }
 
     fun add(word: Word) {
-        if (D) println("dict.add: ${word.name}")
+        if (D) vm.dbg(3, "dict.add: ${word.name}")
         if (words.size >= capacity) throw DictFullError()
         words.add(word)
         word.wn = words.size - 1
     }
 
-    fun addMany(ws: Array<Word>, name: String) {
-        for (w in ws) {
-            add(w)
-        }
+    fun addModule(mod: WordClass) {
+        if (D) vm.dbg(3, "dict.addModule: ${mod.name}")
+        for (w in mod.primitives) add(w)
+        vm.modulesLoaded.put(mod.name, mod)
     }
 
     // ******************************************************* manipulating dict

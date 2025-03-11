@@ -1,19 +1,13 @@
 package kf
 
+import kf.ForthVM.Companion.TRUE
+import kf.ForthVM.Companion.FALSE
 import kotlin.math.sqrt
 
 class WMathLogic(val vm: ForthVM) : WordClass {
-    companion object {
-        val MAX_INT: Int = 0x7fffffff
-        val TRUE: Int = -1
-        val FALSE: Int = 0
-    }
-
     override val name = "MathLogic"
-    override val primitives: Array<Word> = arrayOf<Word>(
-        Word("and") { _ ->
-            w_and()
-        },
+    override val primitives: Array<Word> = arrayOf(
+        Word("and") { _ -> w_and() },
         Word("or") { _ -> w_or() },
         Word("not") { _ -> w_not() },
         Word("inv") { _ -> w_inv() },
@@ -36,12 +30,13 @@ class WMathLogic(val vm: ForthVM) : WordClass {
         Word("1-") { _ -> w_dec() },
         Word("sqrt") { _ -> w_sqrt() },
         Word("true") { _ -> w_true() },
-        Word("false") { _ -> w_false() },  // abs
+        Word("false") { _ -> w_false() },  
+        // TODO:
+        // abs
         // min, max
         // rshift  x u -- x2  put 0s in new bits
         // lshift  x u -- x2   (same)
         // 0<>
-
     )
 
     /**  ( n1 n2 -- n1 & n2 : bitwise AND ) */
@@ -56,12 +51,12 @@ class WMathLogic(val vm: ForthVM) : WordClass {
 
     /**  ( n1 -- ~n1 : bitwise NOT ) */
     fun w_not() {
-        vm.dstk.push(vm.dstk.pop().inv() and MAX_INT)
+        vm.dstk.push(vm.dstk.pop().inv() and ForthVM.MAX_INT)
     }
 
     /**  ( n1 -- -n1 : invert sign ) */
     fun w_inv() {
-        vm.dstk.push(vm.dstk.pop().inv() and MAX_INT)
+        vm.dstk.push(vm.dstk.pop().inv() and ForthVM.MAX_INT)
     }
 
     /**  ( n1 n2 -- n1 ^ n2 : bitwise XOR ) */
@@ -140,9 +135,9 @@ class WMathLogic(val vm: ForthVM) : WordClass {
 
     /**  ( n -- n-1  : decrement ) */
     fun w_dec() {
-        val `val` = vm.dstk.pop() - 1
-        vm.dbg("w_dec: val=%d", `val`)
-        vm.dstk.push(`val`)
+        val v = vm.dstk.pop() - 1
+        vm.dbg("w_dec: val=%d", v)
+        vm.dstk.push(v)
     }
 
     /**  ( n1 n2  -- n1 != n2 : not equal  ) */
@@ -156,7 +151,6 @@ class WMathLogic(val vm: ForthVM) : WordClass {
     fun w_eq0() {
         val a: Int = vm.dstk.pop()
         val out = if (a == 0) TRUE else FALSE
-        if (D) vm.dbg("w_eq0: a=%d out=%d", a, out)
         vm.dstk.push(out)
     }
 

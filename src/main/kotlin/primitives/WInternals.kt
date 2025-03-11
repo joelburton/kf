@@ -1,6 +1,6 @@
 package kf
 
-class WInternals(val vm: ForthVM) :WordClass {
+class WInternals(val vm: ForthVM) : WordClass {
     override val name = "Internals"
     override val primitives: Array<Word> = arrayOf(
         Word(".ip@") { _ -> w_ipLoad() },

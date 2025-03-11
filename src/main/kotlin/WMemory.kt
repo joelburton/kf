@@ -11,10 +11,6 @@ class WMemory(val vm: ForthVM) : WordClass {
         Word(",") { _ -> w_comma() },
         Word(",,") { _ -> w_commaComma() },
         Word("?") { _ -> w_question() },
-        Word(".cstart") { _ -> w_cstart() },
-        Word(".cend") { _ -> w_cend() },
-        Word(".dstart") { _ -> w_dstart() },
-        Word(".dend") { _ -> w_dend() },
         Word("dump") { _ -> w_dump() },
         Word("!+") { _ -> w_plusBang() },
         Word("cell") { _ -> w_cell() },
@@ -41,18 +37,17 @@ class WMemory(val vm: ForthVM) : WordClass {
     }
 
     private fun w_unused() {
-        vm.dbg("w_unused")
         vm.dstk.push(vm.memConfig.dataEnd - vm.dend + 1)
     }
 
     // addr on  = set to true
     private fun w_on() {
-        vm.mem[vm.dstk.pop()] = WMathLogic.TRUE
+        vm.mem[vm.dstk.pop()] = ForthVM.TRUE
     }
 
     // addr off = set to false
     private fun w_off() {
-        vm.mem[vm.dstk.pop()] = WMathLogic.FALSE
+        vm.mem[vm.dstk.pop()] = ForthVM.FALSE
     }
 
     //addr u erase
@@ -78,7 +73,6 @@ class WMemory(val vm: ForthVM) : WordClass {
     fun w_fetch() {
         val addr: Int = vm.dstk.pop()
         val num: Int = vm.mem.get(addr)
-        if (D) vm.dbg("w_fetch: addr=%04x num=%d", addr, num)
         vm.dstk.push(num)
     }
 
@@ -86,37 +80,18 @@ class WMemory(val vm: ForthVM) : WordClass {
     fun w_store() {
         val addr: Int = vm.dstk.pop()
         val num: Int = vm.dstk.pop()
-        if (D) vm.dbg("w_store: addr=%04x num=%d", addr, num)
         vm.mem[addr] = num
     }
 
     /**  ( -- n ) Push value of here (section of DATA where will be written) */
     fun w_here() {
-        if (D) vm.dbg("w_here")
         vm.dstk.push(vm.dend)
     }
 
     /**  ( n -- ) Get n spaces in data section. */
     fun w_allot() {
         val d = vm.dstk.pop()
-        vm.dbg("w_allot: $d")
         vm.dend += d
-    }
-
-    fun w_dstart() {
-        vm.dstk.push(vm.memConfig.dataStart)
-    }
-
-    fun w_dend() {
-        vm.dstk.push(ForthVM.REG_DEND)
-    }
-
-    fun w_cstart() {
-        vm.dstk.push(vm.memConfig.codeStart)
-    }
-
-    fun w_cend() {
-        vm.dstk.push(ForthVM.REG_CEND)
     }
 
     fun w_dump() {
@@ -151,13 +126,11 @@ class WMemory(val vm: ForthVM) : WordClass {
     }
 
     fun w_commaComma() {
-        if (D) vm.dbg("w_commaComma: cend=%d", vm.cend)
         vm.mem[vm.cend++] = vm.dstk.pop()
     }
 
     fun w_question() {
-        val `val`: Int = vm.mem.get(vm.dstk.pop())
-        if (D) vm.dbg("w_question: val=%d", `val`)
-        vm.io.output.print(`val`.toString(vm.base.coerceIn(2, 36)) + " ")
+        val v: Int = vm.mem.get(vm.dstk.pop())
+        vm.io.output.print(v.toString(vm.base.coerceIn(2, 36)) + " ")
     }
 }

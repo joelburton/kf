@@ -35,7 +35,6 @@ class WMisc(val vm: ForthVM): WordClass {
     private fun w_millis() {
         val c = System.currentTimeMillis()
         val millis = (c and 0x7fffffffL).toInt()
-        if (D) vm.dbg("w_millis: %d", millis)
         vm.dstk.push(millis)
     }
 }

@@ -23,25 +23,22 @@ class WWords(val vm: ForthVM) : WordClass {
     /**  `\[defined\]` I ( in:"name" -- f : is this word defined? )
      */
     private fun w_bracketDefined() {
-        if (D) vm.dbg("w_bracketDefined")
         val token: String = vm.getToken()
         val def = vm.dict.getSafe(token) != null
-        vm.dstk.push(if (def) WMathLogic.TRUE else WMathLogic.FALSE)
+        vm.dstk.push(if (def) ForthVM.TRUE else ForthVM.FALSE)
     }
 
     /**  `\[undefined\]` I ( in:"name" -- f : is this word undefined? )
      */
     private fun w_bracketUndefined() {
-        if (D) vm.dbg("w_bracketUndefined")
         val token: String = vm.getToken()
         val def = vm.dict.getSafe(token) != null
-        vm.dstk.push(if (def) WMathLogic.FALSE else WMathLogic.TRUE)
+        vm.dstk.push(if (def) ForthVM.FALSE else ForthVM.TRUE)
     }
 
     /**  `words` ( -- :dump words )
      */
     fun w_words() {
-        if (D) vm.dbg("w_words: %d", vm.dict.size)
         var currLineLen = 0
         val width: Int = vm.termWidth
 
@@ -63,8 +60,6 @@ class WWords(val vm: ForthVM) : WordClass {
     /**  `.dict` ( -- : list all words with internal info )
      */
     fun w_dotDict() {
-        if (D) vm.dbg("w_dotDict: %d", vm.dict.size)
-
         for (i in 0..<vm.dict.size) {
             val w: Word = vm.dict.get(i)
             vm.io.output.print(w.getHeaderStr(vm.io))
@@ -76,7 +71,6 @@ class WWords(val vm: ForthVM) : WordClass {
      */
     fun w_hideWord() {
         val name: String = vm.getToken()
-        if (D) vm.dbg("w_hideWord: $name")
         val w: Word = vm.dict.get(name)
         w.hidden = true
     }
@@ -86,7 +80,6 @@ class WWords(val vm: ForthVM) : WordClass {
      */
     fun w_unhideWord() {
         val name: String = vm.getToken()
-        if (D) vm.dbg("w_unhideWord: $name")
         val w: Word = vm.dict.get(name)
         w.hidden = false
     }
@@ -94,7 +87,6 @@ class WWords(val vm: ForthVM) : WordClass {
     /**  `unhide-all` ( -- : un-hides all words )
      */
     fun w_unhideAll() {
-        if (D) vm.dbg("w_unhideAll")
         for (i in 0..<vm.dict.size) {
             vm.dict.get(i).hidden = false
         }
@@ -106,7 +98,6 @@ class WWords(val vm: ForthVM) : WordClass {
     fun w_synonym() {
         val newName: String = vm.getToken()
         val oldName: String = vm.getToken()
-        if (D) vm.dbg("w_synonym: $newName for $oldName")
         val curWord: Word = vm.dict.get(oldName)
         val nw = Word(
             newName,
@@ -125,8 +116,7 @@ class WWords(val vm: ForthVM) : WordClass {
     fun w_forget() {
         val newName: String = vm.getToken()
         val w: Word = vm.dict.get(newName)
-        vm.dbg("w_forget: %d", w.wn)
-        vm.dict.truncateAt(w.wn!!)
+        vm.dict.truncateAt(w.wn)
         if (w.cpos != Word.NO_ADDR) vm.cend = w.cpos
     }
 
@@ -135,7 +125,6 @@ class WWords(val vm: ForthVM) : WordClass {
     fun w_wnForget() {
         val wn: Int = vm.dstk.pop()
         val w: Word = vm.dict.get(wn)
-        vm.dbg("w_wnForget: %d", wn)
         vm.dict.truncateAt(wn)
         vm.cend = w.cpos
     }
@@ -173,7 +162,6 @@ class WWords(val vm: ForthVM) : WordClass {
     fun w_tick() {
         val token: String = vm.getToken()
         val wn: Int = vm.dict.getNum(token)
-        vm.dbg("w_tick: '%s' wn=%d", token, wn)
         vm.dstk.push(wn)
     }
 

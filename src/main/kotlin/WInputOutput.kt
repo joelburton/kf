@@ -58,7 +58,6 @@ class WInputOutput(val vm: ForthVM) : WordClass {
 
 
     private fun w_char() {
-        vm.dbg("w_char")
         val token: String = vm.getToken()
         if (token.length != 1) throw ForthError("Char literal must be one character")
         vm.dstk.push(vm.interpToken!![0].code)
@@ -66,14 +65,12 @@ class WInputOutput(val vm: ForthVM) : WordClass {
 
     // immediate-mode version of char, writing to code
     private fun w_bracketChar() {
-        vm.dbg("w_char")
         val token: String = vm.getToken()
         if (token.length != 1) throw ParseError("Char literal must be one character")
         vm.appendLit(token[0].code)
     }
 
     private fun w_printLitString() {
-        vm.dbg("w_printLitString")
         var s: String = vm.interpScanner!!.findInLine(".+?\"")
             ?: throw ParseError("String literal not closed")
         // get rid of leading single space and terminating quote
@@ -96,7 +93,6 @@ class WInputOutput(val vm: ForthVM) : WordClass {
 
     /**  ( n -- out:"char-of-n" ) */
     fun w_emit() {
-        if (D) vm.dbg("w_emit")
         val c = vm.dstk.pop()
         vm.dbg("w_emit: " + c.toChar())
         vm.io.output.printf("%c", c)
@@ -141,13 +137,11 @@ class WInputOutput(val vm: ForthVM) : WordClass {
     }
 
     fun w_toUpper() {
-        if (D) vm.dbg("w_toUpper")
         val c: Int = vm.dstk.pop()
         vm.dstk.push(c.toChar().uppercaseChar().code)
     }
 
     fun w_toLower() {
-        if (D) vm.dbg("w_toLower")
         val c: Int = vm.dstk.pop()
         vm.dstk.push(c.toChar().lowercaseChar().code)
     }

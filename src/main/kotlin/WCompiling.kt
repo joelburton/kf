@@ -18,8 +18,6 @@ class WCompiling(val vm: ForthVM) : WordClass {
     /**  `:` X ( in:"name" -- : create word 'name' and start compiling mode )
      */
     fun w_colon() {
-        if (D) vm.dbg("w_colon")
-
         val name: String = vm.getToken()
 
         // Words start off not-recursive hidden, so they can't call themselves
@@ -40,7 +38,7 @@ class WCompiling(val vm: ForthVM) : WordClass {
             callable = wCall.callable
         )
         vm.dict.add(w)
-        vm.interpState = vm.INTERP_STATE_COMPILING
+        vm.interpState = ForthVM.INTERP_STATE_COMPILING
         vm.dict.currentlyDefining = w
     }
 
@@ -48,10 +46,9 @@ class WCompiling(val vm: ForthVM) : WordClass {
      */
     fun w_semicolon() {
         val w: Word = vm.dict.last
-        if (D) vm.dbg(2, "w_semicolon: %s", w.name)
         vm.appendWord("return")
         vm.dict.currentlyDefining = null
-        vm.interpState = vm.INTERP_STATE_INTERPRETING
+        vm.interpState = ForthVM.INTERP_STATE_INTERPRETING
     }
 
     //    ///  ( -- ) really lit ? is it ok to just use lit for this?
@@ -68,7 +65,6 @@ class WCompiling(val vm: ForthVM) : WordClass {
     /** `dolit` ( -- 'lit : push wn for 'lit' onto stack )
      */
     fun w_doLit() {
-        if (D) vm.dbg("w_doLit")
         val wn: Int = vm.dict.getNum("lit")
         vm.dstk.push(wn)
     }
@@ -85,7 +81,6 @@ class WCompiling(val vm: ForthVM) : WordClass {
     fun w_bracketTick() {
         val token: String = vm.getToken()
         val wn: Int = vm.dict.getNum(token)
-        if (D) vm.dbg("w_bracketTick: '%s' wn=%d", token, wn)
         vm.appendLit(wn)
     }
 
@@ -101,7 +96,6 @@ class WCompiling(val vm: ForthVM) : WordClass {
      * between thw one they wanted to make immediate)
      */
     fun w_immediate() {
-        if (D) vm.dbg("w_immediate")
         val w: Word = vm.dict.last
         w.imm = true
         if (vm.dict.currentlyDefining == null) {
@@ -117,7 +111,6 @@ class WCompiling(val vm: ForthVM) : WordClass {
     fun w_recursive() {
         val w: Word = vm.dict.currentlyDefining!!
         w.recursive = true
-        if (D) vm.dbg("w_recursive: $w")
     }
 
 
@@ -125,7 +118,6 @@ class WCompiling(val vm: ForthVM) : WordClass {
      */
     fun w_postpone() {
         val token: String = vm.getToken()
-        if (D) vm.dbg("w_postpone: '%s'", token)
         val w: Word = vm.dict.get(token)
         if (w.imm) {
             vm.dict.last.callable = w.callable
@@ -138,7 +130,6 @@ class WCompiling(val vm: ForthVM) : WordClass {
      */
     fun w_bracketLiteral() {
         val v: Int = vm.dstk.pop()
-        if (D) vm.dbg("w_bracketLiteral %d", v)
         vm.appendLit(v)
     }
 
@@ -146,7 +137,6 @@ class WCompiling(val vm: ForthVM) : WordClass {
      */
     fun w_literal() {
         val v: Int = vm.dstk.pop()
-        if (D) vm.dbg("w_literal %d", v)
         vm.appendLit(v)
     }
 }

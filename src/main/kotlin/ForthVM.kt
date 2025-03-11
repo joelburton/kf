@@ -2,8 +2,9 @@ package kf
 
 import kf.Word.Companion.noWord
 import java.util.*
+import kotlin.collections.HashMap
 
-const val D = false;
+const val D = true;
 const val VERSION_STRING = "KPupForth 0.1.0"
 
 
@@ -74,9 +75,19 @@ class ForthVM(
     companion object {
         const val REG_BASE = 0
         const val REG_VERBOSITY = 1
-        const val REG_CEND = 2
-        const val REG_DEND = 3
-        const val REG_TERM_WIDTH = 4
+        const val REG_CSTART = 2
+        const val REG_CEND = 3
+        const val REG_DSTART = 4
+        const val REG_DEND = 5
+        const val REG_TERM_WIDTH = 6
+        const val REG_INTERP_STATE= 7
+
+        const val INTERP_STATE_INTERPRETING: Int = 0
+        const val INTERP_STATE_COMPILING: Int = -1
+
+        const val MAX_INT: Int = 0x7fffffff
+        const val TRUE: Int = -1
+        const val FALSE: Int = 0
     }
 
     // *************************************************************** registers
@@ -111,6 +122,17 @@ class ForthVM(
             mem[REG_TERM_WIDTH] = v
         }
 
+    var cstart: Int
+    get() = mem[REG_CSTART]
+        set(v) {
+            mem[REG_CSTART] = v
+        }
+
+    var dstart: Int
+        get() = mem[REG_DSTART]
+        set(v) {
+            mem[REG_DSTART] = v
+        }
 
     val cellMeta: Array<CellMeta> =
         Array(memConfig.upperBound + 1) { CellMeta.unknown }
@@ -120,6 +142,7 @@ class ForthVM(
     val dstk = FStack(this, "dstk", memConfig.dstackStart, memConfig.dstackEnd)
     val rstk = FStack(this, "rstk", memConfig.rstackStart, memConfig.rstackEnd)
     val lstk = FStack(this, "lstk", memConfig.lstackStart, memConfig.lstackEnd)
+    val modulesLoaded: HashMap<String, WordClass> = HashMap()
 
     fun reboot(includePrimitives: Boolean = true) {
         if (D) dbg(1, "vm.reboot")
@@ -134,14 +157,18 @@ class ForthVM(
         dict.reset()
         for (i in mem.indices) mem[i] = 0
 
-        ip = memConfig.codeStart
+        // Reset registers
+        cstart = memConfig.codeStart
         cend = memConfig.codeStart
+        dstart = memConfig.dataStart
         dend = memConfig.dataStart
+        termWidth = curTermWidth
+        base = 10
+        verbosity = curVerbosity
+
+        ip = memConfig.codeStart
         currentWord = Word.noWord
 
-
-        // Reset registers
-        base = 10
 //        cellMeta[ForthVM.REG_BASE] = CellMeta.reg_base
 //        cellMeta[ForthVM.REG_VERBOSITY] = CellMeta.reg_verbosity
 //        cellMeta[ForthVM.REG_CEND] = CellMeta.reg_cend
@@ -151,11 +178,8 @@ class ForthVM(
         rstk.reset()
         lstk.reset()
 
-        verbosity = curVerbosity
-        termWidth = curTermWidth
-
-        dict.addMany(WMachine(this).primitives, "Machine")
-        dict.addMany(WInterp(this).primitives, "Machine")
+        dict.addModule(WMachine(this))
+        dict.addModule(WInterp(this))
 
         if (includePrimitives) addCorePrimitives()
 
@@ -174,7 +198,7 @@ class ForthVM(
         dstk.reset()
         rstk.reset()
         lstk.reset()
-        ip = memConfig.codeStart
+        ip = cstart
 
 
         // Do things at the interpreter level that are need after a reset
@@ -189,7 +213,8 @@ class ForthVM(
     fun addCorePrimitives() {
         if (D) dbg(3, "vm.addCorePrimitives")
 
-        for (prim in arrayOf(
+        for (mod in arrayOf(
+            WRegisters(this),
             WTools(this),
             WComments(this),
             WInputOutput(this),
@@ -205,7 +230,7 @@ class ForthVM(
             WInternals(this),
             WWords(this),
 //            WStrings(this),
-        )) dict.addMany(prim.primitives, prim.name)
+        )) dict.addModule(mod)
     }
 
     /**  Read in a primitive class dynamically
@@ -214,9 +239,9 @@ class ForthVM(
         if (D) dbg(3, "vm.readPrimitiveClass: %s", name)
         try {
             val cls: Class<*> = Class.forName(name)
-            val o = cls.getConstructor(ForthVM::class.java)
+            val mod = cls.getConstructor(ForthVM::class.java)
                 .newInstance(this) as WordClass
-            dict.addMany(o.primitives, o.name)
+            dict.addModule(mod)
         } catch (e: Exception) {
             when (e) {
                 is ClassNotFoundException,
@@ -296,8 +321,7 @@ class ForthVM(
         while (true) {
             try {
                 val wn = mem[ip++]
-                currentWord = dict.get(wn)
-                currentWord.callable.invoke(this)
+                dict.get(wn).exec(this)
             } catch (e: ForthQuit) {
                 // For non-interactive (like a file), needs to stop reading all
                 // files --- so rethrow error
@@ -334,9 +358,7 @@ class ForthVM(
     //
     // Everything from this point downward is the things that are needed for
     // the interpreter, but not needed for the VM itself.
-    val REG_INTERP_STATE: Int = 0x0f
-    val INTERP_STATE_INTERPRETING: Int = 0
-    val INTERP_STATE_COMPILING: Int = -1
+
 
     var interpState: Int
         get() = mem[REG_INTERP_STATE]
@@ -373,7 +395,7 @@ class ForthVM(
 
         // Poke interpreter code into memory: the VM will start executing
         // code at this location (mem_code_start)
-        addInterpreterCode(memConfig.codeStart)
+        addInterpreterCode(cstart)
     }
 
     /**  Handle a VM reset at the interpreter layer.
@@ -405,11 +427,9 @@ class ForthVM(
             if (w.interpO)
                 throw InvalidState("Can't use in compile mode: ${w.name}")
             if (w.imm) {
-                currentWord = w
-                w.callable.invoke(this)
-//                w.exec(this)
+                w.exec(this)
             } else {
-                appendCode(w.wn!!, CellMeta.word_number)
+                appendCode(w.wn, CellMeta.word_number)
             }
         } else if ((token[0] == '\'')
             && (token.length == 2 || (token.length == 3 && token[2] == '\''))
@@ -432,9 +452,7 @@ class ForthVM(
         val w: Word? = dict.getSafe(token)
         if (w != null) {
             if (w.compO) throw InvalidState("Compile-only: " + w.name)
-            currentWord = w
-            w.callable.invoke(this)
-//            w.exec(this)
+            w.exec(this)
         } else if ((token[0] == '\'')
             && (token.length == 2 || (token.length == 3 && token[2] == '\''))
         ) {
@@ -501,7 +519,7 @@ class ForthVM(
     }
 
     fun dbg(lvl: Int, format: String, vararg args: Any?) {
-        if (verbosity > lvl) return
+        if (verbosity < lvl) return
         when (lvl) {
             0, 1, 2 -> io.output.printf(io.yellow(format + "\n"), *args)
             else -> io.output.printf(io.grey(format + "\n"), *args)

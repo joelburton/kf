@@ -14,7 +14,6 @@ class WComments(val vm: ForthVM) : WordClass {
      * the scanner will throw an error.
      */
     fun w_parenComment() {
-        if (D) vm.dbg("w_parenComment")
         if (vm.interpScanner!!.findInLine(" \\)") == null) {
             throw ParseError("Parenthesis comment not closed")
         }
@@ -23,7 +22,6 @@ class WComments(val vm: ForthVM) : WordClass {
     /**  ( -- : handles backslash comments )
      */
     fun w_backslashComment() {
-        if (D) vm.dbg("w_backslashComment")
         vm.interpScanner!!.nextLine()
     }
 }

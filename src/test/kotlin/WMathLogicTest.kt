@@ -1,235 +1,233 @@
-import kf.ForthVM
-import kf.IOGateway
 import kf.WMathLogic
-import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
+import kf.ForthVM.Companion.TRUE
+import kf.ForthVM.Companion.FALSE
 
-class WMathLogicTest {
-    val vm = ForthVM(io = IOGateway())
-    val math = WMathLogic(vm)
+class WMathLogicTest : ForthTestCase() {
+    val mod: WMathLogic
 
-    fun rez() : Int {
-        assertEquals(1, vm.dstk.size)
-        return vm.dstk.pop()
+    init {
+        mod = vm.modulesLoaded["MathLogic"]!! as WMathLogic
     }
 
     @Test
     fun w_and() {
         vm.dstk.push(0b0101, 0b0100)
-        math.w_and()
-        assertEquals(0b0100, rez())
+        mod.w_and()
+        
+        assertDStack(0b0100)
     }
 
     @Test
     fun w_or() {
         vm.dstk.push(0b0101, 0b0100)
-        math.w_or()
-        assertEquals(0b0101, rez())
+        mod.w_or()
+        assertDStack(0b0101)
     }
 
     @Test
     fun w_not() {
         vm.dstk.push(0b0101)
-        math.w_not()
-        assertEquals(0b1111111111111111111111111111010, rez())
+        mod.w_not()
+        assertDStack(0b1111111111111111111111111111010)
     }
 
     @Test
     fun w_xor() {
         vm.dstk.push(0b0101, 0b0100)
-        math.w_xor()
-        assertEquals(0b0001, rez())
+        mod.w_xor()
+        assertDStack(0b0001)
     }
 
     @Test
     fun w_negate() {
         vm.dstk.push(5)
-        math.w_negate()
-        assertEquals(-5, rez())
+        mod.w_negate()
+        assertDStack(-5)
 
         vm.dstk.push(-5)
-        math.w_negate()
-        assertEquals(5, rez())
+        mod.w_negate()
+        assertDStack(5)
     }
 
     @Test
     fun w_inv() {
         vm.dstk.push(0b0101)
-        math.w_inv()
-        assertEquals(0b1111111111111111111111111111010, rez())
+        mod.w_inv()
+        assertDStack(0b1111111111111111111111111111010)
     }
 
     @Test
     fun w_add() {
         vm.dstk.push(10, 20)
-        math.w_add()
-        assertEquals(30, rez())
+        mod.w_add()
+        assertDStack(30)
     }
 
     @Test
     fun w_sub() {
         vm.dstk.push(10, 20)
-        math.w_sub()
-        assertEquals(-10, rez())
+        mod.w_sub()
+        assertDStack(-10)
     }
 
     @Test
     fun w_mul() {
         vm.dstk.push(10, 20)
-        math.w_mul()
-        assertEquals(200, rez())
+        mod.w_mul()
+        assertDStack(200)
     }
 
     @Test
     fun w_div() {
         vm.dstk.push(10, 2)
-        math.w_div()
-        assertEquals(5, rez())
+        mod.w_div()
+        assertDStack(5)
     }
 
     @Test
     fun w_mod() {
         vm.dstk.push(10, 2)
-        math.w_mod()
-        assertEquals(0, rez())
+        mod.w_mod()
+        assertDStack(0)
 
         vm.dstk.push(11, 2)
-        math.w_mod()
-        assertEquals(1, rez())
+        mod.w_mod()
+        assertDStack(1)
     }
 
     @Test
     fun w_eq() {
         vm.dstk.push(10, 20)
-        math.w_eq()
-        assertEquals(WMathLogic.FALSE, rez())
+        mod.w_eq()
+        assertDStack(FALSE)
 
         vm.dstk.push(10, 10)
-        math.w_eq()
-        assertEquals(WMathLogic.TRUE, rez())
+        mod.w_eq()
+        assertDStack(TRUE)
     }
 
     @Test
     fun w_gt() {
         vm.dstk.push(10, 20)
-        math.w_gt()
-        assertEquals(WMathLogic.FALSE, rez())
+        mod.w_gt()
+        assertDStack(FALSE)
 
         vm.dstk.push(10, 10)
-        math.w_gt()
-        assertEquals(WMathLogic.FALSE, rez())
+        mod.w_gt()
+        assertDStack(FALSE)
 
         vm.dstk.push(20, 10)
-        math.w_gt()
-        assertEquals(WMathLogic.TRUE, rez())
+        mod.w_gt()
+        assertDStack(TRUE)
     }
 
     @Test
     fun w_lt() {
         vm.dstk.push(10, 20)
-        math.w_lt()
-        assertEquals(WMathLogic.TRUE, rez())
+        mod.w_lt()
+        assertDStack(TRUE)
 
         vm.dstk.push(10, 10)
-        math.w_lt()
-        assertEquals(WMathLogic.FALSE, rez())
+        mod.w_lt()
+        assertDStack(FALSE)
 
         vm.dstk.push(20, 10)
-        math.w_lt()
-        assertEquals(WMathLogic.FALSE, rez())
+        mod.w_lt()
+        assertDStack(FALSE)
     }
 
     @Test
     fun w_gte() {
         vm.dstk.push(10, 20)
-        math.w_gte()
-        assertEquals(WMathLogic.FALSE, rez())
+        mod.w_gte()
+        assertDStack(FALSE)
 
         vm.dstk.push(10, 10)
-        math.w_gte()
-        assertEquals(WMathLogic.TRUE, rez())
+        mod.w_gte()
+        assertDStack(TRUE)
 
         vm.dstk.push(20, 10)
-        math.w_gte()
-        assertEquals(WMathLogic.TRUE, rez())
+        mod.w_gte()
+        assertDStack(TRUE)
     }
 
     @Test
     fun w_lte() {
         vm.dstk.push(10, 20)
-        math.w_lte()
-        assertEquals(WMathLogic.TRUE, rez())
+        mod.w_lte()
+        assertDStack(TRUE)
 
         vm.dstk.push(10, 10)
-        math.w_lte()
-        assertEquals(WMathLogic.TRUE, rez())
+        mod.w_lte()
+        assertDStack(TRUE)
 
         vm.dstk.push(20, 10)
-        math.w_lte()
-        assertEquals(WMathLogic.FALSE, rez())
+        mod.w_lte()
+        assertDStack(FALSE)
 
     }
 
     @Test
     fun w_inc() {
         vm.dstk.push(10)
-        math.w_inc()
-        assertEquals(11, rez())
+        mod.w_inc()
+        assertDStack(11)
     }
 
     @Test
     fun w_dec() {
         vm.dstk.push(10)
-        math.w_dec()
-        assertEquals(9, rez())
+        mod.w_dec()
+        assertDStack(9)
     }
 
     @Test
     fun w_ne() {
         vm.dstk.push(10, 20)
-        math.w_ne()
-        assertEquals(WMathLogic.TRUE, rez())
+        mod.w_ne()
+        assertDStack(TRUE)
 
         vm.dstk.push(10, 10)
-        math.w_ne()
-        assertEquals(WMathLogic.FALSE, rez())
+        mod.w_ne()
+        assertDStack(FALSE)
     }
 
     @Test
     fun w_eq0() {
         vm.dstk.push(0)
-        math.w_eq0()
-        assertEquals(WMathLogic.TRUE, rez())
+        mod.w_eq0()
+        assertDStack(TRUE)
 
         vm.dstk.push(-1)
-        math.w_eq0()
-        assertEquals(WMathLogic.FALSE, rez())
+        mod.w_eq0()
+        assertDStack(FALSE)
 
         vm.dstk.push(42)
-        math.w_eq0()
-        assertEquals(WMathLogic.FALSE, rez())
+        mod.w_eq0()
+        assertDStack(FALSE)
     }
 
     @Test
     fun w_sqrt() {
         vm.dstk.push(16)
-        math.w_sqrt()
-        assertEquals(4, rez())
+        mod.w_sqrt()
+        assertDStack(4)
 
         vm.dstk.push(17)
-        math.w_sqrt()
-        assertEquals(4, rez())
+        mod.w_sqrt()
+        assertDStack(4)
     }
 
     @Test
     fun w_true() {
-        math.w_true()
-        assertEquals(WMathLogic.TRUE, rez())
+        mod.w_true()
+        assertDStack(TRUE)
     }
 
     @Test
     fun w_false() {
-        math.w_false()
-        assertEquals(WMathLogic.FALSE, rez())
+        mod.w_false()
+        assertDStack(FALSE)
     }
 }

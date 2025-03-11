@@ -5,11 +5,12 @@ class WIfThen(val vm: ForthVM) : WordClass {
 
     override val primitives: Array<Word> = arrayOf<Word>(
         Word("if", imm = true, compO = true) { _ -> w_if() },
-        Word("else", imm=true, compO = true ) { _-> w_else() },
-        Word("then", imm=true, compO = true) { _ -> w_then() },
+        Word("else", imm = true, compO = true) { _ -> w_else() },
+        Word("then", imm = true, compO = true) { _ -> w_then() },
     )
 
-    /**  _if */
+    /**  if I ( f -- : if truthy, execute section )
+     */
     fun w_if() {
         vm.appendWord("0branch")
         vm.dstk.push(vm.cend)

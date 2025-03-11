@@ -47,8 +47,8 @@ fun tryAsInt(s: String, radix: Int): Int {
         radix = 10
     }
 
-    try {
-        return s.toInt(radix)
+    return try {
+        s.toInt(radix)
     } catch (e: NumberFormatException) {
         throw ParseError(s)
     }

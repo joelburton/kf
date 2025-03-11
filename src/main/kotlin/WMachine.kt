@@ -26,9 +26,6 @@ class WMachine(val vm: ForthVM): WordClass {
         // fundamental
         Word("lit", compO = true) { _ -> w_lit() },  // registers
 
-        Word("term-width") { _ -> w_termWidth() },
-        Word("verbosity") { _ -> w_verbosity() },
-
         // ~~  *terminal*:lineno:char:<2> 20 10
 
     )
@@ -41,7 +38,6 @@ class WMachine(val vm: ForthVM): WordClass {
      * `brk` if the VM starts executing in uninitialized memory.
      */
     fun w_brk() {
-        if (D) vm.dbg("w_brk")
         throw ForthBrk("brk at " + vm.ip)
     }
 
@@ -52,7 +48,6 @@ class WMachine(val vm: ForthVM): WordClass {
      * and that's always fun.
      */
     fun w_nop() {
-        if (D) vm.dbg("w_nop")
     }
 
     // *************************************************************** branching
@@ -60,7 +55,6 @@ class WMachine(val vm: ForthVM): WordClass {
      */
     fun w_0branch() {
         val flag = vm.dstk.pop()
-        if (D) vm.dbg(3, "w_0branch: $flag")
         if (flag == 0) {
             if (D) vm.dbg("w_0branch =0 --> ${vm.ip}}")
             vm.ip = vm.mem.get(vm.ip)
@@ -72,7 +66,6 @@ class WMachine(val vm: ForthVM): WordClass {
     /** `branch` ( -- in:addr : Unconditional jump )
      */
     fun w_branch() {
-        if (D) vm.dbg(3, "w_branch: --> ${vm.ip}")
         vm.ip = vm.mem.get(vm.ip)
     }
 
@@ -82,12 +75,8 @@ class WMachine(val vm: ForthVM): WordClass {
      */
     fun w_0relBranch() {
         val flag = vm.dstk.pop()
-        if (D) vm.dbg(3, "w_0branch: %d %04x", flag, vm.ip)
         if (0 == flag) {
-            if (D) vm.dbg(
-                "w_0branch =0 --> %04x",
-                vm.mem.get(vm.ip)
-            )
+            if (D) vm.dbg("w_0branch =0 --> %04x", vm.mem.get(vm.ip))
             vm.ip = vm.mem.get(vm.ip) + vm.ip
         } else {
             vm.ip += 1
@@ -99,7 +88,6 @@ class WMachine(val vm: ForthVM): WordClass {
      * This is not a conventional Forth word, but it's useful.
      */
     fun w_relBranch() {
-        if (D) vm.dbg(3, "w_rbranch: %04x", vm.ip)
         vm.ip = vm.mem.get(vm.ip) + vm.ip
     }
 
@@ -107,14 +95,12 @@ class WMachine(val vm: ForthVM): WordClass {
     /** `reset` ( -- : Reset machine state {stacks, cptr, etc} )
      */
     fun w_abort() {
-        if (D) vm.dbg("w_abort")
         vm.reset()
     }
 
     /**  `abort"` ( f in:"msg" -- : if flag non-zero, abort w/msg )
      */
     private fun w_abortQuote() {
-        if (D) vm.dbg("w_abortQuote")
         var s: String = vm.interpScanner!!.findInLine(".+?\"")
             ?: throw ForthError("String literal not closed")
         // get rid of leading single space and terminating quote
@@ -129,7 +115,6 @@ class WMachine(val vm: ForthVM): WordClass {
     /** `reboot` ( -- : Reboots machine {clear all mem, stacks, state, etc.} )
      */
     fun w_reboot() {
-        if (D) vm.dbg("w_reboot")
         vm.reboot(true)
     }
 
@@ -141,7 +126,6 @@ class WMachine(val vm: ForthVM): WordClass {
      * interpreter :-)
      */
     fun w_rebootRaw() {
-        if (D) vm.dbg("w_rebootRaw")
         vm.reboot(false)
     }
 
@@ -157,7 +141,6 @@ class WMachine(val vm: ForthVM): WordClass {
      * just reboots the machine, starting a new interpreter.
      */
     fun w_bye() {
-        if (D) vm.dbg("w_bye")
         throw ForthBye("Bye!")
     }
 
@@ -167,7 +150,6 @@ class WMachine(val vm: ForthVM): WordClass {
      * way to stop the gateway. This should not be caught or prevented.
      */
     fun w_coldStop() {
-        if (D) vm.dbg("w_coldStop")
         throw ForthColdStop("1")
     }
 
@@ -177,28 +159,15 @@ class WMachine(val vm: ForthVM): WordClass {
      * way to stop the gateway. This should not be caught or prevented.
      */
     fun w_quit() {
-        if (D) vm.dbg("w_quit")
         throw ForthQuit("Quit")
     }
 
-    // *************************************************************** registers
-    fun w_termWidth() {
-        if (D) vm.dbg("w_termWidth")
-        vm.dstk.push(ForthVM.REG_TERM_WIDTH)
-    }
-
-    fun w_verbosity() {
-        if (D) vm.dbg("w_verbosity")
-        vm.dstk.push(ForthVM.REG_VERBOSITY)
-    }
-
     // ************************************************************* fundamental
+
     /** `lit` ( -- n : Push next cell directly onto stack and cptr++ )
-     *
-     * FIXME: is this something like `number` in the standard? */
+     */
     fun w_lit() {
-        val `val`: Int = vm.mem.get(vm.ip++)
-        if (D) vm.dbg("w_lit %d", `val`)
-        vm.dstk.push(`val`)
+        val v: Int = vm.mem.get(vm.ip++)
+        vm.dstk.push(v)
     }
 }

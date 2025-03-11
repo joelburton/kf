@@ -19,7 +19,6 @@ class WFunctions(val vm: ForthVM) : WordClass {
      * they just get the addr from different places.
      */
     fun w_call() {
-        if (D) vm.dbg("w_call: ${vm.currentWord.name}")
         vm.rstk.push(vm.ip)
         vm.ip = vm.currentWord.cpos
     }
@@ -28,7 +27,6 @@ class WFunctions(val vm: ForthVM) : WordClass {
      */
     fun w_callByAddr() {
         val addr: Int = vm.dstk.pop()
-        if (D) vm.dbg("w_callByAddr: addr=${addr}")
         vm.rstk.push(vm.ip)
         vm.ip = addr
     }
@@ -37,16 +35,13 @@ class WFunctions(val vm: ForthVM) : WordClass {
      */
     fun w_execute() {
         val wn: Int = vm.dstk.pop()
-        vm.currentWord = vm.dict.get(wn)
-        if (D) vm.dbg("w_exec: curr $wn ${vm.currentWord.name}")
-        vm.currentWord.exec(vm)
+        vm.dict.get(wn).exec(vm)
     }
 
     /**  `return` ( r:n -- : return from current word )
      */
     fun w_return() {
         val retAddr = vm.rstk.pop()
-        if (D) vm.dbg("w_return cptr=$%04x retAddr=$%04x", vm.ip, retAddr)
         vm.ip = retAddr
     }
 }

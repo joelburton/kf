@@ -4,9 +4,7 @@ class WDoes(val vm: ForthVM) : WordClass {
     override val name = "Does"
 
     override val primitives: Array<Word> = arrayOf<Word>(
-        Word("create") { _->
-            w_create()
-        },
+        Word("create") { _-> w_create() },
         Word("does>", imm = true, compO = true) { _ -> doesAngle() },
         Word("does") { _-> w_does() },
         Word("addr", compO = true) { _ -> w_addr() },
@@ -29,7 +27,6 @@ class WDoes(val vm: ForthVM) : WordClass {
     /**  create: add an empty, new word */
     fun w_create() {
         val name: String = vm.getToken()
-        vm.dbg("w_create: %s", name)
         val w: Word = Word(
             name,
             cpos = Word.NO_ADDR,
@@ -40,15 +37,12 @@ class WDoes(val vm: ForthVM) : WordClass {
 
     /**  Used for pure-data things, like "create age 1 allot" (ie variable) */
     fun w_addr() {
-        vm.dbg("w_addr: 0x%04x", vm.currentWord.dpos)
         val addr: Int = vm.currentWord.dpos
         vm.dstk.push(addr)
     }
 
     /**  Used for all "does" words (it's the "function" for a constant) */
     fun w_addrCall() {
-        vm.dbg("w_addrCall")
-
         // push addr
         val addr: Int = vm.currentWord.dpos
         vm.dstk.push(addr)

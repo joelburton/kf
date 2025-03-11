@@ -26,7 +26,6 @@ class WInterp(val vm: ForthVM): WordClass {
         Word("include-primitives") { _ -> w_includeBinary() },
 
         // useful words for working with interpreter
-        Word("state") { _ -> w_stateReg() },
         Word("interp-reload-code") { _ -> w_interpReloadCode() },
         Word("[", imm = true, compO = true) { _ -> w_goImmediate() },
         Word("]", imm=true) { _ -> w_goCompiled() },
@@ -36,7 +35,6 @@ class WInterp(val vm: ForthVM): WordClass {
 
     /** `interp-prompt` ( -- : show prompt for interpreter ) */
     fun w_interpPrompt() {
-        if (D) vm.dbg(3, "w_interPrompt")
         if (vm.verbosity >= -1) {
             val stk_len: Int = vm.dstk.size
             if (vm.isInterpretingState) {
@@ -51,7 +49,6 @@ class WInterp(val vm: ForthVM): WordClass {
      *
      * This pushes 0 for eof-detected, and 1 otherwise */
     fun w_interpRefill() {
-        if (D) vm.dbg(3, "w_interpRefill")
         vm.interpLineBuf = vm.io.readLine()
         if (vm.interpScanner != null) {
             vm.interpScanner!!.close()
@@ -67,7 +64,6 @@ class WInterp(val vm: ForthVM): WordClass {
 
     /**  `interp-read` ( in:"word" -- len : read next token ) */
     fun w_interpRead() {
-        if (D) vm.dbg(3, "w_interpRead")
         try {
             val s = vm.getToken()
             vm.dstk.push(s.length)
@@ -79,7 +75,6 @@ class WInterp(val vm: ForthVM): WordClass {
     /**  `interp-process` ( -- : process token: compile/execute, dep on state ) */
     fun w_interpProcess() {
         val token: String = vm.interpToken!!
-        if (D) vm.dbg(3, "w_interpProcess: \"%s\"", token)
         if (token.isEmpty()) return  // FIXME: look into this -- could this even happen?
 
         if (vm.isCompilingState) vm.interpCompile(token)
@@ -93,7 +88,6 @@ class WInterp(val vm: ForthVM): WordClass {
      * This doesn't do anything useful when already in console io (though it
      * does push 0 to stack, because that's what GForth does :) ). */
     private fun w_tripleBackSlash() {
-        if (D) vm.dbg("w_tripleBackSlash")
         if (vm.io is IOFile) {
             throw ForthQuitNonInteractive()
         } else {
@@ -107,7 +101,6 @@ class WInterp(val vm: ForthVM): WordClass {
      * the interp). When reading a file, it stops reading that file, and
      * moves to the next (exiting if there are no more). */
     private fun w_eof() {
-        if (D) vm.dbg("w_eof")
         throw ForthEOF()
     }
 
@@ -116,7 +109,6 @@ class WInterp(val vm: ForthVM): WordClass {
     /**  `include` ( in:"file" -- : read Forth file in ) */
     fun w_include() {
         val path = vm.getToken()
-        if (D) vm.dbg("w_include: '%s'", path)
 
         val prevIO: IOBase = vm.io
         val prevVerbosity: Int = vm.verbosity
@@ -144,19 +136,18 @@ class WInterp(val vm: ForthVM): WordClass {
      * These can be anything the JVM can understand: Java, Kotlin, Groovy, etc. */
     fun w_includeBinary() {
         val path = vm.getToken()
-        if (D) vm.dbg("w_includeBinary: '%s'", path)
         vm.readPrimitiveClass(path)
     }
 
     // ************************************************************ useful tools
     /**  `state` ( -- addr : gets address of interpreter-state register )
      *
-     * This is very internal, but useful for writing Forth code for compiling
-     * words, writing new control words, etc. */
-    private fun w_stateReg() {
-        if (D) vm.dbg("w_stateReg")
-        vm.dstk.push(vm.REG_INTERP_STATE)
-    }
+//     * This is very internal, but useful for writing Forth code for compiling
+//     * words, writing new control words, etc. */
+//    private fun w_stateReg() {
+//        if (D) vm.dbg("w_stateReg")
+//        vm.dstk.push(ForthmVM.REG_INTERP_STATE)
+//    }
 
     /**  `[` ( -- : enter immediate mode immediately )
      *
@@ -164,8 +155,7 @@ class WInterp(val vm: ForthVM): WordClass {
      * behavior during the compilation. It's also handy when hacking around
      * with interpreter state and need to return to immediate mode. */
     fun w_goImmediate() {
-        if (D) vm.dbg("w_goImmediate")
-        vm.interpState = vm.INTERP_STATE_INTERPRETING
+        vm.interpState = ForthVM.INTERP_STATE_INTERPRETING
     }
 
     /** ']' ( -- : enter compile mode )
@@ -179,8 +169,7 @@ class WInterp(val vm: ForthVM): WordClass {
      * This creates a function that, when run, will put 10 and 20 on the stack,
      * but when *first compiled*, will print 'A'. */
     fun w_goCompiled() {
-        if (D) vm.dbg("w_goCompiled")
-        vm.interpState = vm.INTERP_STATE_COMPILING
+        vm.interpState = ForthVM.INTERP_STATE_COMPILING
     }
 
     /**  'interp-reload-code` ( -- : reloads orig interp code at cend )
@@ -190,7 +179,6 @@ class WInterp(val vm: ForthVM): WordClass {
      * real one --- if something is wrong with the new one, a `reset` will
      * state running back at code state, running the original interpreter. */
     private fun w_interpReloadCode() {
-        if (D) vm.dbg("w_interpReloadCode")
         vm.addInterpreterCode(vm.cend)
     }
 

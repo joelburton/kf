@@ -31,32 +31,27 @@ class WLoops(val vm: ForthVM): WordClass {
 
     /**  begin (a loop) */
     fun w_begin() {
-        if (D) vm.dbg("w_begin")
         vm.dstk.push(vm.cend)
     }
 
     /**  again */
     fun w_again() {
-        if (D) vm.dbg("w_again")
         val bwref: Int = vm.dstk.pop()
         vm.appendJump("branch", bwref)
     }
 
     /**  until */
     fun w_until() {
-        if (D) vm.dbg("w_until")
         val bwref: Int = vm.dstk.pop()
         vm.appendJump("branch", bwref)
     }
 
     private fun w_while() {
-        if (D) vm.dbg("while")
         vm.appendJump("0branch", 0xffff)
         vm.dstk.push(vm.cend) // location of while
     }
 
     private fun w_repeat() {
-        if (D) vm.dbg("repeat")
         val while_ref: Int = vm.dstk.pop()
         vm.mem[while_ref - 1] = vm.cend + 2 // failing while goes past me
         val bwref: Int = vm.dstk.pop()
@@ -67,7 +62,6 @@ class WLoops(val vm: ForthVM): WordClass {
 
     /**  loop  (limit start -- limit start R:addr  ) */
     fun w_do() {
-        if (D) vm.dbg("w_do")
         vm.appendWord("do-impl")
         vm.rstk.push(vm.cend) // start of do loop, so end can come back to us
 
@@ -79,7 +73,6 @@ class WLoops(val vm: ForthVM): WordClass {
 
     // "do"  adds this to def (this is actually run at runtime)
     fun w_doImpl() {
-        if (D) vm.dbg("w_doImpl")
         // swap
         val a = vm.dstk.pop()
         val b = vm.dstk.pop()
@@ -94,7 +87,6 @@ class WLoops(val vm: ForthVM): WordClass {
 
     /**  loop */
     fun w_loop() {
-        if (D) vm.dbg("w_loop")
         vm.appendLit(1)
         val bwref: Int = vm.rstk.pop() // beginning of loop
         vm.appendJump("loop-impl", bwref + 4)
@@ -105,7 +97,6 @@ class WLoops(val vm: ForthVM): WordClass {
 
     /**  +loop */
     fun w_plusLoop() {
-        if (D) vm.dbg("w_loopPlus")
         val bwref: Int = vm.rstk.pop() // beginning of loop
         vm.appendJump("loop-impl", bwref + 4)
 
@@ -115,16 +106,15 @@ class WLoops(val vm: ForthVM): WordClass {
 
     // loop-fn
     fun w_loopImpl() {
-        if (D) vm.dbg("w_loopImpl")
         val incrementBy = vm.dstk.pop()
         vm.lstk.push(vm.lstk.pop() + incrementBy)
         val loopIdx = vm.lstk.pop()
         val limit: Int = vm.lstk.pop()
         if (loopIdx >= limit) {
-            if (D) vm.dbg("w_loopFnPlus: done")
+            if (D) vm.dbg(3, "w_loopImpl: done")
             vm.ip += 1
         } else {
-            if (D) vm.dbg("w_loopFnPlus: looping")
+            if (D) vm.dbg(3, "w_loopImpl: looping")
             // go to the beginning of the loop
             vm.lstk.push(limit, loopIdx)
             vm.ip = vm.mem[vm.ip]
@@ -132,32 +122,26 @@ class WLoops(val vm: ForthVM): WordClass {
     }
 
     private fun w_i() {
-        if (D) vm.dbg("i")
         vm.dstk.push(vm.lstk.getAt(1))
     }
 
     private fun w_j() {
-        if (D) vm.dbg("j")
         vm.dstk.push(vm.lstk.getAt(3))
     }
 
     private fun w_k() {
-        if (D) vm.dbg("k")
         vm.dstk.push(vm.lstk.getAt(5))
     }
 
     private fun w_l() {
-        if (D) vm.dbg("l")
         vm.dstk.push(vm.lstk.getAt(7))
     }
 
     private fun w_m() {
-        if (D) vm.dbg("m")
         vm.dstk.push(vm.lstk.getAt(9))
     }
 
     private fun w_leave() {
-        if (D) vm.dbg("leave")
         val leaveAddr: Int = vm.rstk.peek() + 2
         vm.appendWord("L>")
         vm.appendWord("L>")

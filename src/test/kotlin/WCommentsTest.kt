@@ -7,8 +7,7 @@ import org.junit.jupiter.api.Assertions.*
 import java.util.*
 import kotlin.test.assertFailsWith
 
-class WCommentsTest {
-    val vm = ForthVM()
+class WCommentsTest : ForthTestCase() {
     val comments = WComments(vm)
 
     @Test
