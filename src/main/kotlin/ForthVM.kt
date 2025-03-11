@@ -190,7 +190,6 @@ class ForthVM(
         if (verbosity > 0) {
             io.output.println(io.green("\nWelcome to ${VERSION_STRING}\n"))
         }
-
     }
 
     fun reset() {
@@ -436,7 +435,7 @@ class ForthVM(
         ) {
             appendLit(token[1].code)
         } else {
-            val n: Int = tryAsInt(token, base)
+            val n: Int = token.toForthInt(base)
             appendWord("lit")
             appendCode(n, CellMeta.number_literal)
         }
@@ -458,7 +457,7 @@ class ForthVM(
         ) {
             dstk.push(token[1].code)
         } else {
-            dstk.push(tryAsInt(token, base))
+            dstk.push(token.toForthInt(base))
         }
     }
 

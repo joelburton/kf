@@ -18,37 +18,37 @@ package kf
  * %10  = 2
  *
  * This will throw a ForthError. */
-fun tryAsInt(s: String, radix: Int): Int {
-    var s = s
-    var radix = radix
-    if (s.startsWith("0d")) {
-        s = s.substring(2)
-        radix = 10
-    } else if (s.startsWith("0x")) {
-        s = s.substring(2)
-        radix = 16
-    } else if (s.startsWith("0b")) {
-        s = s.substring(2)
-        radix = 2
-    } else if (s.startsWith("0o")) {
-        s = s.substring(2)
-        radix = 8
-    } else if (s.startsWith("%")) {
-        s = s.substring(1)
-        radix = 2
-    } else if (s.startsWith("$")) {
-        s = s.substring(1)
-        radix = 16
-    } else if (s.startsWith("#")) {
-        s = s.substring(1)
-        radix = 10
-    } else if (s.startsWith("&")) {
-        s = s.substring(1)
-        radix = 10
+fun String.toForthInt(radix: Int): Int {
+    var s = this
+    var _radix = radix
+    if (startsWith("0d")) {
+        s = substring(2)
+        _radix = 10
+    } else if (startsWith("0x")) {
+        s = substring(2)
+        _radix = 16
+    } else if (startsWith("0b")) {
+        s = substring(2)
+        _radix = 2
+    } else if (startsWith("0o")) {
+        s = substring(2)
+        _radix = 8
+    } else if (startsWith("%")) {
+        s = substring(1)
+        _radix = 2
+    } else if (startsWith("$")) {
+        s = substring(1)
+        _radix = 16
+    } else if (startsWith("#")) {
+        s = substring(1)
+        _radix = 10
+    } else if (startsWith("&")) {
+        s = substring(1)
+        _radix = 10
     }
 
     return try {
-        s.toInt(radix)
+        s.toInt(_radix)
     } catch (e: NumberFormatException) {
         throw ParseError(s)
     }
