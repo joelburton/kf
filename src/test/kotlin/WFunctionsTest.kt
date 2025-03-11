@@ -22,7 +22,7 @@ class WFunctionsTest: ForthTestCase() {
 
         // more integration-test-like
         eval("test")
-        assertEquals(42, rez())
+        assertDStack(42)
     }
 
     @Test
@@ -34,7 +34,7 @@ class WFunctionsTest: ForthTestCase() {
 
         // more integration-test-like
         eval("${w.cpos} call-by-addr")
-        assertEquals(42, rez())
+        assertDStack(42)
     }
 
     @Test
@@ -48,7 +48,7 @@ class WFunctionsTest: ForthTestCase() {
 
         // more integration-test-like
         eval("${w.wn} execute")
-        assertEquals(42, rez())
+        assertDStack(42)
     }
 
     @Test
