@@ -6,7 +6,7 @@ class WFunctions(val vm: ForthVM) : WordClass {
     override val primitives: Array<Word> = arrayOf(
         Word("call") { _ -> w_call() },
         Word("call-by-addr") { _ -> w_callByAddr() },
-        Word("execute") { _ -> w_exec() },
+        Word("execute") { _ -> w_execute() },
         Word("return") { _ -> w_return() },
 
         )
@@ -35,7 +35,7 @@ class WFunctions(val vm: ForthVM) : WordClass {
 
     /**  `execute` ( n -- : execute a word by word-num )
      */
-    fun w_exec() {
+    fun w_execute() {
         val wn: Int = vm.dstk.pop()
         vm.currentWord = vm.dict.get(wn)
         if (D) vm.dbg("w_exec: curr $wn ${vm.currentWord.name}")

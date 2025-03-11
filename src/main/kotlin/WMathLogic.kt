@@ -16,9 +16,10 @@ class WMathLogic(val vm: ForthVM) : WordClass {
         },
         Word("or") { _ -> w_or() },
         Word("not") { _ -> w_not() },
+        Word("inv") { _ -> w_inv() },
+        Word("negate") { _ -> w_inv() },
         Word("invert") { _ -> w_not() },  // synonym for "not"
         Word("xor") { _ -> w_xor() },
-        Word("inv") { _ -> w_inv() },
         Word("+") { _ -> w_add() },
         Word("-") { _ -> w_sub() },
         Word("*") { _ -> w_mul() },
@@ -55,17 +56,17 @@ class WMathLogic(val vm: ForthVM) : WordClass {
 
     /**  ( n1 -- ~n1 : bitwise NOT ) */
     fun w_not() {
-        vm.dstk.push(vm.dstk.pop().inv())
+        vm.dstk.push(vm.dstk.pop().inv() and MAX_INT)
+    }
+
+    /**  ( n1 -- -n1 : invert sign ) */
+    fun w_inv() {
+        vm.dstk.push(vm.dstk.pop().inv() and MAX_INT)
     }
 
     /**  ( n1 n2 -- n1 ^ n2 : bitwise XOR ) */
     fun w_xor() {
         vm.dstk.push(vm.dstk.pop() xor vm.dstk.pop())
-    }
-
-    /**  ( n1 -- -n1 : invert sign ) */
-    fun w_inv() {
-        vm.dstk.push(-vm.dstk.pop())
     }
 
     /**  ( n1 n2 -- n1 + n2 : addition ) */
@@ -173,5 +174,10 @@ class WMathLogic(val vm: ForthVM) : WordClass {
     /**  ( n -- false : pushes 0 {false} to stack ) */
     fun w_false() {
         vm.dstk.push(FALSE)
+    }
+
+    /** ( n -- -n : negate sign ) */
+    fun w_negate() {
+        vm.dstk.push(-vm.dstk.pop())
     }
 }
