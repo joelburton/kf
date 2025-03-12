@@ -14,7 +14,7 @@ class WIfThen(val vm: ForthVM) : WordClass {
     fun w_if() {
         vm.appendWord("0branch")
         vm.dstk.push(vm.cend)
-        vm.appendCode(0xff, CellMeta.jump_location)
+        vm.appendCode(0xff, CellMeta.JumpLoc)
     }
 
     /**  else */
@@ -22,7 +22,7 @@ class WIfThen(val vm: ForthVM) : WordClass {
         val orig: Int = vm.dstk.pop()
         vm.appendWord("branch")
         vm.dstk.push(vm.cend)
-        vm.appendCode(0xff, CellMeta.jump_location)
+        vm.appendCode(0xff, CellMeta.JumpLoc)
         vm.mem[orig] = vm.cend
     }
 

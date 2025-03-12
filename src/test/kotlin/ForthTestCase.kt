@@ -5,8 +5,8 @@ import kf.WTools
 import org.junit.jupiter.api.Assertions.assertEquals
 
 open class ForthTestCase {
-    val io = IOGateway()
-    val vm = ForthVM(io = io)
+    val testIO = IOGateway()
+    val vm = ForthVM(io = testIO)
 
     init {
         vm.verbosity = -2
@@ -14,14 +14,16 @@ open class ForthTestCase {
     }
 
     fun eval(s: String): String {
-        io.resetAndLoadCommands(s)
-        try {
-            while (true) {
-                val wn = vm.mem[vm.ip++]
-                vm.dict.get(wn).exec(vm)
+        testIO.resetAndLoadCommands(s)
+        with(vm) {
+            try {
+                while (true) {
+                    val wn = mem[ip++]
+                    dict.get(wn).exec(this)
+                }
+            } catch (e: ForthEOF) {
+                return testIO.getPrinted()
             }
-        } catch (e: ForthEOF) {
-            return io.getPrinted()
         }
     }
 

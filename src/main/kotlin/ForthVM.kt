@@ -9,16 +9,16 @@ const val VERSION_STRING = "KPupForth 0.1.0"
 
 
 enum class CellMeta {
-    unknown,
-    word_number,
-    jump_location,
+    Unknown,
+    WordNum,
+    JumpLoc,
 
     //    reg_base,
 //    reg_verbosity,
 //    reg_cend,
 //    reg_dend,
-    string_literal,
-    number_literal;
+    StringLit,
+    NumLit;
 
     fun getExplanation(vm: ForthVM, v: Int): String {
         val generalFormat: String = String.format(
@@ -28,10 +28,10 @@ enum class CellMeta {
             if (v >= ' '.code && v <= '~'.code) "'" + v.toChar() + "'" else ""
         )
         return when (this) {
-            word_number -> vm.dict.get(v).name
-            jump_location -> kotlin.String.format("--> 0x%04x", v)
-            CellMeta.unknown, CellMeta.number_literal -> generalFormat
-            string_literal -> "$v (string length)"
+            WordNum -> vm.dict.get(v).name
+            JumpLoc -> kotlin.String.format("--> 0x%04x", v)
+            CellMeta.Unknown, CellMeta.NumLit -> generalFormat
+            StringLit -> "$v (string length)"
 //        CellMeta.reg_base -> generalFormat+" (reg: base)"
 //        CellMeta.reg_verbosity -> generalFormat+" (reg: verbosity)"
 //        CellMeta.reg_cend -> generalFormat+" (reg: cend)"
@@ -71,24 +71,6 @@ class ForthVM(
     var io: IOBase = IOBase(),
     val mem: IntArray = IntArray(memConfig.upperBound + 1),
 ) {
-
-    companion object {
-        const val REG_BASE = 0
-        const val REG_VERBOSITY = 1
-        const val REG_CSTART = 2
-        const val REG_CEND = 3
-        const val REG_DSTART = 4
-        const val REG_DEND = 5
-        const val REG_TERM_WIDTH = 6
-        const val REG_INTERP_STATE= 7
-
-        const val INTERP_STATE_INTERPRETING: Int = 0
-        const val INTERP_STATE_COMPILING: Int = -1
-
-        const val MAX_INT: Int = 0x7fffffff
-        const val TRUE: Int = -1
-        const val FALSE: Int = 0
-    }
 
     // *************************************************************** registers
 
@@ -135,7 +117,7 @@ class ForthVM(
         }
 
     val cellMeta: Array<CellMeta> =
-        Array(memConfig.upperBound + 1) { CellMeta.unknown }
+        Array(memConfig.upperBound + 1) { CellMeta.Unknown }
     val dict: Dict = Dict(this)
     var currentWord: Word = Word.noWord
     var ip: Int = memConfig.codeStart
@@ -152,7 +134,7 @@ class ForthVM(
 
         // Clear memory
         for (i in 0..memConfig.upperBound) mem[i] = 0
-        for (i in 0..memConfig.upperBound) cellMeta[i] = CellMeta.unknown
+        for (i in 0..memConfig.upperBound) cellMeta[i] = CellMeta.Unknown
 
         dict.reset()
         for (i in mem.indices) mem[i] = 0
@@ -262,7 +244,7 @@ class ForthVM(
     fun appendWord(s: String) {
         if (D) dbg(3, "vm.appendWord: %s", s)
         val wn = dict.getNum(s)
-        appendCode(wn, CellMeta.word_number)
+        appendCode(wn, CellMeta.WordNum)
     }
 
     /**  Append data to the code section.
@@ -281,7 +263,7 @@ class ForthVM(
     fun appendStrToData(s: String): Int {
         if (D) dbg(3, "vm.appendStrToData: ${s}")
         val startAddr: Int = dend
-        cellMeta[startAddr] = CellMeta.string_literal
+        cellMeta[startAddr] = CellMeta.StringLit
         mem[dend++] = s.length
 
         for (c in s.toCharArray()) mem[dend++] = c.code
@@ -292,14 +274,14 @@ class ForthVM(
      */
     fun appendJump(s: String, addr: Int) {
         appendWord(s)
-        appendCode(addr, CellMeta.jump_location)
+        appendCode(addr, CellMeta.JumpLoc)
     }
 
     /** Append "lit" + value to code section
      */
     fun appendLit(v: Int) {
         appendWord("lit")
-        appendCode(v, CellMeta.number_literal)
+        appendCode(v, CellMeta.NumLit)
     }
 
 
@@ -428,7 +410,7 @@ class ForthVM(
             if (w.imm) {
                 w.exec(this)
             } else {
-                appendCode(w.wn, CellMeta.word_number)
+                appendCode(w.wn, CellMeta.WordNum)
             }
         } else if ((token[0] == '\'')
             && (token.length == 2 || (token.length == 3 && token[2] == '\''))
@@ -437,7 +419,7 @@ class ForthVM(
         } else {
             val n: Int = token.toForthInt(base)
             appendWord("lit")
-            appendCode(n, CellMeta.number_literal)
+            appendCode(n, CellMeta.NumLit)
         }
     }
 
@@ -536,5 +518,23 @@ class ForthVM(
             interpToken = ""
             throw ForthMissingToken()
         }
+    }
+
+    companion object {
+        const val REG_BASE = 0
+        const val REG_VERBOSITY = 1
+        const val REG_CSTART = 2
+        const val REG_CEND = 3
+        const val REG_DSTART = 4
+        const val REG_DEND = 5
+        const val REG_TERM_WIDTH = 6
+        const val REG_INTERP_STATE= 7
+
+        const val INTERP_STATE_INTERPRETING: Int = 0
+        const val INTERP_STATE_COMPILING: Int = -1
+
+        const val MAX_INT: Int = 0x7fffffff
+        const val TRUE: Int = -1
+        const val FALSE: Int = 0
     }
 }

@@ -27,14 +27,14 @@ class Dict(val vm: ForthVM, val capacity: Int = 1024) {
     }
 
     fun get(name: String): Word {
-        for (w in words.reversed()) {
+        for (w in words.asReversed()) {
             if (w.name.equals(name, ignoreCase = true)) return w
         }
         throw WordNotFoundException(name)
     }
 
     fun getSafe(Name: String): Word? =
-        words.reversed().find { it.name.equals(Name, ignoreCase = true) }
+        words.asReversed().find { it.name.equals(Name, ignoreCase = true) }
 
     /**  Get word for if it uses this address.
      *
@@ -55,7 +55,7 @@ class Dict(val vm: ForthVM, val capacity: Int = 1024) {
     /**  Get Word by name (null for not found)
      */
     fun getSafeChkRecursion(name: String?, io: IOBase): Word? {
-        for (w in words.reversed()) {
+        for (w in words.asReversed()) {
             if (w.name.equals(name, ignoreCase = true)) {
                 if (currentlyDefining !== w || w.recursive) return w
                 else io.quiet(
