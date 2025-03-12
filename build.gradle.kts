@@ -1,43 +1,27 @@
-plugins {
-    kotlin("jvm") version "2.1.10"
-    id("org.jetbrains.dokka") version "2.0.0"
-}
-
 group = "kf"
 version = "1.0-SNAPSHOT"
 
-repositories {
-    mavenCentral()
+plugins {
+    kotlin("jvm") version "2.1.10"
+//    id("org.jetbrains.dokka") version "2.0.0"
 }
-
+kotlin { jvmToolchain(17) }
+repositories { mavenCentral() }
 dependencies {
     testImplementation(kotlin("test"))
     implementation("org.jetbrains.kotlin:kotlin-stdlib")
     implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.6.2")
 }
 
-tasks.test {
-    useJUnitPlatform()
-}
-
+tasks.test { useJUnitPlatform() }
 tasks.jar {
-    manifest {
-        attributes["Main-Class"] = "kf.MainKt"
-    }
-
+    manifest { attributes["Main-Class"] = "kf.MainKt" }
 }
-
-
 tasks.register<Jar>("uberJar") {
-    manifest {
-        attributes["Main-Class"] = "kf.MainKt"
-    }
+    manifest { attributes["Main-Class"] = "kf.MainKt" }
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
-
     archiveClassifier = "uber"
-
     from(sourceSets.main.get().output)
-
     dependsOn(configurations.runtimeClasspath)
     from({
         configurations.runtimeClasspath.get().filter {
@@ -45,6 +29,4 @@ tasks.register<Jar>("uberJar") {
         }.map { zipTree(it) }
     })
 }
-kotlin {
-    jvmToolchain(23)
-}
+

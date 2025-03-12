@@ -295,7 +295,7 @@ class ForthVM(
      * run* (and, unless you want a really bare-bones experience, you will want
      * to run).
      */
-    fun runVM() {
+    fun runVM(): Nothing {
         if (D) dbg(3, "vm.run")
 
         while (true) {
