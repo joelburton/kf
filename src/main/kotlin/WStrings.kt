@@ -3,9 +3,9 @@ package kf
 class WStrings(val vm: ForthVM) : WordClass {
     override val name = "Strings"
     override val primitives: Array<Word> = arrayOf(
-        Word("type") { _ -> w_type() },
-        Word("s\"") { _ -> w_sQuote()
-        }, Word("source") { _ -> w_source() },
+        Word("type") { w_type() },
+        Word("s\"") { w_sQuote()
+        }, Word("source") { w_source() },
 
         //            new Word("c,", Strings::w_cComma),
         //            new Word("c@", Strings::w_cFetch),

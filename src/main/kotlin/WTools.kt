@@ -3,16 +3,16 @@ package kf
 class WTools(val vm: ForthVM) : WordClass {
     override val name = "Tools"
     override val primitives: Array<Word> = arrayOf(
-        Word(".dstk") { _ -> w_dumpDataStack() },
-        Word(".rstk") { _ -> w_dumpReturnStack() },
-        Word(".cptr") { _ -> w_cptr() },
-        Word(".code") { _ -> w_dumpCode() },
-        Word(".data") { _ -> w_dumpData() },
-        Word(".regs") { _ -> w_dumpRegs() },
-        Word("_see") { _ -> w_xt_see() },
-        Word("see") { _ -> w_see() },
-        Word("_simple-see") { _ -> w_xt_seeSimple() },
-        Word("simple-see") { _ -> w_seeSimple() },
+        Word(".dstk") { w_dumpDataStack() },
+        Word(".rstk") { w_dumpReturnStack() },
+        Word(".cptr") { w_cptr() },
+        Word(".code") { w_dumpCode() },
+        Word(".data") { w_dumpData() },
+        Word(".regs") { w_dumpRegs() },
+        Word("_see") { w_xt_see() },
+        Word("see") { w_see() },
+        Word("_simple-see") { w_xt_seeSimple() },
+        Word("simple-see") { w_seeSimple() },
 
         // ~~  *terminal*:lineno:char:<2> 20 10
 

@@ -6,25 +6,26 @@ class WMachine(val vm: ForthVM): WordClass {
         // Keep on top -- this when, if the VM somehow starts running from
         // initialized memory (0), it will try to run word# 0, which will be
         // this, and we'll break.
-        Word("brk") { _ -> w_brk() },
-        Word("nop") { _ -> w_nop() },  // branching
+        Word("brk") { w_brk() },
+        Word("nop") { w_nop() },
 
-        Word("0branch") { _ -> w_0branch() },
-        Word("branch") { _ -> w_branch() },
-        Word("0rel-branch") { _ -> w_0relBranch() },
-        Word("rel-branch") { _ -> w_relBranch() },
+        // branching
+        Word("0branch") { w_0branch() },
+        Word("branch") { w_branch() },
+        Word("0rel-branch") { w_0relBranch() },
+        Word("rel-branch") { w_relBranch() },
 
         // fundamental machine state
-        Word("abort") { _ -> w_abort() },
-        Word("abort\"") { _ -> w_abortQuote() },
-        Word("reboot", imm = true, interpO = true,) { _ -> w_reboot() },
-        Word("reboot-raw", imm = true, interpO = true) { _ -> w_rebootRaw() },
-        Word("bye") { _ -> w_bye() },
-        Word("cold", imm=true, interpO = true) { _ -> w_coldStop() },
-        Word("quit") { _ -> w_quit() },
+        Word("abort") { w_abort() },
+        Word("abort\"") { w_abortQuote() },
+        Word("reboot", imm = true, interpO = true,) { w_reboot() },
+        Word("reboot-raw", imm = true, interpO = true) { w_rebootRaw() },
+        Word("bye") { w_bye() },
+        Word("cold", imm=true, interpO = true) { w_coldStop() },
+        Word("quit") { w_quit() },
 
         // fundamental
-        Word("lit", compO = true) { _ -> w_lit() },  // registers
+        Word("lit", compO = true) { w_lit() },  // registers
 
         // ~~  *terminal*:lineno:char:<2> 20 10
 

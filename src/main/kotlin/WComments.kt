@@ -49,9 +49,9 @@ package kf
 class WComments(val vm: ForthVM) : WordClass {
     override val name = "Comments"
 
-    override val primitives: Array<Word> = arrayOf<Word>(
-        Word("\\", imm = true ) { _ -> w_backslashComment() },
-        Word("(", imm = true) { _ -> w_parenComment() },
+    override val primitives: Array<Word> = arrayOf(
+        Word("\\", imm = true) { w_backslashComment() },
+        Word("(", imm = true) { w_parenComment() },
     )
 
     /**  ( -- : handles parentheses comments )

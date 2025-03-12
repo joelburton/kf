@@ -3,16 +3,16 @@ package kf
 class WCompiling(val vm: ForthVM) : WordClass {
     override val name = "Compiling"
 
-    override val primitives: Array<Word> = arrayOf<Word>(
-        Word(":", interpO = true) { _ -> w_colon() },
-        Word(";", imm = true, compO = true) { _ -> w_semicolon() },
-        Word("[literal]", compO = true) { _ -> w_bracketLiteral() },
-        Word("literal", imm=true, compO = true) { _ -> w_literal() },
-        Word("[']", imm = true, compO = true) { _ -> w_bracketTick() },
-        Word("immediate", imm = true) { _ -> w_immediate() },
-        Word("recursive", imm = true, compO = true) { _ -> w_recursive() },
-        Word("postpone", imm = true, compO = true) { _ -> w_postpone() },
-        Word("dolit") { _ -> w_doLit() },
+    override val primitives: Array<Word> = arrayOf(
+        Word(":", interpO = true) {  w_colon() },
+        Word(";", imm = true, compO = true) {  w_semicolon() },
+        Word("[literal]", compO = true) {  w_bracketLiteral() },
+        Word("literal", imm=true, compO = true) {  w_literal() },
+        Word("[']", imm = true, compO = true) {  w_bracketTick() },
+        Word("immediate", imm = true) {  w_immediate() },
+        Word("recursive", imm = true, compO = true) {  w_recursive() },
+        Word("postpone", imm = true, compO = true) {  w_postpone() },
+        Word("dolit") {  w_doLit() },
     )
 
     /**  `:` X ( in:"name" -- : create word 'name' and start compiling mode )

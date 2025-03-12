@@ -3,12 +3,12 @@ package kf
 class WDoes(val vm: ForthVM) : WordClass {
     override val name = "Does"
 
-    override val primitives: Array<Word> = arrayOf<Word>(
+    override val primitives: Array<Word> = arrayOf(
         Word("create") { _-> w_create() },
-        Word("does>", imm = true, compO = true) { _ -> doesAngle() },
+        Word("does>", imm = true, compO = true) {  doesAngle() },
         Word("does") { _-> w_does() },
-        Word("addr", compO = true) { _ -> w_addr() },
-        Word("addrcall", compO = true) { _ -> w_addrCall() },
+        Word("addr", compO = true) {  w_addr() },
+        Word("addrcall", compO = true) {  w_addrCall() },
     )
 
     /**  does> : inside of compilation, adds "does" + "ret" */
@@ -31,7 +31,7 @@ class WDoes(val vm: ForthVM) : WordClass {
             name,
             cpos = Word.NO_ADDR,
             dpos = vm.dend,
-            callable =  { _ -> w_addr() })
+            callable =  {  w_addr() })
         vm.dict.add(w)
     }
 

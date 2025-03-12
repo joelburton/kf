@@ -3,10 +3,10 @@ package kf
 class WIfThen(val vm: ForthVM) : WordClass {
     override val name = "IfThen"
 
-    override val primitives: Array<Word> = arrayOf<Word>(
-        Word("if", imm = true, compO = true) { _ -> w_if() },
-        Word("else", imm = true, compO = true) { _ -> w_else() },
-        Word("then", imm = true, compO = true) { _ -> w_then() },
+    override val primitives: Array<Word> = arrayOf(
+        Word("if", imm = true, compO = true) { w_if() },
+        Word("else", imm = true, compO = true) { w_else() },
+        Word("then", imm = true, compO = true) { w_then() },
     )
 
     /**  if I ( f -- : if truthy, execute section )

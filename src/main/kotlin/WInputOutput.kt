@@ -3,37 +3,33 @@ package kf
 
 class WInputOutput(val vm: ForthVM) : WordClass {
     override val name = "InputOutput"
-    override val primitives: Array<Word> = arrayOf<Word>(
-        Word("cr") { _ -> w_cr() },
-        Word("emit") { _ -> w_emit() },
-        Word("space") { _ -> w_space() },
-        Word("page") { _ -> w_page() },
+    override val primitives: Array<Word> = arrayOf(
+        Word("cr") { w_cr() },
+        Word("emit") { w_emit() },
+        Word("space") { w_space() },
+        Word("page") { w_page() },
 
-        Word("nl") { _ -> w_newline() },
-        Word("bl") { _ -> w_blank() },
+        Word("nl") { w_newline() },
+        Word("bl") { w_blank() },
 
-        Word("key") { _ -> w_key() },  // numbers?
+        Word("key") { w_key() },  // numbers?
 
-        Word(".") { _ -> w_dot() },
-        Word("base") { _ -> w_base() },
-        Word("hex") { _ -> w_hex() },
-        Word("decimal") { _ -> w_decimal() },
-        Word("octal") { _ -> w_octal() },
-        Word("binary") { _ -> w_binary() },
-        Word("dec.") { _ -> w_decimalDot() },
-        Word("hex.") { _ -> w_hexDot() },
-        Word(".\"") { _ -> w_printLitString() },
-        Word("char") { _ -> w_char() },
-        Word(
-            "[char]",
-            imm = true,
-            compO = true
-        ) { _ -> w_bracketChar() },
-        Word("toupper") { _ -> w_toUpper() },
-        Word("tolower") { _ -> w_toLower() },
+        Word(".") { w_dot() },
+        Word("base") { w_base() },
+        Word("hex") { w_hex() },
+        Word("decimal") { w_decimal() },
+        Word("octal") { w_octal() },
+        Word("binary") { w_binary() },
+        Word("dec.") { w_decimalDot() },
+        Word("hex.") { w_hexDot() },
+        Word(".\"") { w_printLitString() },
+        Word("char") { w_char() },
+        Word("[char]", imm = true, compO = true) { w_bracketChar() },
+        Word("toupper") { w_toUpper() },
+        Word("tolower") { w_toLower() },
 
         // word : get a word, store "somewhere", return addr to
-        Word("d.") { _ -> w_dDot() },
+        Word("d.") { w_dDot() },
 
         )
 

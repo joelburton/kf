@@ -10,25 +10,25 @@ import java.util.Scanner
  * are strongly related to the interpreter. */
 class WInterp(val vm: ForthVM): WordClass {
     override val name = "Interp"
-    override val primitives: Array<Word> = arrayOf<Word>(
+    override val primitives: Array<Word> = arrayOf(
         // the interpreter loop (plus stuff in Machine)
-        Word("interp-prompt") { _-> w_interpPrompt() },
-        Word("interp-refill") { _ -> w_interpRefill() },
-        Word("interp-read") { _ -> w_interpRead() },
-        Word("interp-process") { _ -> w_interpProcess() },
+        Word("interp-prompt") { w_interpPrompt() },
+        Word("interp-refill") { w_interpRefill() },
+        Word("interp-read") { w_interpRead() },
+        Word("interp-process") { w_interpProcess() },
 
         // exiting the interpreter
-        Word("\\\\\\") { _ -> w_tripleBackSlash() },
-        Word("eof") { _ -> w_eof() },
+        Word("\\\\\\") { w_tripleBackSlash() },
+        Word("eof") { w_eof() },
 
         // including new primitives and forth files
-        Word("include") { _ -> w_include() },
-        Word("include-primitives") { _ -> w_includeBinary() },
+        Word("include") { w_include() },
+        Word("include-primitives") { w_includeBinary() },
 
         // useful words for working with interpreter
-        Word("interp-reload-code") { _ -> w_interpReloadCode() },
-        Word("[", imm = true, compO = true) { _ -> w_goImmediate() },
-        Word("]", imm=true) { _ -> w_goCompiled() },
+        Word("interp-reload-code") { w_interpReloadCode() },
+        Word("[", imm = true, compO = true) { w_goImmediate() },
+        Word("]", imm=true) { w_goCompiled() },
     )
 
     // ********************************************** words for interpreter loop

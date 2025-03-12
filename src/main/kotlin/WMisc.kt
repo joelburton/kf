@@ -6,9 +6,9 @@ import java.util.concurrent.TimeUnit
 class WMisc(val vm: ForthVM): WordClass {
     override val name = "Misc"
     override val primitives: Array<Word> = arrayOf(
-        Word("millis") { _ -> w_millis() },
-        Word("ms") { _ -> w_ms() },
-        Word("time&date") { _ -> w_timeAmpDate() },
+        Word("millis") { w_millis() },
+        Word("ms") { w_ms() },
+        Word("time&date") { w_timeAmpDate() },
         )
 
     // `time&date'

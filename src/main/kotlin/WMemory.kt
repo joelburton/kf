@@ -3,23 +3,23 @@ package kf
 
 class WMemory(val vm: ForthVM) : WordClass {
     override val name = "Memory"
-    override val primitives: Array<Word> = arrayOf<Word>(
-        Word("@") { _ -> w_fetch() },
-        Word("!") { _ -> w_store() },
-        Word("here") { _ -> w_here() },
-        Word("allot") { _ -> w_allot() },
-        Word(",") { _ -> w_comma() },
-        Word(",,") { _ -> w_commaComma() },
-        Word("?") { _ -> w_question() },
-        Word("dump") { _ -> w_dump() },
-        Word("!+") { _ -> w_plusBang() },
-        Word("cell") { _ -> w_cell() },
-        Word("cells") { _ -> w_cells() },
-        Word("unused") { _ -> w_unused() },
-        Word("on") { _ -> w_on() },
-        Word("off") { _ -> w_off() },
-        Word("erase") { _ -> w_erase() },
-        Word("fill") { _ -> w_fill() },
+    override val primitives: Array<Word> = arrayOf(
+        Word("@") { w_fetch() },
+        Word("!") { w_store() },
+        Word("here") { w_here() },
+        Word("allot") { w_allot() },
+        Word(",") { w_comma() },
+        Word(",,") { w_commaComma() },
+        Word("?") { w_question() },
+        Word("dump") { w_dump() },
+        Word("!+") { w_plusBang() },
+        Word("cell") { w_cell() },
+        Word("cells") { w_cells() },
+        Word("unused") { w_unused() },
+        Word("on") { w_on() },
+        Word("off") { w_off() },
+        Word("erase") { w_erase() },
+        Word("fill") { w_fill() },
     )
 
     private fun w_cell() {

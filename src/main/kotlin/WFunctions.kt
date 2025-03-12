@@ -4,10 +4,10 @@ class WFunctions(val vm: ForthVM) : WordClass {
     override val name = "Functions"
 
     override val primitives: Array<Word> = arrayOf(
-        Word("call") { _ -> w_call() },
-        Word("call-by-addr") { _ -> w_callByAddr() },
-        Word("execute") { _ -> w_execute() },
-        Word("return") { _ -> w_return() },
+        Word("call") { w_call() },
+        Word("call-by-addr") { w_callByAddr() },
+        Word("execute") { w_execute() },
+        Word("return") { w_return() },
 
         )
 

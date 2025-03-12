@@ -3,42 +3,42 @@ package kf
 class
 WStackOps(val vm: ForthVM): WordClass {
     override val name = "Stack Operations"
-    override val primitives: Array<Word> = arrayOf<Word>(
-        Word("dup") { _ -> w_dup() },
-        Word("drop") { _ -> w_drop() },
-        Word("swap") { _ -> w_swap() },
-        Word("nip") { _ -> w_nip() },
-        Word("over") { _ -> w_over() },
-        Word("rot") { _ -> w_rot() },
-        Word("pick") { _ -> w_pick() },
-        Word("tuck") { _ -> w_tuck() },
-        Word("roll") { _ -> w_roll() },
-        Word("?dup") { _ -> w_questionDup() },
+    override val primitives: Array<Word> = arrayOf(
+        Word("dup") { w_dup() },
+        Word("drop") { w_drop() },
+        Word("swap") { w_swap() },
+        Word("nip") { w_nip() },
+        Word("over") { w_over() },
+        Word("rot") { w_rot() },
+        Word("pick") { w_pick() },
+        Word("tuck") { w_tuck() },
+        Word("roll") { w_roll() },
+        Word("?dup") { w_questionDup() },
 
-        Word("2drop") { _ -> w_2drop() },
-        Word("2dup") { _ -> w_2dup() },
-        Word("2over") { _ -> w_2over() },
-        Word("2swap") { _ -> w_2swap() },
+        Word("2drop") { w_2drop() },
+        Word("2dup") { w_2dup() },
+        Word("2over") { w_2over() },
+        Word("2swap") { w_2swap() },
 
-        Word(".s") { _ -> w_dotS() },
-        Word("clearstack") { _ -> w_clearStack() },
-        Word("depth") { _ -> w_depth() },
+        Word(".s") { w_dotS() },
+        Word("clearstack") { w_clearStack() },
+        Word("depth") { w_depth() },
 
-        Word("sp0") { _ -> w_sp0() },
-        Word("sp@") { _ -> w_spFetch() },
-        Word("sp!") { _ -> w_spStore() },
+        Word("sp0") { w_sp0() },
+        Word("sp@") { w_spFetch() },
+        Word("sp!") { w_spStore() },
 
-        Word("rp0") { _ -> w_rp0() },
-        Word("rp@") { _ -> w_rpFetch() },
-        Word("rp!") { _ -> w_rpStore() },
-        Word(">R") { _ -> w_toR() },
-        Word("R>") { _ -> w_rFrom() },  // R@ - copy to dstk
+        Word("rp0") { w_rp0() },
+        Word("rp@") { w_rpFetch() },
+        Word("rp!") { w_rpStore() },
+        Word(">R") { w_toR() },
+        Word("R>") { w_rFrom() },  // R@ - copy to dstk
         
-        Word("lp0") { _ -> w_lp0() },
-        Word("lp@") { _ -> w_lpFetch() },
-        Word("lp!") { _ -> w_lpStore() },
-        Word(">L") { _ -> w_toL() },
-        Word("L>") { _ -> w_lFrom() },  // L@
+        Word("lp0") { w_lp0() },
+        Word("lp@") { w_lpFetch() },
+        Word("lp!") { w_lpStore() },
+        Word(">L") { w_toL() },
+        Word("L>") { w_lFrom() },  // L@
         // should these all be C for control stack?
         // clearstacks : clears data & fp, not other things!
 

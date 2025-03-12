@@ -2,28 +2,28 @@ package kf
 
 class WLoops(val vm: ForthVM): WordClass {
     override val name = "Loops"
-    override val primitives: Array<Word> = arrayOf<Word>(
-        Word("begin", imm = true, compO = true) { _ -> w_begin() },
-        Word("again", imm=true, compO=true) { _ -> w_again() },
-        Word("until", imm=true, compO=true) { _ -> w_until() },
-        Word("while", imm=true, compO=true) { _ -> w_while() },
-        Word("repeat", imm=true, compO=true) { _ -> w_repeat() },
+    override val primitives: Array<Word> = arrayOf(
+        Word("begin", imm = true, compO = true) { w_begin() },
+        Word("again", imm=true, compO=true) { w_again() },
+        Word("until", imm=true, compO=true) { w_until() },
+        Word("while", imm=true, compO=true) { w_while() },
+        Word("repeat", imm=true, compO=true) { w_repeat() },
 
-        Word("do", imm=true, compO=true) { _ -> w_do() },
-        Word("do-impl", compO = true, hidden = true) { _ -> w_doImpl() },
-        Word("loop", imm=true, compO=true) { _ -> w_loop() },
-        Word("i", compO=true) { _ -> w_i() },
-        Word("j", compO=true) { _ -> w_j() },
-        Word("k", compO=true) { _ -> w_k() },
-        Word("l", compO=true) { _ -> w_l() },
-        Word("m", compO=true) { _ -> w_m() },
+        Word("do", imm=true, compO=true) { w_do() },
+        Word("do-impl", compO = true, hidden = true) { w_doImpl() },
+        Word("loop", imm=true, compO=true) { w_loop() },
+        Word("i", compO=true) { w_i() },
+        Word("j", compO=true) { w_j() },
+        Word("k", compO=true) { w_k() },
+        Word("l", compO=true) { w_l() },
+        Word("m", compO=true) { w_m() },
 
-        Word("loop-impl", compO = true, hidden = true) { _ -> w_loopImpl() },
-        Word("+loop", imm=true, compO=true) { _ -> w_plusLoop() },
+        Word("loop-impl", compO = true, hidden = true) { w_loopImpl() },
+        Word("+loop", imm=true, compO=true) { w_plusLoop() },
 
-        Word("leave", imm=true, compO=true) { _ -> w_leave() },
+        Word("leave", imm=true, compO=true) { w_leave() },
 
-        Word(".lstk") { _ -> w_lstk() },  // ?do - enter loop if true
+        Word(".lstk") { w_lstk() },  // ?do - enter loop if true
         // -do down-counting
 
     )

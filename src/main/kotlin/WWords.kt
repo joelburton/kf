@@ -2,22 +2,22 @@ package kf
 
 class WWords(val vm: ForthVM) : WordClass {
     override val name = "Words"
-    override val primitives: Array<Word> = arrayOf<Word>(
-        Word("words") { _ -> w_words() },
-        Word("synonym") { _ -> w_synonym() },
-        Word("forget") { _ -> w_forget() },
-        Word("wn-forget") { _ -> w_wnForget() },
-        Word("marker") { _ -> w_marker() },
-        Word("'") { _ -> w_tick() },
+    override val primitives: Array<Word> = arrayOf(
+        Word("words") { w_words() },
+        Word("synonym") { w_synonym() },
+        Word("forget") { w_forget() },
+        Word("wn-forget") { w_wnForget() },
+        Word("marker") { w_marker() },
+        Word("'") { w_tick() },
 
-        Word(".dict") { _ -> w_dotDict() },
-        Word(".wn-hide") { _ -> w_hideWord() },
-        Word(".wn-unhide") { _ -> w_unhideWord() },
-        Word("id.") { _ -> w_wordId() },
-        Word(".unhide-all") { _ -> w_unhideAll() },
+        Word(".dict") { w_dotDict() },
+        Word(".wn-hide") { w_hideWord() },
+        Word(".wn-unhide") { w_unhideWord() },
+        Word("id.") { w_wordId() },
+        Word(".unhide-all") { w_unhideAll() },
 
-        Word("[defined]", imm = true) { _ -> w_bracketDefined() },
-        Word("[undefined]", imm = true) { _ -> w_bracketUndefined() },
+        Word("[defined]", imm = true) { w_bracketDefined() },
+        Word("[undefined]", imm = true) { w_bracketUndefined() },
     )
 
     /**  `\[defined\]` I ( in:"name" -- f : is this word defined? )
