@@ -8,7 +8,7 @@ interface WordClass {
     val primitives: Array<Word>
 }
 
-class Dict(val vm: ForthVM, val capacity: Int = 1024) {
+class Dict(val vm: ForthVM, val capacity: Int = 1024)  {
     private val words = arrayListOf<Word>()
     var currentlyDefining: Word? = null
 
@@ -21,12 +21,12 @@ class Dict(val vm: ForthVM, val capacity: Int = 1024) {
     val size: Int get() = words.size
     val last: Word get() = words.last()
 
-    fun get(wn: Int): Word {
+    operator fun get(wn: Int): Word {
         if (wn < 0 || wn >= words.size) throw WordNotFoundException("${wn}")
         return words[wn]
     }
 
-    fun get(name: String): Word {
+    operator fun get(name: String): Word {
         for (w in words.asReversed()) {
             if (w.name.equals(name, ignoreCase = true)) return w
         }

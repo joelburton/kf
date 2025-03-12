@@ -46,7 +46,7 @@ class DictTest  : ForthTestCase() {
     fun get() {
         val word = Word("word", callable = dummyFunc)
         dict.add(word)
-        assertFailsWith<WordNotFoundException> { dict.get("no-word") }
+        assertFailsWith<WordNotFoundException> { dict["no-word"] }
         assertEquals(word, dict.get("word"))
     }
 
@@ -54,7 +54,7 @@ class DictTest  : ForthTestCase() {
     fun testGet() {
         val word = Word("word", callable = dummyFunc)
         dict.add(word)
-        assertFailsWith<WordNotFoundException> { dict.get(-1) }
+        assertFailsWith<WordNotFoundException> { dict[-1] }
         assertEquals(word, dict.get(0))
     }
 
@@ -62,7 +62,7 @@ class DictTest  : ForthTestCase() {
     fun getNum() {
         val word = Word("word", callable = dummyFunc)
         dict.add(word)
-        assertFailsWith<WordNotFoundException> { dict.get("no-word") }
+        assertFailsWith<WordNotFoundException> { dict["no-word"] }
         assertEquals(0, dict.getNum("word"))
     }
 

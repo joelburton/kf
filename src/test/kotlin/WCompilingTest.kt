@@ -20,7 +20,7 @@ class WCompilingTest : ForthTestCase() {
     fun w_colon() {
         // integration test
         eval(": test 123 ;")
-        assertNotNull(vm.dict.get("test"))
+        assertNotNull(vm.dict["test"])
         eval("test")
         assertDStack(123)
         assertFailsWith<InvalidState> { eval(": a : test1 123 ;") }
@@ -30,7 +30,7 @@ class WCompilingTest : ForthTestCase() {
     fun w_semicolon() {
         // integration test
         eval(": test 123 ;")
-        assertNotNull(vm.dict.get("test"))
+        assertNotNull(vm.dict["test"])
         eval("test")
         assertDStack(123)
         assertFailsWith<InvalidState> { eval(": test1 123 ; ;") }

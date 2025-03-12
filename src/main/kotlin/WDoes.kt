@@ -20,7 +20,7 @@ class WDoes(val vm: ForthVM) : WordClass {
     /**  does: change most recent word from data to call-fn-with-data-num */
     fun w_does() {
         val w: Word = vm.dict.last
-        w.callable = vm.dict.get("addrcall").callable
+        w.callable = vm.dict["addrcall"].callable
         w.cpos = vm.ip + 1
     }
 

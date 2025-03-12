@@ -1,6 +1,5 @@
 package kf
 
-import kf.Word.Companion.noWord
 import java.util.*
 import kotlin.collections.HashMap
 import kotlin.time.TimeSource
@@ -8,6 +7,7 @@ import kotlin.time.TimeSource
 const val D = true;
 const val VERSION_STRING = "KPupForth 0.1.0"
 
+@Suppress("KotlinConstantConditions")
 val Int.charRepr get() =
     if (this in ' '.code..'~'.code) "'${this.toChar()}'" else ""
 
@@ -26,7 +26,7 @@ enum class CellMeta {
 
     fun getExplanation(vm: ForthVM, v: Int): String {
         return when (this) {
-            WordNum -> vm.dict.get(v).name
+            WordNum -> vm.dict[v].name
             JumpLoc -> "  --> ${v.addr}"
             Unknown, NumLit -> "$v ${v.hex} ${v.charRepr}"
             StringLit -> "$v (string length)"
@@ -66,59 +66,62 @@ class InvalidState(message: String) : ForthError("Invalid state: $message")
 
 class ForthVM(
     val memConfig: IMemConfig = SmallMemConfig,
-    var io: IOBase = IOBase(),
+    var io: IOBase = IOTerminal(),
     val mem: IntArray = IntArray(memConfig.upperBound + 1),
 ) {
 
     // *************************************************************** registers
 
-    var base: Int
+    // TODO: maybe these could be delegates?
+    //
+    // var base: Int by registerDelegate(REG_BASE)
+
+    var base
         get() = mem[REG_BASE]
         set(v) {
             mem[REG_BASE] = v
         }
 
-    var verbosity: Int
+    var verbosity
         get() = mem[REG_VERBOSITY]
         set(v) {
             mem[REG_VERBOSITY] = v
         }
 
-    var cend: Int
+    var cend
         get() = mem[REG_CEND]
         set(v) {
             mem[REG_CEND] = v
         }
 
-    var dend: Int
+    var dend
         get() = mem[REG_DEND]
         set(v) {
             mem[REG_DEND] = v
         }
 
-    var termWidth: Int
+    var termWidth
         get() = mem[REG_TERM_WIDTH]
         set(v) {
             mem[REG_TERM_WIDTH] = v
         }
 
-    var cstart: Int
+    var cstart
         get() = mem[REG_CSTART]
         set(v) {
             mem[REG_CSTART] = v
         }
 
-    var dstart: Int
+    var dstart
         get() = mem[REG_DSTART]
         set(v) {
             mem[REG_DSTART] = v
         }
 
-    val cellMeta: Array<CellMeta> =
-        Array(memConfig.upperBound + 1) { CellMeta.Unknown }
-    val dict: Dict = Dict(this)
-    var currentWord: Word = Word.noWord
-    var ip: Int = memConfig.codeStart
+    val cellMeta = Array(memConfig.upperBound + 1) { CellMeta.Unknown }
+    val dict = Dict(this)
+    lateinit var currentWord: Word
+    var ip = memConfig.codeStart
     val dstk = FStack(this, "dstk", memConfig.dstackStart, memConfig.dstackEnd)
     val rstk = FStack(this, "rstk", memConfig.rstackStart, memConfig.rstackEnd)
     val lstk = FStack(this, "lstk", memConfig.lstackStart, memConfig.lstackEnd)
@@ -301,7 +304,7 @@ class ForthVM(
         while (true) {
             try {
                 val wn = mem[ip++]
-                dict.get(wn).exec(this)
+                dict[wn].exec(this)
             } catch (e: ForthQuit) {
                 // For non-interactive (like a file), needs to stop reading all
                 // files --- so rethrow error
@@ -369,7 +372,7 @@ class ForthVM(
         if (D) dbg(3, "vm.rebootInterpreter")
         interpToken = ""
         interpState = INTERP_STATE_INTERPRETING
-        currentWord = noWord
+        currentWord = Word.noWord
         interpScanner = null // it will make one once it gets some input
         interpLineBuf = ""
 

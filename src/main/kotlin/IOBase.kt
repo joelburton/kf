@@ -1,7 +1,7 @@
 package kf
 
 
-open class IOBase {
+sealed class IOBase {
     open val o = System.out
     open val err = System.err
     open val isInteractive = true

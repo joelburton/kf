@@ -1,6 +1,6 @@
 package kf
 
-typealias CallableWord = (ForthVM) -> Unit
+typealias CallableWord = Word.(ForthVM) -> Unit
 
 class Word(
     val name:String,

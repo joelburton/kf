@@ -35,7 +35,7 @@ class WFunctions(val vm: ForthVM) : WordClass {
      */
     fun w_execute() {
         val wn: Int = vm.dstk.pop()
-        vm.dict.get(wn).exec(vm)
+        vm.dict[wn].exec(vm)
     }
 
     /**  `return` ( r:n -- : return from current word )

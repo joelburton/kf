@@ -43,7 +43,7 @@ class WWords(val vm: ForthVM) : WordClass {
         val width: Int = vm.termWidth
 
         for (i in 0..<vm.dict.size) {
-            val w: Word = vm.dict.get(i)
+            val w: Word = vm.dict[i]
             if (w.hidden) continue
 
             val s: String = w.name + " "
@@ -61,7 +61,7 @@ class WWords(val vm: ForthVM) : WordClass {
      */
     fun w_dotDict() {
         for (i in 0..<vm.dict.size) {
-            val w: Word = vm.dict.get(i)
+            val w: Word = vm.dict[i]
             vm.io.o.print(w.getHeaderStr(vm.io))
         }
         vm.io.o.println(vm.io.grey(Word.HEADER_STR))
@@ -71,7 +71,7 @@ class WWords(val vm: ForthVM) : WordClass {
      */
     fun w_hideWord() {
         val name: String = vm.getToken()
-        val w: Word = vm.dict.get(name)
+        val w: Word = vm.dict[name]
         w.hidden = true
     }
 
@@ -80,7 +80,7 @@ class WWords(val vm: ForthVM) : WordClass {
      */
     fun w_unhideWord() {
         val name: String = vm.getToken()
-        val w: Word = vm.dict.get(name)
+        val w: Word = vm.dict[name]
         w.hidden = false
     }
 
@@ -88,7 +88,7 @@ class WWords(val vm: ForthVM) : WordClass {
      */
     fun w_unhideAll() {
         for (i in 0..<vm.dict.size) {
-            vm.dict.get(i).hidden = false
+            vm.dict[i].hidden = false
         }
     }
 
@@ -98,7 +98,7 @@ class WWords(val vm: ForthVM) : WordClass {
     fun w_synonym() {
         val newName: String = vm.getToken()
         val oldName: String = vm.getToken()
-        val curWord: Word = vm.dict.get(oldName)
+        val curWord: Word = vm.dict[oldName]
         val nw = Word(
             newName,
             callable = curWord.callable,
@@ -115,7 +115,7 @@ class WWords(val vm: ForthVM) : WordClass {
      */
     fun w_forget() {
         val newName: String = vm.getToken()
-        val w: Word = vm.dict.get(newName)
+        val w: Word = vm.dict[newName]
         vm.dict.truncateAt(w.wn)
         if (w.cpos != Word.NO_ADDR) vm.cend = w.cpos
     }
@@ -124,7 +124,7 @@ class WWords(val vm: ForthVM) : WordClass {
      */
     fun w_wnForget() {
         val wn: Int = vm.dstk.pop()
-        val w: Word = vm.dict.get(wn)
+        val w: Word = vm.dict[wn]
         vm.dict.truncateAt(wn)
         vm.cend = w.cpos
     }
@@ -141,7 +141,7 @@ class WWords(val vm: ForthVM) : WordClass {
      * Will forget back to (and including) when the "foo" marker was made.
      */
     fun w_marker() {
-        val wCall = vm.dict.get("call")
+        val wCall = vm.dict["call"]
         val newName: String = vm.getToken()
         val w = Word(
             newName,
@@ -169,7 +169,7 @@ class WWords(val vm: ForthVM) : WordClass {
      */
     fun w_wordId() {
         val wn: Int = vm.dstk.pop()
-        val w: Word = vm.dict.get(wn)
+        val w: Word = vm.dict[wn]
         vm.io.o.print(w.name + " ")
     }
 } // 5 ' .   ( n xt )

@@ -79,17 +79,17 @@ class WTools(val vm: ForthVM) : WordClass {
     }
 
     fun w_xtSee() {
-        val w: Word = vm.dict.get(vm.dstk.pop())
+        val w: Word = vm.dict[vm.dstk.pop()]
         _see(vm, w, false)
     }
 
     fun w_see() {
-        val w: Word = vm.dict.get(vm.getToken())
+        val w: Word = vm.dict[vm.getToken()]
         _see(vm, w, false)
     }
 
     fun w_xtSeeSimple() {
-        val w: Word = vm.dict.get(vm.dstk.pop())
+        val w: Word = vm.dict[vm.dstk.pop()]
         _see(vm, w, true)
     }
 

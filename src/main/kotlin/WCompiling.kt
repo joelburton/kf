@@ -30,7 +30,7 @@ class WCompiling(val vm: ForthVM) : WordClass {
         // currently-being-defined word as such while being compiled,
         // so it can call itself (recurse).
 
-        val wCall = vm.dict.get("call")
+        val wCall = vm.dict["call"]
         val w = Word(
             name,
             cpos = vm.cend,
@@ -118,7 +118,7 @@ class WCompiling(val vm: ForthVM) : WordClass {
      */
     fun w_postpone() {
         val token: String = vm.getToken()
-        val w: Word = vm.dict.get(token)
+        val w: Word = vm.dict[token]
         if (w.imm) {
             vm.dict.last.callable = w.callable
         } else {

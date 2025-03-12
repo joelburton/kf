@@ -19,7 +19,7 @@ open class ForthTestCase {
             try {
                 while (true) {
                     val wn = mem[ip++]
-                    dict.get(wn).exec(this)
+                    dict[wn].exec(this)
                 }
             } catch (e: ForthEOF) {
                 return testIO.getPrinted()
@@ -28,7 +28,7 @@ open class ForthTestCase {
     }
 
     fun see(name: String) {
-        WTools._see(vm, vm.dict.get(name), false)
+        WTools._see(vm, vm.dict[name], false)
         print((vm.io as IOGateway).getPrinted())
     }
 

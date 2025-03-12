@@ -10,7 +10,7 @@ class WFunctionsTest: ForthTestCase() {
     init {
         mod = vm.modulesLoaded["Functions"]!! as WFunctions
         eval(": test 42 ;")
-        w = vm.dict.get("test")
+        w = vm.dict["test"]
     }
 
     @Test
