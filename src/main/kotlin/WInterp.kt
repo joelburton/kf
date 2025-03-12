@@ -9,6 +9,7 @@ import java.util.Scanner
  * are strongly related to the interpreter. */
 class WInterp(val vm: ForthVM): WordClass {
     override val name = "Interp"
+
     override val primitives: Array<Word> = arrayOf(
         // the interpreter loop (plus stuff in Machine)
         Word("interp-prompt") { w_interpPrompt() },

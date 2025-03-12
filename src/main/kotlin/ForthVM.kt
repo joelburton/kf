@@ -103,7 +103,7 @@ class ForthVM(
         }
 
     var cstart: Int
-    get() = mem[REG_CSTART]
+        get() = mem[REG_CSTART]
         set(v) {
             mem[REG_CSTART] = v
         }
@@ -123,8 +123,7 @@ class ForthVM(
     val rstk = FStack(this, "rstk", memConfig.rstackStart, memConfig.rstackEnd)
     val lstk = FStack(this, "lstk", memConfig.lstackStart, memConfig.lstackEnd)
     val modulesLoaded: HashMap<String, WordClass> = HashMap()
-    val timeSource = TimeSource.Monotonic
-    val timeMarkCreated = timeSource.markNow()
+    val timeMarkCreated = TimeSource.Monotonic.markNow()
 
     fun reboot(includePrimitives: Boolean = true) {
         if (D) dbg(1, "vm.reboot")
@@ -522,7 +521,7 @@ class ForthVM(
         const val REG_DSTART = 4
         const val REG_DEND = 5
         const val REG_TERM_WIDTH = 6
-        const val REG_INTERP_STATE= 7
+        const val REG_INTERP_STATE = 7
 
         const val INTERP_STATE_INTERPRETING: Int = 0
         const val INTERP_STATE_COMPILING: Int = -1

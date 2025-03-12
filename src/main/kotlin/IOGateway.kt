@@ -1,8 +1,6 @@
 package kf
 
-import java.io.BufferedReader
 import java.io.ByteArrayOutputStream
-import java.io.CharArrayReader
 import java.io.PrintStream
 
 /**  Gets input from commands it was originally created with, and collects
@@ -14,14 +12,13 @@ class IOGateway : IOBase() {
     val bos = ByteArrayOutputStream()
     override val o: PrintStream = PrintStream(bos)
     override val err: PrintStream = o
-    var input: BufferedReader = BufferedReader(
-        CharArrayReader(CharArray(0)))
+    var input: MutableList<String> = mutableListOf()
 
-    override fun readLine() = input.readLine()
+    override fun readLine() = input.removeFirstOrNull()
 
     fun resetAndLoadCommands(cmds: String) {
         bos.reset()
-        input = BufferedReader(CharArrayReader(cmds.toCharArray()))
+        input = mutableListOf(*cmds.split("\n").toTypedArray())
     }
 
     fun getPrinted(): String = bos.toString()

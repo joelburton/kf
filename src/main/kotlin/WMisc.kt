@@ -31,7 +31,7 @@ class WMisc(val vm: ForthVM): WordClass {
     /** `ms` ( n -- : pause VM for n milliseconds )
       */
     private fun w_ms() {
-        Thread.sleep(vm.dstk.pop().toLong(), 0)
+        Thread.sleep(vm.dstk.pop().toLong())
     }
 
     /** `millis` ( -- n : number of milliseconds elapsed since VM started. )
