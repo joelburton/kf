@@ -1,8 +1,12 @@
+import kf.CallableWord
 import kf.ForthEOF
 import kf.ForthVM
 import kf.IOGateway
 import kf.WTools
-import org.junit.jupiter.api.Assertions.assertEquals
+import kotlin.test.assertContentEquals
+import kotlin.test.assertEquals
+
+val dummyFunc: CallableWord = { it.ip = 2 }
 
 open class ForthTestCase {
     val testIO = IOGateway()
@@ -33,7 +37,15 @@ open class ForthTestCase {
     }
 
     fun assertDStack(vararg items: Int) {
-        assertEquals(items.size, vm.dstk.size)
-        for (v in items.reversed()) assertEquals(v, vm.dstk.pop())
+        assertContentEquals(vm.dstk.asArray(), items)
+        vm.dstk.reset()
+    }
+
+    fun assertDStackKeep(vararg items: Int) {
+        assertContentEquals(vm.dstk.asArray(), items)
+    }
+
+    fun assertPrinted(s: String) {
+        assertEquals(s, testIO.getPrinted())
     }
 }

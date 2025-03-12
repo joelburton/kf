@@ -1,10 +1,9 @@
+import kf.CallableWord
 import kf.ForthVM
 import kf.Word
+import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 
-import org.junit.jupiter.api.Assertions.*
-
-val dummyFunc: (ForthVM) -> Unit = { it.ip = 2 }
 
 class WordTest {
 

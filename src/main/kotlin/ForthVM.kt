@@ -11,6 +11,9 @@ const val VERSION_STRING = "KPupForth 0.1.0"
 val Int.charRepr get() =
     if (this in ' '.code..'~'.code) "'${this.toChar()}'" else ""
 
+fun Int.numToStr(base: Int): String = this.toString(base.coerceIn(2, 36))
+
+
 
 enum class CellMeta {
     Unknown,
@@ -197,22 +200,25 @@ class ForthVM(
         if (D) dbg(3, "vm.addCorePrimitives")
 
         for (mod in arrayOf(
-            WRegisters(this),
-            WTools(this),
+            // Machine    // nt
+            // Interp     // nt
+            WRegisters(this), // nt
+            WTools(this), // nt
             WComments(this),
             WInputOutput(this),
-            WStackOps(this),
+            WStackOps(this), // nt
             WMathLogic(this),
-            WMemory(this),
+            WMemory(this), // nt
             WFunctions(this),
             WCompiling(this),
-            WIfThen(this), // dep: Functions
-            WLoops(this), // dep: Functions
-            WDoes(this), // dep: Functions
-            WMisc(this), // dep: Functions
+            WIfThen(this),
+            WLoops(this), // nt
+            WDoes(this), // nt
+            WMisc(this), // nt
             WInternals(this),
-            WWords(this),
-//            WStrings(this),
+            WWords(this), // nt
+            WStrings(this), // nt
+            WDoubleNum(this), // nt
         )) dict.addModule(mod)
     }
 

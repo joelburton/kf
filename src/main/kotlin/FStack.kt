@@ -24,7 +24,7 @@ class FStack(
         get() = endAt - sp + 1
 
     /**  Get stack as array (for debugging). */
-    private fun asArray() = vm.mem.copyOfRange(sp, endAt + 1).reversedArray()
+    fun asArray() = vm.mem.copyOfRange(sp, endAt + 1).reversedArray()
 
     /**  Just useful for debuggers. */
     override fun toString(): String = "${name} ${asArray().contentToString()}"

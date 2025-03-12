@@ -6,6 +6,8 @@ class WStrings(val vm: ForthVM) : WordClass {
         Word("type") { w_type() },
         Word("s\"") { w_sQuote()
         }, Word("source") { w_source() },
+        Word(".\"") { w_dotQuote() },
+
 
         //            new Word("c,", Strings::w_cComma),
         //            new Word("c@", Strings::w_cFetch),
@@ -43,4 +45,16 @@ class WStrings(val vm: ForthVM) : WordClass {
         vm.dstk.push(strAddr)
         vm.dstk.push(s.length)
     }
+
+    /** `."` `( -- : out:"str" : print string following )` */
+
+    private fun w_dotQuote() {
+        var s: String = vm.interpScanner!!.findInLine(".+?\"")
+            ?: throw ParseError("String literal not closed")
+        // get rid of leading single space and terminating quote
+        s = s.substring(1, s.length - 1)
+        vm.io.o.print(s)
+    }
+
+
 }

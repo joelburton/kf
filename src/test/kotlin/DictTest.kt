@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Assertions.*
 import kotlin.test.assertFailsWith
 
 
+
 class FakeMod: WordClass {
     override val name = "FakeMod"
     override val primitives = arrayOf<Word>(
