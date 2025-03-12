@@ -13,7 +13,8 @@ class WMisc(val vm: ForthVM): WordClass {
         Word("time&date") { w_timeAmpDate() },
         )
 
-    // `time&date'
+    /** `time&date` ( -- secs minutes hours dayOfMonth monthNum year : get now )
+     */
     private fun w_timeAmpDate() {
         val now = Clock.System.now()
         val lt = now.toLocalDateTime(TimeZone.currentSystemDefault())
@@ -27,15 +28,13 @@ class WMisc(val vm: ForthVM): WordClass {
         )
     }
 
+    /** `ms` ( n -- : pause VM for n milliseconds )
+      */
     private fun w_ms() {
-        try {
-            Thread.sleep(vm.dstk.pop().toLong(), 0)
-        } catch (e: InterruptedException) {
-            throw RuntimeException(e)
-        }
+        Thread.sleep(vm.dstk.pop().toLong(), 0)
     }
 
-    /** Number of milliseconds elapsed since VM was started.
+    /** `millis` ( -- n : number of milliseconds elapsed since VM started. )
      */
     private fun w_millis() {
         val millis = vm.timeMarkCreated.elapsedNow().inWholeMilliseconds.toInt()
