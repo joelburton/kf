@@ -22,10 +22,10 @@ class WordTest {
     }
 
     @Test
-    fun exec() {
+    fun invoke() {
         val vm = ForthVM()
         val word = Word("test", callable = dummyFunc)
-        word.exec(vm)
+        word.invoke(vm)
         assertEquals(2, vm.ip)
     }
 }

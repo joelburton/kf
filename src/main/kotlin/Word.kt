@@ -25,7 +25,7 @@ class Word(
    }
 
     override fun toString() = name;
-    fun exec(vm: ForthVM) {
+    operator fun invoke(vm: ForthVM) {
         if (D) vm.dbg(2, "word.exec $name -->")
         vm.currentWord = this
         callable(vm)

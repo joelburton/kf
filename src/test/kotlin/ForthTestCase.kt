@@ -19,9 +19,9 @@ open class ForthTestCase {
             try {
                 while (true) {
                     val wn = mem[ip++]
-                    dict[wn].exec(this)
+                    dict[wn](this)
                 }
-            } catch (e: ForthEOF) {
+            } catch (_: ForthEOF) {
                 return testIO.getPrinted()
             }
         }

@@ -4,7 +4,7 @@ import java.util.*
 import kotlin.collections.HashMap
 import kotlin.time.TimeSource
 
-const val D = true;
+const val D = true
 const val VERSION_STRING = "KPupForth 0.1.0"
 
 @Suppress("KotlinConstantConditions")
@@ -168,7 +168,7 @@ class ForthVM(
         if (includePrimitives) addCorePrimitives()
 
         // Do things at the interpreter level that are needed after a reboot
-        rebootInterpreter();
+        rebootInterpreter()
         addInterpreterCode(memConfig.codeStart)
 
         if (verbosity > 0) {
@@ -177,7 +177,7 @@ class ForthVM(
     }
 
     fun reset() {
-        if (D) dbg(1, "vm.reset");
+        if (D) dbg(1, "vm.reset")
         dstk.reset()
         rstk.reset()
         lstk.reset()
@@ -185,7 +185,7 @@ class ForthVM(
 
 
         // Do things at the interpreter level that are need after a reset
-        resetInterpreter();
+        resetInterpreter()
     }
 
 
@@ -251,24 +251,24 @@ class ForthVM(
 
     /**  Append data to the code section.
      */
-    fun appendCode(v: Int, cellMeta_val: CellMeta) {
-        if (D) dbg(3, "vm.appendText: ${v} ${cellMeta_val}")
+    fun appendCode(v: Int, cellMetaVal: CellMeta) {
+        if (D) dbg(3, "vm.appendText: $v $cellMetaVal")
         if (cend > memConfig.codeEnd) throw ForthError("Code buffer overflow")
 
         mem[cend] = v
-        cellMeta[cend] = cellMeta_val
+        cellMeta[cend] = cellMetaVal
         cend += 1
     }
 
     /**  Append string to the data section
      */
     fun appendStrToData(s: String): Int {
-        if (D) dbg(3, "vm.appendStrToData: ${s}")
+        if (D) dbg(3, "vm.appendStrToData: $s")
         val startAddr: Int = dend
         cellMeta[startAddr] = CellMeta.StringLit
         mem[dend++] = s.length
 
-        for (c in s.toCharArray()) mem[dend++] = c.code
+        for (c in s) mem[dend++] = c.code
         return startAddr + 1
     }
 
@@ -304,15 +304,15 @@ class ForthVM(
         while (true) {
             try {
                 val wn = mem[ip++]
-                dict[wn].exec(this)
+                dict[wn](this)
             } catch (e: ForthQuit) {
                 // For non-interactive (like a file), needs to stop reading all
                 // files --- so rethrow error
-                if (!io.isInteractive) throw e;
+                if (!io.isInteractive) throw e
                 // otherwise, it just resets call stack
-                rstk.reset();
+                rstk.reset()
             } catch (e: ForthWarning) {
-                io.warn("WARNING: " + e.message);
+                io.warn("WARNING: " + e.message)
             } catch (e: ForthError) {
                 // Any normal error will be ForthError (or a subclass of it);
                 // other errors will continue upward. These will be
@@ -321,13 +321,13 @@ class ForthVM(
                 //
                 // For ForthErrors, just show the user a message, reset
                 // the machine (empty stacks, etc.), and let them continue.
-                io.error("ERROR: " + e.message);
+                io.error("ERROR: " + e.message)
                 if (verbosity >= 1)
-                    e.printStackTrace();
-                reset();
+                    e.printStackTrace()
+                reset()
             } catch (e: ForthBrk) {
-                io.error("BRK: " + e.message);
-                e.printStackTrace();
+                io.error("BRK: " + e.message)
+                e.printStackTrace()
             }
         }
     }
@@ -409,8 +409,8 @@ class ForthVM(
         if (w != null) {
             if (w.interpO)
                 throw InvalidState("Can't use in compile mode: ${w.name}")
-            if (w.imm) {
-                w.exec(this)
+            else if (w.imm) {
+                w(this)
             } else {
                 appendCode(w.wn, CellMeta.WordNum)
             }
@@ -435,7 +435,7 @@ class ForthVM(
         val w: Word? = dict.getSafe(token)
         if (w != null) {
             if (w.compO) throw InvalidState("Compile-only: " + w.name)
-            w.exec(this)
+            w(this)
         } else if ((token[0] == '\'')
             && (token.length == 2 || (token.length == 3 && token[2] == '\''))
         ) {
@@ -488,7 +488,7 @@ class ForthVM(
      * more of the actual dictionary access to Forth for people to be able
      * to write more interpreter internals in Forth. */
     fun addInterpreterCode(startAddr: Int) {
-        if (D) dbg(3, "vm.addInterpreterCode: ${startAddr}")
+        if (D) dbg(3, "vm.addInterpreterCode: $startAddr")
 
         appendWord("interp-prompt")
         appendWord("interp-refill")
