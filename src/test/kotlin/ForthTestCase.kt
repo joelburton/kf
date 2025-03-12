@@ -37,12 +37,12 @@ open class ForthTestCase {
     }
 
     fun assertDStack(vararg items: Int) {
-        assertContentEquals(vm.dstk.asArray(), items)
+        assertContentEquals(items, vm.dstk.asArray())
         vm.dstk.reset()
     }
 
     fun assertDStackKeep(vararg items: Int) {
-        assertContentEquals(vm.dstk.asArray(), items)
+        assertContentEquals(items, vm.dstk.asArray())
     }
 
     fun assertPrinted(s: String) {

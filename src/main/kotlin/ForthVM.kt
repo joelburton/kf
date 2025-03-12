@@ -202,6 +202,7 @@ class ForthVM(
         for (mod in arrayOf(
             // Machine    // nt
             // Interp     // nt
+            WInclude(this), // nt
             WRegisters(this), // nt
             WTools(this), // nt
             WComments(this),
@@ -220,27 +221,6 @@ class ForthVM(
             WStrings(this), // nt
             WDoubleNum(this), // nt
         )) dict.addModule(mod)
-    }
-
-    /**  Read in a primitive class dynamically
-     */
-    fun readPrimitiveClass(name: String) {
-        if (D) dbg(3, "vm.readPrimitiveClass: $name")
-        try {
-            val cls: Class<*> = Class.forName(name)
-            val mod = cls.getConstructor(ForthVM::class.java)
-                .newInstance(this) as WordClass
-            dict.addModule(mod)
-        } catch (e: Exception) {
-            when (e) {
-                is ClassNotFoundException,
-                is IllegalAccessException,
-                is NoSuchFieldException ->
-                    throw ForthError("Can't load: $name (${e.message})")
-
-                else -> throw e // Re-throw other unexpected exceptions
-            }
-        }
     }
 
     // ***************************************************** Adding to VM memory

@@ -21,7 +21,7 @@ class WMachine(val vm: ForthVM): WordClass {
         Word("reboot", imm = true, interpO = true,) { w_reboot() },
         Word("reboot-raw", imm = true, interpO = true) { w_rebootRaw() },
         Word("bye") { w_bye() },
-        Word("cold", imm=true, interpO = true) { w_coldStop() },
+        Word("cold", imm=true, interpO = true) { w_cold() },
         Word("quit") { w_quit() },
 
         // fundamental
@@ -150,7 +150,7 @@ class WMachine(val vm: ForthVM): WordClass {
      * This is a harsh, but conventional Forth word. It's practically the only
      * way to stop the gateway. This should not be caught or prevented.
      */
-    fun w_coldStop() {
+    fun w_cold() {
         throw ForthColdStop("1")
     }
 
@@ -166,9 +166,12 @@ class WMachine(val vm: ForthVM): WordClass {
     // ************************************************************* fundamental
 
     /** `lit` ( -- n : Push next cell directly onto stack and cptr++ )
+     *
+     * This what the compiler emits for `: a 65 ;` => `lit 65`. When this code
+     * is being run, this functions get the 65 and pushes it onto the stack.
      */
     fun w_lit() {
-        val v: Int = vm.mem.get(vm.ip++)
+        val v: Int = vm.mem[vm.ip++]
         vm.dstk.push(v)
     }
 }

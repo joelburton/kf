@@ -21,10 +21,6 @@ class WInterp(val vm: ForthVM): WordClass {
         Word("\\\\\\") { w_tripleBackSlash() },
         Word("eof") { w_eof() },
 
-        // including new primitives and forth files
-        Word("include") { w_include() },
-        Word("include-primitives") { w_includeBinary() },
-
         // useful words for working with interpreter
         Word("interp-reload-code") { w_interpReloadCode() },
         Word("[", imm = true, compO = true) { w_goImmediate() },
@@ -105,39 +101,6 @@ class WInterp(val vm: ForthVM): WordClass {
     }
 
 
-    // ************************************************************
-    /**  `include` ( in:"file" -- : read Forth file in ) */
-    fun w_include() {
-        val path = vm.getToken()
-
-        val prevIO: IOBase = vm.io
-        val prevVerbosity: Int = vm.verbosity
-
-        try {
-            vm.io = IOFile(path)
-        } catch (e: FileSystemException) {
-            throw ForthError("No such file: $path")
-        }
-
-        try {
-            vm.runVM()
-        } catch (e: ForthQuitNonInteractive) {
-            // Caused by the EOF or \\\ commands --- stop reading this file, but
-            // not an error --- will proceed to next file or to console
-        } catch (_: ForthEOF) {
-        } finally {
-            vm.io = prevIO
-            vm.verbosity = prevVerbosity
-        }
-    }
-
-    /**  `include-primitives` ( in:"file" -- : Read class file of primitives )
-     *
-     * These can be anything the JVM can understand: Java, Kotlin, Groovy, etc. */
-    fun w_includeBinary() {
-        val path = vm.getToken()
-        vm.readPrimitiveClass(path)
-    }
 
     // ************************************************************ useful tools
 

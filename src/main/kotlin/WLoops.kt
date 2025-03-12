@@ -10,7 +10,7 @@ class WLoops(val vm: ForthVM): WordClass {
         Word("repeat", imm=true, compO=true) { w_repeat() },
 
         Word("do", imm=true, compO=true) { w_do() },
-        Word("do-impl", compO = true, hidden = true) { w_doImpl() },
+        Word("(do)", compO = true, hidden = true) { w_parenDo() },
         Word("loop", imm=true, compO=true) { w_loop() },
         Word("i", compO=true) { w_i() },
         Word("j", compO=true) { w_j() },
@@ -18,7 +18,7 @@ class WLoops(val vm: ForthVM): WordClass {
         Word("l", compO=true) { w_l() },
         Word("m", compO=true) { w_m() },
 
-        Word("loop-impl", compO = true, hidden = true) { w_loopImpl() },
+        Word("(loop)", compO = true, hidden = true) { w_parenLoop() },
         Word("+loop", imm=true, compO=true) { w_plusLoop() },
 
         Word("leave", imm=true, compO=true) { w_leave() },
@@ -72,7 +72,7 @@ class WLoops(val vm: ForthVM): WordClass {
     }
 
     // "do"  adds this to def (this is actually run at runtime)
-    fun w_doImpl() {
+    fun w_parenDo() {
         // swap
         val a = vm.dstk.pop()
         val b = vm.dstk.pop()
@@ -105,7 +105,7 @@ class WLoops(val vm: ForthVM): WordClass {
     }
 
     // loop-fn
-    fun w_loopImpl() {
+    fun w_parenLoop() {
         val incrementBy = vm.dstk.pop()
         vm.lstk.push(vm.lstk.pop() + incrementBy)
         val loopIdx = vm.lstk.pop()
