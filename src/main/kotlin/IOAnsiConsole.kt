@@ -8,7 +8,7 @@ class IOAnsiConsole: IOBase() {
     override fun quiet(s: String) = "\u001b[0;37m${s}\u001b[0m"
 
     override fun clearScreen() {
-        output.print("\u001b[H\u001b[2J")
-        output.flush()
+        o.print("\u001b[H\u001b[2J")
+        o.flush()
     }
 }

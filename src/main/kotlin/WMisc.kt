@@ -1,7 +1,9 @@
 package kf
 
-import java.util.*
-import java.util.concurrent.TimeUnit
+import kotlinx.datetime.Clock
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toLocalDateTime
+
 
 class WMisc(val vm: ForthVM): WordClass {
     override val name = "Misc"
@@ -13,14 +15,15 @@ class WMisc(val vm: ForthVM): WordClass {
 
     // `time&date'
     private fun w_timeAmpDate() {
-        val now = Calendar.getInstance()
+        val now = Clock.System.now()
+        val lt = now.toLocalDateTime(TimeZone.currentSystemDefault())
         vm.dstk.push(
-            now[Calendar.SECOND],
-            now[Calendar.MINUTE],
-            now[Calendar.HOUR_OF_DAY],
-            now[Calendar.DAY_OF_MONTH],
-            now[Calendar.MONTH] + 1,
-            now[Calendar.YEAR]
+            lt.second,
+            lt.minute,
+            lt.hour,
+            lt.dayOfMonth,
+            lt.monthNumber,
+            lt.year
         )
     }
 
@@ -32,9 +35,10 @@ class WMisc(val vm: ForthVM): WordClass {
         }
     }
 
+    /** Number of milliseconds elapsed since VM was started.
+     */
     private fun w_millis() {
-        val c = System.currentTimeMillis()
-        val millis = (c and 0x7fffffffL).toInt()
+        val millis = vm.timeMarkCreated.elapsedNow().inWholeMilliseconds.toInt()
         vm.dstk.push(millis)
     }
 }

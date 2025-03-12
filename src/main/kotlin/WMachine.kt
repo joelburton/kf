@@ -57,7 +57,7 @@ class WMachine(val vm: ForthVM): WordClass {
     fun w_0branch() {
         val flag = vm.dstk.pop()
         if (flag == 0) {
-            if (D) vm.dbg("w_0branch =0 --> ${vm.ip}}")
+            if (D) vm.dbg(3, "w_0branch =0 --> ${vm.ip}}")
             vm.ip = vm.mem.get(vm.ip)
         } else {
             vm.ip += 1
@@ -77,7 +77,7 @@ class WMachine(val vm: ForthVM): WordClass {
     fun w_0relBranch() {
         val flag = vm.dstk.pop()
         if (0 == flag) {
-            if (D) vm.dbg("w_0branch =0 --> %04x", vm.mem.get(vm.ip))
+            if (D) vm.dbg(3, "w_0branch =0 --> ${vm.mem[vm.ip].addr}")
             vm.ip = vm.mem.get(vm.ip) + vm.ip
         } else {
             vm.ip += 1

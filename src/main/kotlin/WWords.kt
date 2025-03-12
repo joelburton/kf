@@ -49,12 +49,12 @@ class WWords(val vm: ForthVM) : WordClass {
             val s: String = w.name + " "
             currLineLen += s.length
             if (currLineLen > width) {
-                vm.io.output.println()
+                vm.io.o.println()
                 currLineLen = s.length
             }
-            vm.io.output.print(s)
+            vm.io.o.print(s)
         }
-        vm.io.output.println()
+        vm.io.o.println()
     }
 
     /**  `.dict` ( -- : list all words with internal info )
@@ -62,9 +62,9 @@ class WWords(val vm: ForthVM) : WordClass {
     fun w_dotDict() {
         for (i in 0..<vm.dict.size) {
             val w: Word = vm.dict.get(i)
-            vm.io.output.print(w.getHeaderStr(vm.io))
+            vm.io.o.print(w.getHeaderStr(vm.io))
         }
-        vm.io.output.println(vm.io.grey(Word.HEADER_STR))
+        vm.io.o.println(vm.io.grey(Word.HEADER_STR))
     }
 
     /**  `hide` ( in:"name" -- : hides word )
@@ -170,7 +170,7 @@ class WWords(val vm: ForthVM) : WordClass {
     fun w_wordId() {
         val wn: Int = vm.dstk.pop()
         val w: Word = vm.dict.get(wn)
-        vm.io.output.print(w.name + " ")
+        vm.io.o.print(w.name + " ")
     }
 } // 5 ' .   ( n xt )
 //execute ( )      \ execute the xt of .

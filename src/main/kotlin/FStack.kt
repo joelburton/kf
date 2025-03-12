@@ -81,7 +81,7 @@ class FStack(
         val str = (endAt downTo sp).joinToString(separator = " ") {
             vm.mem[it].toString()
         }
-        vm.io.output.print("<${size}> ${str}")
+        vm.io.o.print("<${size}> ${str}")
     }
 
     /**  Print a verbose stack dump. */
@@ -89,18 +89,18 @@ class FStack(
         if (D) vm.dbg(4, "$name: dump")
         for (i in 0..<size) {
             val v = getAt(i)
-            vm.io.output.printf("%s[%x] = 0x%08x (%4d)", name, i, v, v)
+            vm.io.o.printf("%s[%x] = 0x%08x (%4d)", name, i, v, v)
             if (v in (0x20..0x7e)) {
-                vm.io.output.printf(" '%c'", v.toChar())
+                vm.io.o.printf(" '%c'", v.toChar())
             }
             if (i == size - 1)
-                vm.io.output.print(" <- top")
-            vm.io.output.println()
+                vm.io.o.print(" <- top")
+            vm.io.o.println()
         }
     }
 
     fun popFrom(n: Int): Int {
-        if (D) vm.dbg("$name: popFrom $n")
+        if (D) vm.dbg(3, "$name: popFrom $n")
         if (n < 0 || n >= size) throw StackInvalid(name, n)
         val v = vm.mem[sp + n]
         for (i in n downTo 1) {

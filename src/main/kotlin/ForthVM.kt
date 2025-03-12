@@ -3,9 +3,13 @@ package kf
 import kf.Word.Companion.noWord
 import java.util.*
 import kotlin.collections.HashMap
+import kotlin.time.TimeSource
 
 const val D = true;
 const val VERSION_STRING = "KPupForth 0.1.0"
+
+val Int.charRepr get() =
+    if (this in ' '.code..'~'.code) "'${this.toChar()}'" else ""
 
 
 enum class CellMeta {
@@ -21,16 +25,10 @@ enum class CellMeta {
     NumLit;
 
     fun getExplanation(vm: ForthVM, v: Int): String {
-        val generalFormat: String = String.format(
-            "%d $%x %s",
-            v,
-            v,
-            if (v >= ' '.code && v <= '~'.code) "'" + v.toChar() + "'" else ""
-        )
         return when (this) {
             WordNum -> vm.dict.get(v).name
-            JumpLoc -> kotlin.String.format("--> 0x%04x", v)
-            CellMeta.Unknown, CellMeta.NumLit -> generalFormat
+            JumpLoc -> "  --> ${v.addr}"
+            Unknown, NumLit -> "$v ${v.hex} ${v.charRepr}"
             StringLit -> "$v (string length)"
 //        CellMeta.reg_base -> generalFormat+" (reg: base)"
 //        CellMeta.reg_verbosity -> generalFormat+" (reg: verbosity)"
@@ -53,12 +51,12 @@ class ForthColdStop(msg: String) : RuntimeException(msg)
 /**  End-of-file detected (exists current interpreter, both interactive and
  * non-interactive)
  */
-class ForthEOF : java.lang.RuntimeException()
+class ForthEOF : RuntimeException()
 
 /**  When raised, will quit the interpreter *if* this is a non-interactive
  * interpreter (like when reading a file with `include`)
  */
-class ForthQuitNonInteractive : java.lang.RuntimeException()
+class ForthQuitNonInteractive : RuntimeException()
 
 /**  Might be an invalid number or missing word.
  */
@@ -125,6 +123,8 @@ class ForthVM(
     val rstk = FStack(this, "rstk", memConfig.rstackStart, memConfig.rstackEnd)
     val lstk = FStack(this, "lstk", memConfig.lstackStart, memConfig.lstackEnd)
     val modulesLoaded: HashMap<String, WordClass> = HashMap()
+    val timeSource = TimeSource.Monotonic
+    val timeMarkCreated = timeSource.markNow()
 
     fun reboot(includePrimitives: Boolean = true) {
         if (D) dbg(1, "vm.reboot")
@@ -133,8 +133,8 @@ class ForthVM(
         val curTermWidth = if (termWidth == 0) 80 else termWidth
 
         // Clear memory
-        for (i in 0..memConfig.upperBound) mem[i] = 0
-        for (i in 0..memConfig.upperBound) cellMeta[i] = CellMeta.Unknown
+        mem.fill(0)
+        cellMeta.fill(CellMeta.Unknown)
 
         dict.reset()
         for (i in mem.indices) mem[i] = 0
@@ -170,7 +170,7 @@ class ForthVM(
         addInterpreterCode(memConfig.codeStart)
 
         if (verbosity > 0) {
-            io.output.println(io.green("\nWelcome to ${VERSION_STRING}\n"))
+            io.o.println(io.green("\nWelcome to ${VERSION_STRING}\n"))
         }
     }
 
@@ -217,7 +217,7 @@ class ForthVM(
     /**  Read in a primitive class dynamically
      */
     fun readPrimitiveClass(name: String) {
-        if (D) dbg(3, "vm.readPrimitiveClass: %s", name)
+        if (D) dbg(3, "vm.readPrimitiveClass: $name")
         try {
             val cls: Class<*> = Class.forName(name)
             val mod = cls.getConstructor(ForthVM::class.java)
@@ -242,7 +242,7 @@ class ForthVM(
      * and will safely check for it in the dictionary.
      */
     fun appendWord(s: String) {
-        if (D) dbg(3, "vm.appendWord: %s", s)
+        if (D) dbg(3, "vm.appendWord: $s")
         val wn = dict.getNum(s)
         appendCode(wn, CellMeta.WordNum)
     }
@@ -401,7 +401,7 @@ class ForthVM(
      * However, words that are "immediate-mode" will execute.
      */
     fun interpCompile(token: String) {
-        if (D) dbg(3, "vm.compile: %s", token)
+        if (D) dbg(3, "vm.compile: $token")
         val w: Word? = dict.getSafeChkRecursion(token, io)
 
         if (w != null) {
@@ -429,7 +429,7 @@ class ForthVM(
      */
 
     fun interpInterpret(token: String) {
-        if (D) dbg(3, "vm.execute: %s", token)
+        if (D) dbg(3, "vm.execute: $token")
         val w: Word? = dict.getSafe(token)
         if (w != null) {
             if (w.compO) throw InvalidState("Compile-only: " + w.name)
@@ -499,25 +499,19 @@ class ForthVM(
         appendJump("branch", startAddr + 8)
     }
 
-    fun dbg(lvl: Int, format: String, vararg args: Any?) {
+    fun dbg(lvl: Int, s: String) {
         if (verbosity < lvl) return
         when (lvl) {
-            0, 1, 2 -> io.output.printf(io.yellow(format + "\n"), *args)
-            else -> io.output.printf(io.grey(format + "\n"), *args)
+            0, 1, 2 -> io.o.println(io.yellow(s))
+            else -> io.o.printf(io.grey(s))
         }
     }
 
-    fun dbg(format: String, vararg args: Any?) = dbg(2, format, *args)
-
     fun getToken(): String {
         if (D) dbg(3, "getToken")
-        if (interpScanner != null && interpScanner!!.hasNext()) {
-            interpToken = interpScanner!!.next()
-            return interpToken!!
-        } else {
-            interpToken = ""
-            throw ForthMissingToken()
-        }
+        interpToken = interpScanner?.takeIf { sc -> sc.hasNext() }?.next()
+            ?: throw ForthMissingToken()
+        return interpToken!!
     }
 
     companion object {

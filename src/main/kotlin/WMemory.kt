@@ -100,23 +100,19 @@ class WMemory(val vm: ForthVM) : WordClass {
         val end = start + len - 1
         var i = start - (start % 4)
         while (i < start + len) {
-            val a = if (i >= start && i <= end)
-                String.format("%08x", vm.mem.get(i))
-            else
-                "        "
-            val b = if (i + 1 >= start && i + 1 <= end)
-                String.format("%08x", vm.mem.get(i + 1))
-            else
-                "        "
-            val c = if (i + 2 >= start && i + 2 <= end)
-                String.format("%08x", vm.mem.get(i + 2))
-            else
-                "        "
-            val d = if (i + 3 >= start && i + 3 <= end)
-                String.format("%08x", vm.mem.get(i + 3))
-            else
-                "        "
-            vm.io.output.printf("0x%04x = %s %s %s %s\n", i, a, b, c, d)
+            val a = if (i >= start && i <= end) vm.mem[i].hex8
+            else "        "
+
+            val b = if (i + 1 >= start && i + 1 <= end) vm.mem[i+1].hex8
+            else "        "
+
+            val c = if (i + 2 >= start && i + 2 <= end) vm.mem[i+2].hex8
+            else "        "
+
+            val d = if (i + 3 >= start && i + 3 <= end) vm.mem[i+3].hex8
+            else "        "
+
+            vm.io.o.println("${i.addr} = $a $b $c $d")
             i += 4
         }
     }
@@ -131,6 +127,6 @@ class WMemory(val vm: ForthVM) : WordClass {
 
     fun w_question() {
         val v: Int = vm.mem.get(vm.dstk.pop())
-        vm.io.output.print(v.toString(vm.base.coerceIn(2, 36)) + " ")
+        vm.io.o.print(v.toString(vm.base.coerceIn(2, 36)) + " ")
     }
 }

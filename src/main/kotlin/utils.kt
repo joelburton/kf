@@ -1,4 +1,8 @@
+@file:OptIn(ExperimentalStdlibApi::class)
+
 package kf
+
+import kotlin.text.HexFormat
 
 /**  Try a word as an integer:
  *
@@ -52,4 +56,16 @@ fun String.toForthInt(radix: Int): Int {
     } catch (e: NumberFormatException) {
         throw ParseError(s)
     }
+}
+
+val DollarHex = HexFormat { number { prefix = "$" } }
+val DollarBriefHex = HexFormat {
+    number { prefix = "$"; removeLeadingZeros = true }
+}
+val Int.hex8: String get() = this.toHexString(DollarHex)
+val Int.hex: String get() = this.toHexString(DollarBriefHex)
+val Int.addr: String get() = this.toShort().toHexString(DollarHex)
+val Int.pad10: String get(): String {
+    val s = this.toString();
+    return s.padStart(10, ' ');
 }

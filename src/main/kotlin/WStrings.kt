@@ -14,13 +14,12 @@ class WStrings(val vm: ForthVM) : WordClass {
 
 
     fun w_type() {
-        val len: Int = vm.dstk.pop()
-        val addr: Int = vm.dstk.pop()
-        val sb = StringBuilder()
-        for (i in 0..<len) {
-            sb.append(vm.mem.get(addr + i) as Char)
-        }
-        vm.io.output.print(sb.toString())
+        val len = vm.dstk.pop()
+        val addr = vm.dstk.pop()
+        val output = (0 until len)
+            .map { vm.mem[addr + it].toChar() }
+            .joinToString("")
+        vm.io.o.print(output)
     }
 
     fun w_sQuote() {

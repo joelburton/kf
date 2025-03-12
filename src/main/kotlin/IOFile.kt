@@ -6,12 +6,13 @@ import java.io.InputStreamReader
 
 /**  Works generally like a console, except input comes from the file.
  */
-class IOFile(filePath: String) : IOBase() {
-    override val input: BufferedReader
+class IOFile(path: String) : IOBase() {
+    val input: BufferedReader
     override val isInteractive = false
 
     init {
-        val inStream = FileInputStream(filePath)
-        input = BufferedReader(InputStreamReader(inStream))
+        input = BufferedReader(InputStreamReader(FileInputStream(path)))
     }
+
+    override fun readLine(): String? = input.readLine()
 }

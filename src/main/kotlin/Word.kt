@@ -1,5 +1,6 @@
 package kf
 
+typealias CallableWord = (ForthVM) -> Unit
 
 class Word(
     val name:String,
@@ -11,7 +12,7 @@ class Word(
     var interpO: Boolean = false,
     var recursive: Boolean = false,
     var wn: Int = 0,
-    var callable: (ForthVM) -> Unit,
+    var callable: CallableWord,
 ) {
    companion object {
        const val NO_ADDR: Int = 0xffff
@@ -42,8 +43,8 @@ class Word(
             if (interpO) "IO" else "",
             if (recursive) "RE" else "",
             if (hidden) "HI" else "",
-            if (cpos != NO_ADDR) String.format("$%04x", cpos) else "",
-            if (dpos != NO_ADDR) String.format("$%04x", cpos) else ""
+            if (cpos != NO_ADDR) cpos.addr else "",
+            if (dpos != NO_ADDR) dpos.addr else ""
         )
     }
 }

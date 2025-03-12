@@ -12,15 +12,12 @@ import java.io.PrintStream
  */
 class IOGateway : IOBase() {
     val bos = ByteArrayOutputStream()
-    override val output: PrintStream = PrintStream(bos)
-    override val err: PrintStream = output
-    override var input: BufferedReader = BufferedReader(CharArrayReader(
-        CharArray(0)
-    ))
+    override val o: PrintStream = PrintStream(bos)
+    override val err: PrintStream = o
+    var input: BufferedReader = BufferedReader(
+        CharArrayReader(CharArray(0)))
 
-    override fun readLine(): String? {
-        return input.readLine()
-    }
+    override fun readLine() = input.readLine()
 
     fun resetAndLoadCommands(cmds: String) {
         bos.reset()

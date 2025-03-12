@@ -136,7 +136,6 @@ class WMathLogic(val vm: ForthVM) : WordClass {
     /**  ( n -- n-1  : decrement ) */
     fun w_dec() {
         val v = vm.dstk.pop() - 1
-        vm.dbg("w_dec: val=%d", v)
         vm.dstk.push(v)
     }
 

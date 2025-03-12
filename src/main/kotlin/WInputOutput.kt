@@ -37,7 +37,7 @@ class WInputOutput(val vm: ForthVM) : WordClass {
         val hi: Int = vm.dstk.pop()
         val lo: Int = vm.dstk.pop()
         val combined = (hi.toLong() shl 32) or (lo.toLong() and 0xFFFFFFFFL)
-        vm.io.output.print(combined.toString(vm.base.coerceIn(2, 36)) + " ")
+        vm.io.o.print(combined.toString(vm.base.coerceIn(2, 36)) + " ")
     }
 
     private fun w_page() {
@@ -45,18 +45,18 @@ class WInputOutput(val vm: ForthVM) : WordClass {
     }
 
     private fun w_decimalDot() {
-        vm.io.output.print(vm.dstk.pop().toString(10) + " ")
+        vm.io.o.print(vm.dstk.pop().toString(10) + " ")
     }
 
     private fun w_hexDot() {
-        vm.io.output.print("$" + vm.dstk.pop().toString(16) + " ")
+        vm.io.o.print("$" + vm.dstk.pop().toString(16) + " ")
     }
 
 
     private fun w_char() {
         val token: String = vm.getToken()
         if (token.length != 1) throw ForthError("Char literal must be one character")
-        vm.dstk.push(vm.interpToken!![0].code)
+        vm.dstk.push(token[0].code)
     }
 
     // immediate-mode version of char, writing to code
@@ -71,32 +71,31 @@ class WInputOutput(val vm: ForthVM) : WordClass {
             ?: throw ParseError("String literal not closed")
         // get rid of leading single space and terminating quote
         s = s.substring(1, s.length - 1)
-        vm.io.output.print(s)
+        vm.io.o.print(s)
     }
 
 
     /**  ( x -- out:"" ) Pop & print top of stack. */
     fun w_dot() {
-        vm.io.output.print(
+        vm.io.o.print(
             vm.dstk.pop().toString(vm.base.coerceIn(2, 36)) + " "
         )
     }
 
     /**  ( -- out:"\n" ) Emit newline. */
     fun w_cr() {
-        vm.io.output.println()
+        vm.io.o.println()
     }
 
     /**  ( n -- out:"char-of-n" ) */
     fun w_emit() {
         val c = vm.dstk.pop()
-        vm.dbg("w_emit: " + c.toChar())
-        vm.io.output.printf("%c", c)
+        vm.io.o.printf("%c", c)
     }
 
     /**  ( -- out:" " ) */
     fun w_space() {
-        vm.io.output.print(" ")
+        vm.io.o.print(" ")
     }
 
     fun w_newline() {

@@ -18,7 +18,7 @@ class WRegisters(val vm: ForthVM) : WordClass {
         Word("r:$name") { _ -> register(name, addr) }
 
     private fun register(name: String, addr: Int) {
-        if (D) vm.dbg("w_reg-${name}")
+        if (D) vm.dbg(3, "w_reg-${name}")
         vm.dstk.push(addr)
     }
 }

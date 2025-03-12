@@ -1,6 +1,5 @@
 package kf
 
-import java.io.FileNotFoundException
 import java.util.Scanner
 
 /** The interpreter primitives.
@@ -38,9 +37,9 @@ class WInterp(val vm: ForthVM): WordClass {
         if (vm.verbosity >= -1) {
             val stk_len: Int = vm.dstk.size
             if (vm.isInterpretingState) {
-                vm.io.output.print(vm.io.green("($stk_len) >>> "))
+                vm.io.o.print(vm.io.green("($stk_len) >>> "))
             } else {
-                vm.io.output.print(vm.io.green("($stk_len) ... "))
+                vm.io.o.print(vm.io.green("($stk_len) ... "))
             }
         }
     }
@@ -115,7 +114,7 @@ class WInterp(val vm: ForthVM): WordClass {
 
         try {
             vm.io = IOFile(path)
-        } catch (e: FileNotFoundException) {
+        } catch (e: FileSystemException) {
             throw ForthError("No such file: $path")
         }
 
@@ -140,14 +139,6 @@ class WInterp(val vm: ForthVM): WordClass {
     }
 
     // ************************************************************ useful tools
-    /**  `state` ( -- addr : gets address of interpreter-state register )
-     *
-//     * This is very internal, but useful for writing Forth code for compiling
-//     * words, writing new control words, etc. */
-//    private fun w_stateReg() {
-//        if (D) vm.dbg("w_stateReg")
-//        vm.dstk.push(ForthmVM.REG_INTERP_STATE)
-//    }
 
     /**  `[` ( -- : enter immediate mode immediately )
      *
