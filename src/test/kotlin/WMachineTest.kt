@@ -40,7 +40,8 @@ class WMachineTest : ForthTestCase() {
 
     @Test
     fun w_branch() {
-        eval(": test 3 dup . 1- 0= if return then branch 10 ;")
+        vm.cend = 0x100
+        eval(": test 3 dup . 1- dup 0= if return then branch [ 0x102 ] literal ;")  // FIXME : need a real 102, not a lit one
         see("test")
         TODO()
     }

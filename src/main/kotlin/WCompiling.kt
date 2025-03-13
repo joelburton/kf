@@ -47,6 +47,7 @@ class WCompiling(val vm: ForthVM) : WordClass {
     fun w_semicolon() {
         val w: Word = vm.dict.last
         vm.appendWord("return")
+        w.cposEnd = vm.cend
         vm.dict.currentlyDefining = null
         vm.interpState = ForthVM.INTERP_STATE_INTERPRETING
     }

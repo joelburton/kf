@@ -26,10 +26,10 @@ class WTools(val vm: ForthVM) : WordClass {
             } else if (w.dpos != Word.NO_ADDR) {
                 _dump(vm, w.dpos, simple)
             } else {
-                val ret_n: Int = vm.dict.getNum("return")
+//                val ret_n: Int = vm.dict.getNum("return")
                 for (k in w.cpos..<vm.cend) {
                     _dump(vm, k, simple)
-                    if (vm.mem.get(k) == ret_n) break
+                    if (w.cposEnd == k) break
                 }
             }
         }

@@ -5,6 +5,7 @@ typealias CallableWord = Word.(ForthVM) -> Unit
 class Word(
     val name:String,
     var cpos: Int = NO_ADDR,
+    var cposEnd: Int = NO_ADDR,
     var dpos: Int = NO_ADDR,
     var hidden: Boolean = false,
     var imm: Boolean = false,

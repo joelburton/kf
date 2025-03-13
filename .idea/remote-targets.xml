@@ -15,6 +15,43 @@
           </config>
         </ContributedStateBase>
       </target>
+      <target name="bellsoft/liberica-openjdk-alpine:latest" type="docker" uuid="b26e397b-aab0-49d8-aa84-c7fc94eb7cd3">
+        <config>
+          <option name="targetPlatform">
+            <TargetPlatform />
+          </option>
+          <option name="buildNotPull" value="false" />
+          <option name="pullImageConfig">
+            <PullImageConfig>
+              <option name="tagToPull" value="bellsoft/liberica-openjdk-alpine:latest" />
+            </PullImageConfig>
+          </option>
+        </config>
+        <ContributedStateBase type="JavaLanguageRuntime">
+          <config>
+            <option name="agentFolder">
+              <VolumeState>
+                <option name="targetSpecificBits">
+                  <map>
+                    <entry key="mountAsVolume" value="false" />
+                  </map>
+                </option>
+              </VolumeState>
+            </option>
+            <option name="classpathFolder">
+              <VolumeState>
+                <option name="targetSpecificBits">
+                  <map>
+                    <entry key="mountAsVolume" value="false" />
+                  </map>
+                </option>
+              </VolumeState>
+            </option>
+            <option name="homePath" value="/usr/lib/jvm/jdk-23.0.2-bellsoft-aarch64" />
+            <option name="javaVersionString" value="23.0.2" />
+          </config>
+        </ContributedStateBase>
+      </target>
     </targets>
   </component>
 </project>

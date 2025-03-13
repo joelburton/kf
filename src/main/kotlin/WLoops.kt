@@ -62,7 +62,7 @@ class WLoops(val vm: ForthVM): WordClass {
 
     /**  loop  (limit start -- limit start R:addr  ) */
     fun w_do() {
-        vm.appendWord("do-impl")
+        vm.appendWord("(do)")
         vm.rstk.push(vm.cend) // start of do loop, so end can come back to us
 
         // a jump just to jump over the next jump
@@ -89,7 +89,7 @@ class WLoops(val vm: ForthVM): WordClass {
     fun w_loop() {
         vm.appendLit(1)
         val bwref: Int = vm.rstk.pop() // beginning of loop
-        vm.appendJump("loop-impl", bwref + 4)
+        vm.appendJump("(loop)", bwref + 4)
 
         // fix jump-at-start (For leave)
         vm.mem[bwref + 3] = vm.cend
@@ -98,7 +98,7 @@ class WLoops(val vm: ForthVM): WordClass {
     /**  +loop */
     fun w_plusLoop() {
         val bwref: Int = vm.rstk.pop() // beginning of loop
-        vm.appendJump("loop-impl", bwref + 4)
+        vm.appendJump("(loop)", bwref + 4)
 
         // fix jump-at-start (For leave)
         vm.mem[bwref + 3] = vm.cend

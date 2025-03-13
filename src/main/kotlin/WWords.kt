@@ -147,10 +147,11 @@ class WWords(val vm: ForthVM) : WordClass {
             newName,
             callable = wCall.callable,
             cpos = vm.cend,
+            cposEnd = vm.cend + 4,
             dpos = Word.NO_ADDR
         )
         vm.dict.add(w)
-        vm.appendLit(w.wn!!)
+        vm.appendLit(w.wn)
         vm.appendWord("wn-forget")
         vm.appendWord("return")
     }
