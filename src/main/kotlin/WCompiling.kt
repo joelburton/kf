@@ -1,5 +1,7 @@
 package kf
 
+import com.github.ajalt.mordant.terminal.muted
+
 class WCompiling(val vm: ForthVM) : WordClass {
     override val name = "Compiling"
 
@@ -123,7 +125,7 @@ class WCompiling(val vm: ForthVM) : WordClass {
         if (w.imm) {
             vm.dict.last.callable = w.callable
         } else {
-            vm.io.quiet("??? using `postpone` with non-immediate word")
+            vm.io.muted("??? using `postpone` with non-immediate word")
         }
     }
 

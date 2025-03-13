@@ -14,6 +14,7 @@ dependencies {
     implementation("org.jetbrains.kotlin:kotlin-stdlib")
     implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.6.2")
     implementation("com.github.ajalt.mordant:mordant:3.0.2")
+    implementation("com.github.ajalt.clikt:clikt:5.0.3")
 }
 
 tasks.test { useJUnitPlatform() }

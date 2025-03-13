@@ -1,75 +1,19 @@
 package kf
 
+
+import com.github.ajalt.mordant.rendering.TextColors.*
+import com.github.ajalt.mordant.terminal.StandardTerminalInterface
+import com.github.ajalt.mordant.terminal.Terminal
+import com.github.ajalt.mordant.terminal.TerminalInterface
+import com.github.ajalt.mordant.terminal.danger
+import com.github.ajalt.mordant.terminal.warning
 import java.util.*
-import kotlin.collections.HashMap
 import kotlin.time.TimeSource
 
-const val D = true
-const val VERSION_STRING = "KPupForth 0.1.0"
-
-@Suppress("KotlinConstantConditions")
-val Int.charRepr get() =
-    if (this in ' '.code..'~'.code) "'${this.toChar()}'" else ""
-
-fun Int.numToStr(base: Int): String = this.toString(base.coerceIn(2, 36))
-
-
-
-enum class CellMeta {
-    Unknown,
-    WordNum,
-    JumpLoc,
-
-    //    reg_base,
-//    reg_verbosity,
-//    reg_cend,
-//    reg_dend,
-    StringLit,
-    NumLit;
-
-    fun getExplanation(vm: ForthVM, v: Int): String {
-        return when (this) {
-            WordNum -> vm.dict[v].name
-            JumpLoc -> "  --> ${v.addr}"
-            Unknown, NumLit -> "$v ${v.hex} ${v.charRepr}"
-            StringLit -> "$v (string length)"
-//        CellMeta.reg_base -> generalFormat+" (reg: base)"
-//        CellMeta.reg_verbosity -> generalFormat+" (reg: verbosity)"
-//        CellMeta.reg_cend -> generalFormat+" (reg: cend)"
-//        CellMeta.reg_dend -> generalFormat+" (reg: dend)"
-        }
-    }
-}
-
-
-open class ForthError(msg: String) : Exception(msg)
-class ForthMissingToken() : ForthError("Missing token")
-class ForthWarning(msg: String) : ForthError(msg)
-
-class ForthBrk(msg: String) : RuntimeException(msg)
-class ForthQuit(msg: String) : RuntimeException(msg)
-class ForthBye(msg: String) : RuntimeException(msg)
-class ForthColdStop(msg: String) : RuntimeException(msg)
-
-/**  End-of-file detected (exists current interpreter, both interactive and
- * non-interactive)
- */
-class ForthEOF : RuntimeException()
-
-/**  When raised, will quit the interpreter *if* this is a non-interactive
- * interpreter (like when reading a file with `include`)
- */
-class ForthQuitNonInteractive : RuntimeException()
-
-/**  Might be an invalid number or missing word.
- */
-class ParseError(message: String) : ForthError("Parse error: $message")
-
-class InvalidState(message: String) : ForthError("Invalid state: $message")
 
 class ForthVM(
     val memConfig: IMemConfig = SmallMemConfig,
-    var io: IOBase = IOTerminal(),
+    var io: Terminal = Terminal(),
     val mem: IntArray = IntArray(memConfig.upperBound + 1),
 ) {
 
@@ -175,7 +119,7 @@ class ForthVM(
         addInterpreterCode(memConfig.codeStart)
 
         if (verbosity > 0) {
-            io.o.println(io.green("\nWelcome to ${VERSION_STRING}\n"))
+            io.println(brightGreen("\nWelcome to ${VERSION_STRING}\n"))
         }
     }
 
@@ -294,11 +238,11 @@ class ForthVM(
             } catch (e: ForthQuit) {
                 // For non-interactive (like a file), needs to stop reading all
                 // files --- so rethrow error
-                if (!io.isInteractive) throw e
+                if (io.terminalInterface !is StandardTerminalInterface) throw e  // FIXME: should check interactive
                 // otherwise, it just resets call stack
                 rstk.reset()
             } catch (e: ForthWarning) {
-                io.warn("WARNING: " + e.message)
+                io.warning("WARNING: " + e.message)
             } catch (e: ForthError) {
                 // Any normal error will be ForthError (or a subclass of it);
                 // other errors will continue upward. These will be
@@ -307,12 +251,12 @@ class ForthVM(
                 //
                 // For ForthErrors, just show the user a message, reset
                 // the machine (empty stacks, etc.), and let them continue.
-                io.error("ERROR: " + e.message)
+                io.danger("ERROR: " + e.message)
                 if (verbosity >= 1)
                     e.printStackTrace()
                 reset()
             } catch (e: ForthBrk) {
-                io.error("BRK: " + e.message)
+                io.danger("BRK: " + e.message)
                 e.printStackTrace()
             }
         }
@@ -490,8 +434,8 @@ class ForthVM(
     fun dbg(lvl: Int, s: String) {
         if (verbosity < lvl) return
         when (lvl) {
-            0, 1, 2 -> io.o.println(io.yellow(s))
-            else -> io.o.printf(io.grey(s))
+            0, 1, 2 -> io.println(yellow(s))
+            else -> io.println(gray(s))
         }
     }
 

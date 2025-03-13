@@ -1,6 +1,9 @@
 package kf
 
 import java.util.Scanner
+import com.github.ajalt.mordant.rendering.TextColors.green
+import com.github.ajalt.mordant.rendering.TextStyles.bold
+
 
 /** The interpreter primitives.
  *
@@ -34,9 +37,9 @@ class WInterp(val vm: ForthVM): WordClass {
         if (vm.verbosity >= -1) {
             val stk_len: Int = vm.dstk.size
             if (vm.isInterpretingState) {
-                vm.io.o.print(vm.io.green("($stk_len) >>> "))
+                vm.io.print(bold(green("($stk_len) >>> ")))
             } else {
-                vm.io.o.print(vm.io.green("($stk_len) ... "))
+                vm.io.print(bold(green("($stk_len) ... ")))
             }
         }
     }
@@ -45,7 +48,8 @@ class WInterp(val vm: ForthVM): WordClass {
      *
      * This pushes 0 for eof-detected, and 1 otherwise */
     fun w_interpRefill() {
-        vm.interpLineBuf = vm.io.readLine()
+        vm.interpLineBuf = vm.io.readLineOrNull(false)
+        if (vm.interpLineBuf == null) { throw ForthEOF() }
         if (vm.interpScanner != null) {
             vm.interpScanner!!.close()
             vm.interpScanner = null

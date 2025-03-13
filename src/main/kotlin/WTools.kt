@@ -19,10 +19,10 @@ class WTools(val vm: ForthVM) : WordClass {
 
     companion object {
         fun _see(vm: ForthVM, w: Word, simple: Boolean) {
-            vm.io.o.print(w.getHeaderStr(vm.io))
+            vm.io.print(w.getHeaderStr())
 
             if (w.cpos == Word.NO_ADDR) {
-                vm.io.o.println(" (built-in, cannot show code)")
+                vm.io.println(" (built-in, cannot show code)")
             } else if (w.dpos != Word.NO_ADDR) {
                 _dump(vm, w.dpos, simple)
             } else {
@@ -39,7 +39,7 @@ class WTools(val vm: ForthVM) : WordClass {
             val exp = vm.cellMeta[k].getExplanation(vm, v)
                 .apply { padEnd(20 - length) }
             val name = vm.dict.getByMem(k)?.let { "[word: ${it.name}]" } ?: ""
-            vm.io.o.println(
+            vm.io.println(
                 if (simple) "${k.addr} = $exp $name"
                 else "${k.addr} = ${v.hex8} (${v.pad10}) $exp $name"
             )

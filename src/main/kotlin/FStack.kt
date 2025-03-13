@@ -81,7 +81,7 @@ class FStack(
         val str = (endAt downTo sp).joinToString(separator = " ") {
             vm.mem[it].toString()
         }
-        vm.io.o.print("<${size}> ${str}")
+        vm.io.print("<${size}> ${str}")
     }
 
     /**  Print a verbose stack dump. */
@@ -89,13 +89,13 @@ class FStack(
         if (D) vm.dbg(4, "$name: dump")
         for (i in 0..<size) {
             val v = getAt(i)
-            vm.io.o.printf("%s[%x] = 0x%08x (%4d)", name, i, v, v)
+            vm.io.print("$name[$i] = ${v.hex8} (${v.pad10})")
             if (v in (0x20..0x7e)) {
-                vm.io.o.printf(" '%c'", v.toChar())
+                vm.io.print(" ${v.charRepr}")
             }
             if (i == size - 1)
-                vm.io.o.print(" <- top")
-            vm.io.o.println()
+                vm.io.print("   <- top")
+            vm.io.println()
         }
     }
 

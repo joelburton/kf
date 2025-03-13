@@ -1,16 +1,22 @@
+import com.github.ajalt.mordant.rendering.AnsiLevel
+import com.github.ajalt.mordant.terminal.Terminal
 import kf.CallableWord
 import kf.ForthEOF
 import kf.ForthVM
 import kf.IOGateway
+import kf.TerminalTestInterface
 import kf.WTools
+import kf.recorder
 import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
 
 val dummyFunc: CallableWord = { it.ip = 2 }
 
 open class ForthTestCase {
-    val testIO = IOGateway()
-    val vm = ForthVM(io = testIO)
+    val testIO = TerminalTestInterface()
+    val vm = ForthVM(io = Terminal(
+        ansiLevel = AnsiLevel.NONE,
+        terminalInterface = testIO))
 
     init {
         vm.verbosity = -2
@@ -18,7 +24,7 @@ open class ForthTestCase {
     }
 
     fun eval(s: String): String {
-        testIO.resetAndLoadCommands(s)
+        testIO.addInputs(s)
         with(vm) {
             try {
                 while (true) {
@@ -26,14 +32,14 @@ open class ForthTestCase {
                     dict[wn](this)
                 }
             } catch (_: ForthEOF) {
-                return testIO.getPrinted()
+                return recorder.output()
             }
         }
     }
 
     fun see(name: String) {
         WTools._see(vm, vm.dict[name], false)
-        print((vm.io as IOGateway).getPrinted())
+        print(getOutput())
     }
 
     fun assertDStack(vararg items: Int) {
@@ -46,6 +52,12 @@ open class ForthTestCase {
     }
 
     fun assertPrinted(s: String) {
-        assertEquals(s, testIO.getPrinted())
+        assertEquals(s, getOutput())
+    }
+
+    fun getOutput(): String {
+        return recorder.output().also {
+            recorder.clearOutput()
+        }
     }
 }

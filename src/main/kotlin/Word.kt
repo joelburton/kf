@@ -1,5 +1,7 @@
 package kf
 
+import com.github.ajalt.mordant.rendering.TextColors.*
+
 typealias CallableWord = Word.(ForthVM) -> Unit
 
 class Word(
@@ -34,11 +36,11 @@ class Word(
     }
 
     /**  Useful for debugging and to support `w_see` and `w_simple-see`. */
-    fun getHeaderStr(io: IOBase): String {
+    fun getHeaderStr(): String {
         return java.lang.String.format(
             "%s %-32s %-2s %-2s %-2s %-2s %-2s C:%-5s D:%-5s\n",
-            io.grey(String.format("(%3d)", wn)),
-            io.yellow(name),
+            gray(String.format("(%3d)", wn)),
+            yellow(name),
             if (imm) "IM" else "",
             if (compO) "CO" else "",
             if (interpO) "IO" else "",

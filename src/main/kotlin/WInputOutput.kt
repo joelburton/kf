@@ -1,7 +1,6 @@
 package kf
 
 
-
 class WInputOutput(val vm: ForthVM) : WordClass {
     override val name = "InputOutput"
     override val primitives: Array<Word> = arrayOf(
@@ -33,31 +32,34 @@ class WInputOutput(val vm: ForthVM) : WordClass {
         // word : get a word, store "somewhere", return addr to
         //   or parse? should be in interpreter
 
-        )
+    )
 
     /** `cr` `( -- out:"\n": print newline )` */
 
     fun w_cr() {
-        vm.io.o.println()
+        vm.io.println()
     }
 
     /** `emit` `( n -- out:"char-of-n" )` */
 
     fun w_emit() {
         val c = vm.dstk.pop()
-        vm.io.o.printf("%c", c)
+        vm.io.print(c.toChar().toString())
     }
 
     /** `space` `( -- out:" " : print space )` */
 
     fun w_space() {
-        vm.io.o.print(" ")
+        vm.io.print(" ")
     }
 
     /** `page` `( -- : clear screen )` */
 
     private fun w_page() {
-        vm.io.clearScreen()
+        vm.io.cursor.move {
+            setPosition(0, 0)
+            clearScreen()
+        }
     }
 
 
@@ -93,7 +95,7 @@ class WInputOutput(val vm: ForthVM) : WordClass {
     /** `.`  `( x -- out:"" : pop & print top of stack )` */
 
     fun w_dot() {
-        vm.io.o.print("${vm.dstk.pop().numToStr(vm.base)} ")
+        vm.io.print("${vm.dstk.pop().numToStr(vm.base)} ")
     }
 
     /** `base` `( -- addr : get address of register base )`
@@ -134,13 +136,13 @@ class WInputOutput(val vm: ForthVM) : WordClass {
     /** `dec.` `( n -- out:"n" : print n in decimal, regardless of base )` */
 
     private fun w_decDot() {
-        vm.io.o.print(vm.dstk.pop().toString(10) + " ")
+        vm.io.print(vm.dstk.pop().toString(10) + " ")
     }
 
     /** `hex.` `( n -- out:"hex(n)" : print n in hex, regardless of base )` */
 
     private fun w_hexDot() {
-        vm.io.o.print("$" + vm.dstk.pop().toString(16) + " ")
+        vm.io.print("$" + vm.dstk.pop().toString(16) + " ")
     }
 
 

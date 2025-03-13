@@ -107,7 +107,7 @@ class FStackTest : ForthTestCase() {
         stk.push(1)
         stk.push(2)
         stk.simpleDump()
-        assertEquals("<2> 1 2", testIO.getPrinted())
+        assertEquals("<2> 1 2", getOutput())
     }
 
     @Test
@@ -118,12 +118,12 @@ class FStackTest : ForthTestCase() {
         stk.push(2)
         stk.dump()
         assertEquals("""
-myStack[0] = 0x00000001 (   1)
-myStack[1] = 0x000000ff ( 255)
-myStack[2] = 0x00000041 (  65) 'A'
-myStack[3] = 0x00000002 (   2) <- top
+myStack[0] = ${'$'}00000001 (         1)
+myStack[1] = ${'$'}000000ff (       255)
+myStack[2] = ${'$'}00000041 (        65) 'A'
+myStack[3] = ${'$'}00000002 (         2)   <- top
 
-        """.trimIndent(), testIO.getPrinted())
+        """.trimIndent(), getOutput())
     }
 
     @Test

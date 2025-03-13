@@ -1,5 +1,8 @@
 package kf
 
+import com.github.ajalt.mordant.terminal.Terminal
+import com.github.ajalt.mordant.terminal.muted
+
 class WordNotFoundException(msg: String) : Exception(msg)
 class DictFullError() : Exception("Dictionary full")
 
@@ -54,11 +57,11 @@ class Dict(val vm: ForthVM, val capacity: Int = 1024)  {
 
     /**  Get Word by name (null for not found)
      */
-    fun getSafeChkRecursion(name: String?, io: IOBase): Word? {
+    fun getSafeChkRecursion(name: String?, io: Terminal): Word? {
         for (w in words.asReversed()) {
             if (w.name.equals(name, ignoreCase = true)) {
                 if (currentlyDefining !== w || w.recursive) return w
-                else io.quiet(
+                else io.muted(
                     "Skipping currently-defining word because it isn't"
                             + " recursive"
                 )

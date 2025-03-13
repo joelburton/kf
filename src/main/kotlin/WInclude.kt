@@ -1,5 +1,7 @@
 package kf
 
+import com.github.ajalt.mordant.terminal.Terminal
+
 class WInclude(val vm: ForthVM) : WordClass {
     override val name = "Include"
     override val primitives = arrayOf(
@@ -37,11 +39,11 @@ class WInclude(val vm: ForthVM) : WordClass {
     fun w_include() {
         val path = vm.getToken()
 
-        val prevIO: IOBase = vm.io
+        val prevIO: Terminal = vm.io
         val prevVerbosity: Int = vm.verbosity
 
         try {
-            vm.io = IOFile(path)
+//            vm.io = IOFile(path)  // FIXME
         } catch (e: FileSystemException) {
             throw ForthError("No such file: $path")
         }

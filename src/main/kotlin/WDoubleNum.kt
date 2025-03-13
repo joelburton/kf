@@ -22,6 +22,6 @@ class WDoubleNum (val vm: ForthVM) : WordClass {
         val hi: Int = vm.dstk.pop()
         val lo: Int = vm.dstk.pop()
         val combined = (hi.toLong() shl 32) or (lo.toLong() and 0xFFFFFFFFL)
-        vm.io.o.print(combined.toString(vm.base.coerceIn(2, 36)) + " ")
+        vm.io.print(combined.toString(vm.base.coerceIn(2, 36)) + " ")
     }
 }

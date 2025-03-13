@@ -1,5 +1,7 @@
 package kf
 
+import com.github.ajalt.mordant.terminal.danger
+
 class WMachine(val vm: ForthVM): WordClass {
     override val name = "Machine"
     override val primitives: Array<Word> = arrayOf(
@@ -108,7 +110,7 @@ class WMachine(val vm: ForthVM): WordClass {
         s = s.substring(1, s.length - 1)
         val flag: Int = vm.dstk.pop()
         if (flag != 0) {
-            vm.io.error("ABORT: $s")
+            vm.io.danger("ABORT: $s")
             vm.reset()
         }
     }

@@ -1,5 +1,7 @@
 package kf
 
+import com.github.ajalt.mordant.rendering.TextColors.*
+
 class WWords(val vm: ForthVM) : WordClass {
     override val name = "Words"
     override val primitives: Array<Word> = arrayOf(
@@ -49,12 +51,12 @@ class WWords(val vm: ForthVM) : WordClass {
             val s: String = w.name + " "
             currLineLen += s.length
             if (currLineLen > width) {
-                vm.io.o.println()
+                vm.io.println()
                 currLineLen = s.length
             }
-            vm.io.o.print(s)
+            vm.io.print(s)
         }
-        vm.io.o.println()
+        vm.io.println()
     }
 
     /**  `.dict` ( -- : list all words with internal info )
@@ -62,9 +64,9 @@ class WWords(val vm: ForthVM) : WordClass {
     fun w_dotDict() {
         for (i in 0..<vm.dict.size) {
             val w: Word = vm.dict[i]
-            vm.io.o.print(w.getHeaderStr(vm.io))
+            vm.io.print(w.getHeaderStr())
         }
-        vm.io.o.println(vm.io.grey(Word.HEADER_STR))
+        vm.io.println(gray(Word.HEADER_STR))
     }
 
     /**  `hide` ( in:"name" -- : hides word )
@@ -171,7 +173,7 @@ class WWords(val vm: ForthVM) : WordClass {
     fun w_wordId() {
         val wn: Int = vm.dstk.pop()
         val w: Word = vm.dict[wn]
-        vm.io.o.print(w.name + " ")
+        vm.io.print(w.name + " ")
     }
 } // 5 ' .   ( n xt )
 //execute ( )      \ execute the xt of .

@@ -112,7 +112,7 @@ class WMemory(val vm: ForthVM) : WordClass {
             val d = if (i + 3 >= start && i + 3 <= end) vm.mem[i+3].hex8
             else "        "
 
-            vm.io.o.println("${i.addr} = $a $b $c $d")
+            vm.io.println("${i.addr} = $a $b $c $d")
             i += 4
         }
     }
@@ -127,6 +127,6 @@ class WMemory(val vm: ForthVM) : WordClass {
 
     fun w_question() {
         val v: Int = vm.mem.get(vm.dstk.pop())
-        vm.io.o.print(v.toString(vm.base.coerceIn(2, 36)) + " ")
+        vm.io.print(v.toString(vm.base.coerceIn(2, 36)) + " ")
     }
 }

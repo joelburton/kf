@@ -21,7 +21,7 @@ class WStrings(val vm: ForthVM) : WordClass {
         val output = (0 until len)
             .map { vm.mem[addr + it].toChar() }
             .joinToString("")
-        vm.io.o.print(output)
+        vm.io.print(output)
     }
 
     fun w_sQuote() {
@@ -53,7 +53,7 @@ class WStrings(val vm: ForthVM) : WordClass {
             ?: throw ParseError("String literal not closed")
         // get rid of leading single space and terminating quote
         s = s.substring(1, s.length - 1)
-        vm.io.o.print(s)
+        vm.io.print(s)
     }
 
 

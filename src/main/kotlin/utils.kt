@@ -65,7 +65,4 @@ val DollarBriefHex = HexFormat {
 val Int.hex8: String get() = this.toHexString(DollarHex)
 val Int.hex: String get() = this.toHexString(DollarBriefHex)
 val Int.addr: String get() = this.toShort().toHexString(DollarHex)
-val Int.pad10: String get(): String {
-    val s = this.toString();
-    return s.padStart(10, ' ');
-}
+val Int.pad10: String get(): String = toString().padStart(10, ' ')
