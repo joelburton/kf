@@ -1,6 +1,7 @@
 package kf
 
 interface IMemConfig {
+    val name: String;
     val regsStart: Int;
     val regsEnd: Int;
     val codeStart: Int
@@ -14,9 +15,20 @@ interface IMemConfig {
     val lstackStart: Int
     val lstackEnd: Int
     val upperBound: Int
+
+    fun show() {
+        println("Registers: ${regsStart.addr}-${regsEnd.addr}")
+        println("Code: ${codeStart.addr}-${codeEnd.addr}")
+        println("Data: ${dataStart.addr}-${dataEnd.addr}")
+        println("Dstack: ${dstackStart.addr}-${dstackEnd.addr}")
+        println("Rstack: ${rstackStart.addr}-${rstackEnd.addr}")
+        println("Lstack: ${lstackStart.addr}-${lstackEnd.addr}")
+        println("Upper bound: ${upperBound.addr}")
+    }
 }
 
 object SmallMemConfig : IMemConfig {
+    override val name: String = "Small (1k)"
     override val regsStart: Int = 0x0000
     override val regsEnd: Int = 0x000f
     override val codeStart: Int = 0x0010
@@ -33,22 +45,24 @@ object SmallMemConfig : IMemConfig {
 }
 
 object MedMemConfig: IMemConfig {
+    override val name: String = "Medium (12k)"
     override val regsStart: Int = 0x0000
     override val regsEnd: Int = 0x000f
     override val codeStart: Int = 0x0010
-    override val codeEnd: Int = 0x10ff
-    override val dataStart: Int = 0x2000
-    override val dataEnd: Int = 0x2fff
-    override val dstackStart: Int = 0x3000
-    override val dstackEnd: Int = 0x3dff
-    override val rstackStart: Int = 0x3e00
-    override val rstackEnd: Int = 0x3eff
-    override val lstackStart: Int = 0x3f00
-    override val lstackEnd: Int = 0x3fff
-    override val upperBound: Int = 0x3fff
+    override val codeEnd: Int = 0x0fff
+    override val dataStart: Int = 0x1000
+    override val dataEnd: Int = 0x1fff
+    override val dstackStart: Int = 0x2000
+    override val dstackEnd: Int = 0x2dff
+    override val rstackStart: Int = 0x2e00
+    override val rstackEnd: Int = 0x2eff
+    override val lstackStart: Int = 0x2f00
+    override val lstackEnd: Int = 0x2fff
+    override val upperBound: Int = 0x2fff
 }
 
 object LargeMemConfig: IMemConfig {
+    override val name: String = "Large (64k)"
     override val regsStart: Int = 0x0000
     override val regsEnd: Int = 0x00ff
     override val codeStart: Int = 0x0100
@@ -64,3 +78,4 @@ object LargeMemConfig: IMemConfig {
     override val upperBound: Int = 0xffff
 }
 
+val memoryConfigs = arrayOf(SmallMemConfig, MedMemConfig, LargeMemConfig)

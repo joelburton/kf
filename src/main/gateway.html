@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Title</title>
+</head>
+<body>
+<script>
+  const ws = new WebSocket("ws://localhost:8080/ws");
+  ws.onmessage = (event) => {
+    console.log("GOT", event.data);
+    run();
+  };
+  ws.onopen = () => {
+    console.log("Connection opened");
+    run();
+  };
+  ws.onclose = () => {
+    console.log("Connection closed");
+  };
+
+  function run() {
+      const cmd = prompt("Enter command");
+      if (cmd !== "" && cmd !== null) ws.send(cmd);
+  }
+</script>
+</body>
+</html>

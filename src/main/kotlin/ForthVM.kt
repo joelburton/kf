@@ -12,12 +12,11 @@ import kotlin.time.TimeSource
 
 
 class ForthVM(
-    terminalInterface: TerminalInterface = StandardForthInterface(),
+    var io: Terminal = Terminal(),
     val memConfig: IMemConfig = SmallMemConfig,
     val mem: IntArray = IntArray(memConfig.upperBound + 1),
     verbosity: Int = 0,
 ) {
-    var io: Terminal = Terminal(terminalInterface = terminalInterface)
 
     // *************************************************************** registers
 
@@ -83,6 +82,7 @@ class ForthVM(
 
     fun reboot(includePrimitives: Boolean = true) {
         if (D) dbg(1, "vm.reboot")
+        if (verbosity > 0) io.println(yellow("Rebooting..."))
         // The only things we want to hold onto
         val curVerbosity: Int = this@ForthVM.verbosity
         val curTermWidth = if (termWidth == 0) 80 else termWidth

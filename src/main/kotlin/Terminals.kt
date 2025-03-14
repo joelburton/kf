@@ -23,6 +23,3 @@ class TerminalFileInterface(val path: String) : StandardTerminalInterface()  {
     val inputs: MutableList<String> = content.split("\n").toMutableList()
     override fun readLineOrNull(hideInput: Boolean) = inputs.removeFirstOrNull()
 }
-
-
-class StandardForthInterface : StandardTerminalInterface()  {}

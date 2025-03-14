@@ -89,7 +89,7 @@ class WInterp(val vm: ForthVM): WordClass {
      * This doesn't do anything useful when already in console io (though it
      * does push 0 to stack, because that's what GForth does :) ). */
     private fun w_tripleBackSlash() {
-        if (vm.io is IOFile) {
+        if (vm.io.terminalInterface is TerminalFileInterface) {
             throw ForthQuitNonInteractive()
         } else {
             vm.dstk.push(0)
