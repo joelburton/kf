@@ -48,7 +48,7 @@ object MedMemConfig: IMemConfig {
     override val upperBound: Int = 0x3fff
 }
 
-class LargeMemConfig: IMemConfig {
+object LargeMemConfig: IMemConfig {
     override val regsStart: Int = 0x0000
     override val regsEnd: Int = 0x00ff
     override val codeStart: Int = 0x0100

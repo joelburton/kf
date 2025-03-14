@@ -49,17 +49,18 @@ class WInterp(val vm: ForthVM): WordClass {
      * This pushes 0 for eof-detected, and 1 otherwise */
     fun w_interpRefill() {
         vm.interpLineBuf = vm.io.readLineOrNull(false)
-        if (vm.interpLineBuf == null) { throw ForthEOF() }
+
         if (vm.interpScanner != null) {
             vm.interpScanner!!.close()
             vm.interpScanner = null
         }
+
         if (vm.interpLineBuf == null) {
             vm.dstk.push(0)
-            return
+        } else {
+            vm.interpScanner = Scanner(vm.interpLineBuf!!)
+            vm.dstk.push(1)
         }
-        vm.interpScanner = Scanner(vm.interpLineBuf)
-        vm.dstk.push(1)
     }
 
     /**  `interp-read` ( in:"word" -- len : read next token ) */

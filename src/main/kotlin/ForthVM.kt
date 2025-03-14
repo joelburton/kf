@@ -12,10 +12,12 @@ import kotlin.time.TimeSource
 
 
 class ForthVM(
+    terminalInterface: TerminalInterface = StandardForthInterface(),
     val memConfig: IMemConfig = SmallMemConfig,
-    var io: Terminal = Terminal(),
     val mem: IntArray = IntArray(memConfig.upperBound + 1),
+    verbosity: Int = 0,
 ) {
+    var io: Terminal = Terminal(terminalInterface = terminalInterface)
 
     // *************************************************************** registers
 
@@ -75,10 +77,14 @@ class ForthVM(
     val modulesLoaded: HashMap<String, WordClass> = HashMap()
     val timeMarkCreated = TimeSource.Monotonic.markNow()
 
+    init {
+        this.verbosity = verbosity
+    }
+
     fun reboot(includePrimitives: Boolean = true) {
         if (D) dbg(1, "vm.reboot")
         // The only things we want to hold onto
-        val curVerbosity: Int = verbosity
+        val curVerbosity: Int = this@ForthVM.verbosity
         val curTermWidth = if (termWidth == 0) 80 else termWidth
 
         // Clear memory
@@ -95,7 +101,7 @@ class ForthVM(
         dend = memConfig.dataStart
         termWidth = curTermWidth
         base = 10
-        verbosity = curVerbosity
+        this@ForthVM.verbosity = curVerbosity
 
         ip = memConfig.codeStart
         currentWord = Word.noWord
@@ -118,7 +124,7 @@ class ForthVM(
         rebootInterpreter()
         addInterpreterCode(memConfig.codeStart)
 
-        if (verbosity > 0) {
+        if (this@ForthVM.verbosity > 0) {
             io.println(brightGreen("\nWelcome to ${VERSION_STRING}\n"))
         }
     }
@@ -252,7 +258,7 @@ class ForthVM(
                 // For ForthErrors, just show the user a message, reset
                 // the machine (empty stacks, etc.), and let them continue.
                 io.danger("ERROR: " + e.message)
-                if (verbosity >= 1)
+                if (this@ForthVM.verbosity >= 1)
                     e.printStackTrace()
                 reset()
             } catch (e: ForthBrk) {
@@ -432,7 +438,7 @@ class ForthVM(
     }
 
     fun dbg(lvl: Int, s: String) {
-        if (verbosity < lvl) return
+        if (this@ForthVM.verbosity < lvl) return
         when (lvl) {
             0, 1, 2 -> io.println(yellow(s))
             else -> io.println(gray(s))
