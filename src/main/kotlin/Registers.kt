@@ -9,7 +9,6 @@ class WRegisters(val vm: ForthVM) : WordClass {
         makeRegWord("cstart", ForthVM.REG_DSTART),
         makeRegWord("dend", ForthVM.REG_DEND),
         makeRegWord("base", ForthVM.REG_BASE),
-        makeRegWord("term-width", ForthVM.REG_TERM_WIDTH),
         makeRegWord("verbosity", ForthVM.REG_VERBOSITY),
         makeRegWord("interp-state", ForthVM.REG_INTERP_STATE),
     )
