@@ -1,10 +1,12 @@
 package kf
 
 
-import com.github.ajalt.mordant.rendering.TextColors.*
 import com.github.ajalt.mordant.terminal.StandardTerminalInterface
 import com.github.ajalt.mordant.terminal.Terminal
 import com.github.ajalt.mordant.terminal.danger
+import com.github.ajalt.mordant.terminal.info
+import com.github.ajalt.mordant.terminal.muted
+import com.github.ajalt.mordant.terminal.success
 import com.github.ajalt.mordant.terminal.warning
 import kotlin.time.TimeSource
 
@@ -128,7 +130,7 @@ class ForthVM(
 
     fun reboot(includePrimitives: Boolean = true) {
         if (D) dbg(1, "vm.reboot")
-        if (verbosity > 0) io.println(yellow("Rebooting..."))
+        if (verbosity > 0) io.info("Rebooting...")
 
         val curVerbosity = verbosity  // restore to current after reboot
 
@@ -145,21 +147,14 @@ class ForthVM(
         ip = memConfig.codeStart
         currentWord = Word.noWord
 
-        dstk.reset()
-        rstk.reset()
-        lstk.reset()
-
         dict.reset()
         dict.addModule(WMachine(this))
         dict.addModule(WInterp(this))
         if (includePrimitives) addCorePrimitives()
 
         rebootInterpreter()
-        addInterpreterCode(memConfig.codeStart)
-
-        if (verbosity > 0) {
-            io.println(brightGreen("\nWelcome to ${VERSION_STRING}\n"))
-        }
+        reset()
+        if (verbosity > 0) banner()
     }
 
     /** Reset: this what `abort` does */
@@ -322,15 +317,11 @@ class ForthVM(
 
 
     /**  Buffer holding the most recently read token. */
-    var interpToken: String? = null
+    var interpToken: String = ""
 
     /**  Scanner for reading and tokenizing input line. */
     var interpScanner: FScanner = FScanner(
         this, memConfig.interpBufferStart, memConfig.interpBufferEnd)
-
-    /**  Current input line read from input device. */
-    var interpLineBuf: String? = null
-
 
     // ************************************************ Reboot/reset interpreter
 
@@ -339,23 +330,21 @@ class ForthVM(
     private fun rebootInterpreter() {
         if (D) dbg(3, "vm.rebootInterpreter")
         interpToken = ""
-        interpState = INTERP_STATE_INTERPRETING
-        currentWord = Word.noWord
-        interpScanner.reset() // it will make one once it gets some input
-        interpLineBuf = ""
+        interpScanner.reset()
 
-        // Poke interpreter code into memory: the VM will start executing
-        // code at this location (mem_code_start)
+        // Put interpreter code in mem; the VM will start executing here
         addInterpreterCode(cstart)
+        resetInterpreter()
     }
 
     /**  Handle a VM reset at the interpreter layer.
      */
     private fun resetInterpreter() {
         if (D) dbg(3, "vm.resetInterpreter")
-        dict.currentlyDefining?.let {
-            // If error happens while defining word, roll back this word.
-            cend = it.cpos
+
+        // If error happens while defining word, roll back this word.
+        dict.currentlyDefining?.let { w ->
+            cend = w.cpos
             dict.removeLast()
             dict.currentlyDefining = null
         }
@@ -371,7 +360,7 @@ class ForthVM(
      * However, words that are "immediate-mode" will execute.
      */
     fun interpCompile(token: String) {
-        if (D) dbg(3, "vm.compile: $token")
+        if (D) dbg(3, "vm.interpCompile: $token")
         val w: Word? = dict.getSafeChkRecursion(token, io)
 
         if (w != null) {
@@ -382,9 +371,7 @@ class ForthVM(
             } else {
                 appendCode(w.wn, CellMeta.WordNum)
             }
-        } else if ((token[0] == '\'')
-            && (token.length == 2 || (token.length == 3 && token[2] == '\''))
-        ) {
+        } else if (token.isCharLit) {
             appendLit(token[1].code)
         } else {
             val n: Int = token.toForthInt(base)
@@ -399,14 +386,12 @@ class ForthVM(
      */
 
     fun interpInterpret(token: String) {
-        if (D) dbg(3, "vm.execute: $token")
+        if (D) dbg(3, "vm.interpInterpret: $token")
         val w: Word? = dict.getSafe(token)
         if (w != null) {
             if (w.compO) throw InvalidState("Compile-only: " + w.name)
             w(this)
-        } else if ((token[0] == '\'')
-            && (token.length == 2 || (token.length == 3 && token[2] == '\''))
-        ) {
+        } else if (token.isCharLit) {
             dstk.push(token[1].code)
         } else {
             dstk.push(token.toForthInt(base))
@@ -414,7 +399,7 @@ class ForthVM(
     }
 
 
-// *************************************************** the Forth interpreter
+    // *************************************************** the Forth interpreter
 
     /** Instructions for the VM for the Forth interpreter
      *
@@ -471,19 +456,22 @@ class ForthVM(
     }
 
     fun dbg(lvl: Int, s: String) {
-        if (this@ForthVM.verbosity < lvl) return
+        if (verbosity < lvl) return
         when (lvl) {
-            0, 1, 2 -> io.println(yellow(s))
-            else -> io.println(gray(s))
+            0, 1, 2 -> io.info(s)
+            else -> io.muted(s)
         }
+    }
+
+    fun banner() {
+        io.success("\nWelcome to ${VERSION_STRING}\n")
     }
 
     fun getToken(): String {
         if (D) dbg(3, "getToken")
         val (addr, len) = interpScanner.parseName()
         interpToken = interpScanner.getAsString(addr, len)
-//            ?: throw ForthMissingToken()
-        return interpToken!!
+        return interpToken
     }
 
     companion object {

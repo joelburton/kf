@@ -66,13 +66,16 @@ val DollarHex = HexFormat { number { prefix = "$" } }
 val DollarBriefHex = HexFormat {
     number { prefix = "$"; removeLeadingZeros = true }
 }
-val Int.hex8: String get() = this.toHexString(DollarHex)
-val Int.hex: String get() = this.toHexString(DollarBriefHex)
-val Int.addr: String get() = this.toShort().toHexString(DollarHex)
-val Int.pad10: String get(): String = toString().padStart(10, ' ')
+val Int.hex8 get() = this.toHexString(DollarHex)
+val Int.hex get() = this.toHexString(DollarBriefHex)
+val Int.addr get() = this.toShort().toHexString(DollarHex)
+val Int.pad10 get(): String = toString().padStart(10, ' ')
 
 @Suppress("KotlinConstantConditions")
 val Int.charRepr get() =
     if (this in ' '.code..'~'.code) "'${this.toChar()}'" else ""
 
 fun Int.numToStr(base: Int): String = this.toString(base.coerceIn(2, 36))
+
+val String.isCharLit get() = (get(0) == '\'')
+        && (length == 2 || (length == 3 && get(2) == '\''))

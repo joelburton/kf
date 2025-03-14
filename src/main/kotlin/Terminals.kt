@@ -43,5 +43,12 @@ class TerminalFileInterface(val path: String) : StandardTerminalInterface()  {
 
     val inputs: MutableList<String> = content.split("\n").toMutableList()
     override fun readLineOrNull(hideInput: Boolean) = inputs.removeFirstOrNull()
-
 }
+
+/** A terminal interface for strings. */
+
+class TerminalStringInterface(val content: String) : StandardTerminalInterface()  {
+    val inputs: MutableList<String> = content.split("\n").toMutableList()
+    override fun readLineOrNull(hideInput: Boolean) = inputs.removeFirstOrNull()
+}
+

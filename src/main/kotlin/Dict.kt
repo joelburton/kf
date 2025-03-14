@@ -3,7 +3,7 @@ package kf
 import com.github.ajalt.mordant.terminal.Terminal
 import com.github.ajalt.mordant.terminal.muted
 
-class WordNotFoundException(msg: String) : Exception(msg)
+class WordNotFoundException(msg: String) : ForthError(msg)
 class DictFullError() : Exception("Dictionary full")
 
 interface WordClass {
@@ -12,32 +12,33 @@ interface WordClass {
 }
 
 class Dict(val vm: ForthVM, val capacity: Int = 1024)  {
-    val words = arrayListOf<Word>()
+    private val _words = arrayListOf<Word>()
+    val words: List<Word> = _words
     var currentlyDefining: Word? = null
 
     fun reset() {
         if (D) vm.dbg(3, "dict.reset")
-        words.clear()
+        _words.clear()
         currentlyDefining = null
     }
 
-    val size: Int get() = words.size
-    val last: Word get() = words.last()
+    val size: Int get() = _words.size
+    val last: Word get() = _words.last()
 
     operator fun get(wn: Int): Word {
-        if (wn < 0 || wn >= words.size) throw WordNotFoundException("${wn}")
-        return words[wn]
+        if (wn < 0 || wn >= _words.size) throw WordNotFoundException("${wn}")
+        return _words[wn]
     }
 
     operator fun get(name: String): Word {
-        for (w in words.asReversed()) {
+        for (w in _words.asReversed()) {
             if (w.name.equals(name, ignoreCase = true)) return w
         }
         throw WordNotFoundException(name)
     }
 
     fun getSafe(Name: String): Word? =
-        words.asReversed().find { it.name.equals(Name, ignoreCase = true) }
+        _words.asReversed().find { it.name.equals(Name, ignoreCase = true) }
 
     /**  Get word for if it uses this address.
      *
@@ -49,7 +50,7 @@ class Dict(val vm: ForthVM, val capacity: Int = 1024)  {
      * location might be linked to.
      */
     fun getByMem(n: Int): Word? {
-        for (w in words.reversed()) {
+        for (w in _words.reversed()) {
             if (w.dpos == n || w.cpos == n) return w
         }
         return null
@@ -58,7 +59,7 @@ class Dict(val vm: ForthVM, val capacity: Int = 1024)  {
     /**  Get Word by name (null for not found)
      */
     fun getSafeChkRecursion(name: String?, io: Terminal): Word? {
-        for (w in words.asReversed()) {
+        for (w in _words.asReversed()) {
             if (w.name.equals(name, ignoreCase = true)) {
                 if (currentlyDefining !== w || w.recursive) return w
                 else io.muted(
@@ -71,17 +72,17 @@ class Dict(val vm: ForthVM, val capacity: Int = 1024)  {
     }
 
     fun getNum(name: String): Int {
-        for (i in words.indices.reversed()) {
-            if (words[i].name.equals(name, ignoreCase = true)) return i
+        for (i in _words.indices.reversed()) {
+            if (_words[i].name.equals(name, ignoreCase = true)) return i
         }
         throw WordNotFoundException(name)
     }
 
     fun add(word: Word) {
         if (D) vm.dbg(3, "dict.add: ${word.name}")
-        if (words.size >= capacity) throw DictFullError()
-        words.add(word)
-        word.wn = words.size - 1
+        if (_words.size >= capacity) throw DictFullError()
+        _words.add(word)
+        word.wn = _words.size - 1
     }
 
     fun addModule(mod: WordClass) {
@@ -97,8 +98,8 @@ class Dict(val vm: ForthVM, val capacity: Int = 1024)  {
      */
     fun truncateAt(n: Int) {
         if (D) vm.dbg(3, "dict.truncateAt $n")
-        if (words.size > n) {
-            words.subList(n, words.size).clear()
+        if (_words.size > n) {
+            _words.subList(n, _words.size).clear()
         }
     }
 
@@ -106,6 +107,6 @@ class Dict(val vm: ForthVM, val capacity: Int = 1024)  {
      */
     fun removeLast() {
         if (D) vm.dbg(3, "dict.removeLast")
-        words.removeLast()
+        _words.removeLast()
     }
 }

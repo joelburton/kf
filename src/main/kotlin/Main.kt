@@ -79,6 +79,7 @@ class Hello : CliktCommand("PupForth") {
         }
 
         val vm = ForthVM()
+        vm.verbosity = verbosity
         vm.reboot()
 
         // first, process any files passed in on cmd line

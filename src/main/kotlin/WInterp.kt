@@ -3,6 +3,7 @@ package kf
 import java.util.Scanner
 import com.github.ajalt.mordant.rendering.TextColors.green
 import com.github.ajalt.mordant.rendering.TextStyles.bold
+import com.github.ajalt.mordant.terminal.Terminal
 
 
 /** The interpreter primitives.
@@ -28,6 +29,11 @@ class WInterp(val vm: ForthVM): WordClass {
         Word("interp-reload-code") { w_interpReloadCode() },
         Word("[", imm = true, compO = true) { w_goImmediate() },
         Word("]", imm=true) { w_goCompiled() },
+
+        Word("parse-name") { w_parseName() },
+        Word("find") { w_find() },
+        Word("eval") { w_eval() },
+        Word("banner") { w_banner() },
     )
 
     // ********************************************** words for interpreter loop
@@ -67,11 +73,9 @@ class WInterp(val vm: ForthVM): WordClass {
         }
     }
 
-    /**  `interp-process` ( -- : process token: compile/execute, dep on state ) */
+    /**  `interp-process` ( -- : process token: compile/exec, dep on state ) */
     fun w_interpProcess() {
-        val token: String = vm.interpToken!!
-        if (token.isEmpty()) return  // FIXME: look into this -- could this even happen?
-
+        val token: String = vm.interpToken
         if (vm.isCompilingState) vm.interpCompile(token)
         else vm.interpInterpret(token)
     }
@@ -136,30 +140,67 @@ class WInterp(val vm: ForthVM): WordClass {
         vm.addInterpreterCode(vm.cend)
     }
 
-//    private fun w_parse() {
-//        if (D) vm.dbg("w_parseName")
-//        val s = getToken(vm)
-//        if (s.isEmpty()) {
-//            vm.dstk.push(0)
-//        } else {
-//            vm.dstk.push(vm.dict.getNum(s))
-//        }
-//    }
-//
-//    private fun w_find() {
-//        if (D) vm.dbg("w_find")
-//        val addr: Int = vm.dstk.pop()
-//        val s = getToken(vm) // fixme: should take an addr!
-//        val w: Word = vm.dict.getSafe(s)
-//        if (w == null) {
-//            if (D) vm.dbg("w_find: not found")
-//            vm.dstk.push(addr, 0)
-//        } else if (w.immediate) {
-//            if (D) vm.dbg("w_find: immediate")
-//            vm.dstk.push(addr, 1)
-//        } else {
-//            if (D) vm.dbg("w_find: not immediate")
-//            vm.dstk.push(addr, -1)
-//        }
-//    }
+    /** `parse-name` `( "name" -- addr u : get token from input )` */
+
+    private fun w_parseName() {
+        if (D) vm.dbg(2, "w_parseName")
+        val (addr, len) = vm.interpScanner.parseName()
+        vm.dstk.push(addr, len)
+    }
+
+    /** `find` `( addr u -- addr 0 | xt 1 | xt -1 : find word: 1=imm, -1=not-imm )` */
+
+    private fun w_find() {
+        if (D) vm.dbg(2, "w_find")
+        val len: Int = vm.dstk.pop()
+        val addr: Int = vm.dstk.pop()
+        val w = vm.dict.getSafe(vm.interpScanner.getAsString(addr, len))
+        if (w == null) {
+            if (D) vm.dbg(3, "w_find: not found")
+            vm.dstk.push(addr, 0)
+        } else if (w.imm) {
+            if (D) vm.dbg(3, "w_find: immediate")
+            vm.dstk.push(w.wn, 1)
+        } else {
+            if (D) vm.dbg(3, "w_find: not immediate")
+            vm.dstk.push(w.wn, -1)
+        }
+    }
+
+    /**`eval` ( addr u -- : evaluate string of Forth ) */
+
+    private fun w_eval() {
+        // TODO: this might not be the best approach; we'd want
+        // everything the same: ANSI, raw-term-ability, etc
+        // better perhaps: being able to "stuff" input into
+        // the normal input?
+        // or, even better: a different string buffer loc
+
+        val len = vm.dstk.pop()
+        val addr = vm.dstk.pop()
+        val s = vm.interpScanner.getAsString(addr, len)
+
+        val prevIO = vm.io
+        val prevVerbosity = vm.verbosity
+
+        vm.io = Terminal(terminalInterface = TerminalStringInterface(s))
+        vm.verbosity = -2
+
+        try {
+            vm.runVM()
+        } catch (_: ForthQuitNonInteractive) {
+
+        } catch (_: ForthEOF) {
+
+        } finally {
+            vm.io = prevIO
+            vm.verbosity = prevVerbosity
+        }
+    }
+
+    /** `banner` `( -- : print welcome banner )` */
+
+    fun w_banner() {
+        vm.banner()
+    }
 }
