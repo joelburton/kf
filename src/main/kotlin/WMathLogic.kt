@@ -83,6 +83,7 @@ class WMathLogic(val vm: ForthVM) : WordClass {
     fun w_div() {
         val d = vm.dstk.pop()
         val n = vm.dstk.pop()
+        if (d == 0) throw ForthError("Division by zero")
         vm.dstk.push(n / d)
     }
 

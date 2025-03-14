@@ -10,13 +10,35 @@ import kotlin.time.TimeSource
 
 import kotlin.reflect.KProperty
 
+// *****************************************************************************
+// Some orientation:
+//
+// This file contains the actual VM as well as some parts that are needed
+// by the interpreter loop (the VM can be used without an interpreter, or
+// perhaps even with a different, all-in-Forth interpreter). For now, this is
+// all one Java class, but this file is divided into sections, and the VM
+// stuff is at the top, and the interpreter stuff is at the bottom.
+
+
+/**
+ *  A Forth virtual machine. This executes in Forth-memory code and
+ *  manages Forth memory, registers, and stacks.
+ */
 
 class ForthVM(
+    /** Terminal used by the VM */
     var io: Terminal = Terminal(),
+
+    /** Memory layout of this VM. */
     val memConfig: IMemConfig = SmallMemConfig,
+
+    /** RAM for the VM */
     val mem: IntArray = IntArray(memConfig.upperBound + 1),
-    verbosity: Int = 0,
 ) {
+
+    /** Convenience for creating registers, which have getters/setters that
+     * uses the underlying [mem].
+     */
     inner class RegisterDelegate(val addr: Int) {
         operator fun getValue(thisRef: Any?, prop: KProperty<*>): Int {
             return mem[addr]
@@ -29,76 +51,118 @@ class ForthVM(
 
 
     // *************************************************************** registers
+    /** Base of math output (10 is for decimal and default) */
     var base: Int by RegisterDelegate(REG_BASE)
+
+    /** Verbosity of system:
+     *     4 - very low-level debugging
+     *     3 - show internal msgs
+     *     2 - show all words
+     *     1 - welcome messages, user warnings, etc (default)
+     *     0 - no banner or unimportant warnings
+     *     -1 - quiet: no warnings
+     *     -2 - very no prompt, no output except direct (like .)
+     *
+     *  To see any dev-debugging messages, the global variable [D] needs to
+     *  be true.
+     */
     var verbosity: Int by RegisterDelegate(REG_VERBOSITY)
+
+    /** Current end of the CODE section. */
     var cend: Int by RegisterDelegate(REG_CEND)
+
+    /** Current end of the DATA section. */
     var dend: Int by RegisterDelegate(REG_DEND)
+
+    /** Start of the CODE section. This comes from the memory configuration
+     * passed in, and normally wouldn't ever change. However, to hack around,
+     * users *can* change this.
+     */
     var cstart: Int by RegisterDelegate(REG_CSTART)
+
+    /** Start of the DATA section. See [cstart]. */
     var dstart: Int by RegisterDelegate(REG_DSTART)
 
-    // *************************************************************** registers
-    val cellMeta = Array(memConfig.upperBound + 1) { CellMeta.Unknown }
+    // *************************************************************************
+
+    /**  Word dictionary. */
     val dict = Dict(this)
-    lateinit var currentWord: Word
-    var ip = memConfig.codeStart
+
+    /**  This is only needed to make see/simple-see commands more helpful. */
+    val cellMeta = Array(memConfig.upperBound + 1) { CellMeta.Unknown }
+
+    /** Data stack (the one normally used by end users) */
     val dstk = FStack(this, "dstk", memConfig.dstackStart, memConfig.dstackEnd)
+
+    /** Return stack (for calling/returning from fn calls */
     val rstk = FStack(this, "rstk", memConfig.rstackStart, memConfig.rstackEnd)
+
+    /** Loop stack (keeps track of i/j/k variables and loop nest depth */
     val lstk = FStack(this, "lstk", memConfig.lstackStart, memConfig.lstackEnd)
+
+    /** Current word being executed by the VM. */
+    lateinit var currentWord: Word  // TODO: this should be removed
+
+    /** The instruction pointer; where is the VM executing next? */
+    var ip = memConfig.codeStart
+
+    /** List of {name: class} for all primitive modules loaded. */
     val modulesLoaded: HashMap<String, WordClass> = HashMap()
+
+    /** Time mark for when VM started (the `millis` word reports # of millis
+     * since server start, since it's not possible to return millis before the
+     * 1970 epoch on a 32-bit machine.
+     */
     val timeMarkCreated = TimeSource.Monotonic.markNow()
 
     init {
-        this.verbosity = verbosity
+        // THere needs to be a verbosity set, so setting it to mildly-chatty.
+        // Most callers will directly set this on their vm instance before
+        // rebooting.
+        this.verbosity = 1
     }
+
+    // *************************************************************************
+
+    /** Boot or reboot the machine. This should clear everything. */
 
     fun reboot(includePrimitives: Boolean = true) {
         if (D) dbg(1, "vm.reboot")
         if (verbosity > 0) io.println(yellow("Rebooting..."))
-        // The only things we want to hold onto
-        val curVerbosity: Int = this@ForthVM.verbosity
-//        val curTermWidth = if (termWidth == 0) 80 else termWidth
 
-        // Clear memory
-        mem.fill(0)
+        val curVerbosity = verbosity  // restore to current after reboot
+
+        mem.fill(0)  // keep this above register setting, since it clears them
         cellMeta.fill(CellMeta.Unknown)
 
-        dict.reset()
-        for (i in mem.indices) mem[i] = 0
-
-        // Reset registers
+        base = 10
+        verbosity = curVerbosity
         cstart = memConfig.codeStart
         cend = memConfig.codeStart
         dstart = memConfig.dataStart
         dend = memConfig.dataStart
-//        termWidth = curTermWidth
-        base = 10
-        this@ForthVM.verbosity = curVerbosity
 
         ip = memConfig.codeStart
         currentWord = Word.noWord
-
-//        cellMeta[ForthVM.REG_BASE] = CellMeta.reg_base
-//        cellMeta[ForthVM.REG_VERBOSITY] = CellMeta.reg_verbosity
-//        cellMeta[ForthVM.REG_CEND] = CellMeta.reg_cend
-//        cellMeta[ForthVM.REG_DEND] = CellMeta.reg_dend
 
         dstk.reset()
         rstk.reset()
         lstk.reset()
 
+        dict.reset()
         dict.addModule(WMachine(this))
         dict.addModule(WInterp(this))
-
         if (includePrimitives) addCorePrimitives()
 
-        // Do things at the interpreter level that are needed after a reboot
         rebootInterpreter()
         addInterpreterCode(memConfig.codeStart)
 
-        if (this@ForthVM.verbosity > 0) {
+        if (verbosity > 0) {
             io.println(brightGreen("\nWelcome to ${VERSION_STRING}\n"))
         }
     }
+
+    /** Reset: this what `abort` does */
 
     fun reset() {
         if (D) dbg(1, "vm.reset")
@@ -107,13 +171,12 @@ class ForthVM(
         lstk.reset()
         ip = cstart
 
-
-        // Do things at the interpreter level that are need after a reset
         resetInterpreter()
     }
 
 
     // ************************************************** Adding primitive words
+
     /**  Add a list of primitives at once, potentially printing new items as
      * added.
      */
@@ -249,15 +312,12 @@ class ForthVM(
     // Everything from this point downward is the things that are needed for
     // the interpreter, but not needed for the VM itself.
 
+    /** A register for interpreter use: state of interpreting/compiling. */
+    var interpState: Int by RegisterDelegate(REG_INTERP_STATE)
 
-    var interpState: Int
-        get() = mem[REG_INTERP_STATE]
-        set(v) {
-            mem[REG_INTERP_STATE] = v
-        }
-    val isInterpretingState: Boolean
+    val isInterpretingState
         get() = mem[REG_INTERP_STATE] == INTERP_STATE_INTERPRETING
-    val isCompilingState: Boolean
+    val isCompilingState
         get() = mem[REG_INTERP_STATE] == INTERP_STATE_COMPILING
 
 
