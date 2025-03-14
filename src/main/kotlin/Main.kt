@@ -19,6 +19,10 @@ class Hello : CliktCommand("PupForth") {
         "--medium" to MedMemConfig,
         "--small" to SmallMemConfig,
     ).default(MedMemConfig).help("VM memory size (default is medium)")
+    val gateway: String? by option().switch(
+        "--http" to "http",
+        "--websocket" to "websocket",
+    ).help("gateway type (default is none)")
 
     fun executeFiles(vm: ForthVM) {
         for (path in paths) {
@@ -34,6 +38,15 @@ class Hello : CliktCommand("PupForth") {
 
     override fun run() {
         val vm = ForthVM()
+
+        if (gateway != null) {
+            when (gateway) {
+                "http" -> GatewayHttp(vm)
+                else -> throw RuntimeException("Unknown gateway: $gateway")
+            }.startGateway()
+            return
+        }
+
         val interactive = Terminal(
             ansiLevel = if (plain) AnsiLevel.NONE else null
         )
