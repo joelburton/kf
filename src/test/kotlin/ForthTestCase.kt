@@ -3,7 +3,6 @@ import com.github.ajalt.mordant.terminal.Terminal
 import kf.CallableWord
 import kf.ForthEOF
 import kf.ForthVM
-import kf.IOGateway
 import kf.TerminalTestInterface
 import kf.WTools
 import kf.recorder

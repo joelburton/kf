@@ -1,7 +1,6 @@
 package kf
 
-class Parser(val vm: ForthVM) {
-    val bufAt = 0x10
+class FScanner(val vm: ForthVM, val bufStartAddr: Int, val bufEndAddr: Int) {
     var bufPtr = 0
     var bufLen = 0
 
@@ -9,11 +8,19 @@ class Parser(val vm: ForthVM) {
         const val SPACE = 0x20
     }
 
-    /** Add string to the input buffer. */
+    /** Reset */
+
+    fun reset() {
+        bufPtr = bufStartAddr
+        bufLen = 0
+    }
+
+    /** Set string to the input buffer. */
 
     fun fill(s: String) {
-        for (c in s) vm.mem[bufAt + bufLen++] = c.code
-        bufPtr = bufAt
+        bufLen = 0
+        for (c in s) vm.mem[bufStartAddr + bufLen++] = c.code
+        bufPtr = bufStartAddr
     }
 
     /** Get range of buffer as normal K string. */
@@ -26,7 +33,7 @@ class Parser(val vm: ForthVM) {
     /** Get space-separated word. Returns (addr, len). */
 
     fun parseName(): Pair<Int, Int> {
-        val max = bufAt + bufLen
+        val max = bufStartAddr + bufLen
         var at = 0
         var len = 0
 
@@ -35,23 +42,32 @@ class Parser(val vm: ForthVM) {
         while (bufPtr < max && vm.mem[bufPtr] != SPACE) bufPtr += 1
         len = bufPtr - at;
         if (bufPtr < max && vm.mem[bufPtr++] != SPACE)
-            throw Exception("Unexpected char after term")
+            throw Exception("WOULD NEVER HAPPEN?")
         return Pair(at, len);
     }
 
     /** General parse for an ending character. Returns (addr, len) */
 
-    fun parse(term: Int): Pair<Int, Int> {
-        val max = bufAt + bufLen
+    fun parse(term: Char): Pair<Int, Int> {
+        val max = bufStartAddr + bufLen
         var at = bufPtr
         var phraseLen = 0
 
-        while (bufPtr < max && vm.mem[bufPtr] != term) bufPtr += 1
-        if (bufPtr == max) throw Exception("Unexpected end of string")
+        while (bufPtr < max && vm.mem[bufPtr] != term.code) bufPtr += 1
+        if (bufPtr == max) throw ParseError("Expected terminator")
         phraseLen = bufPtr - at;
         bufPtr += 1  // advance past closing term
-        if (bufPtr < max) if (vm.mem[bufPtr++] != 0x20)
-            throw Exception("Unexpected char after term")
+        if (bufPtr < max) if (vm.mem[bufPtr++] != SPACE)
+            throw ParseError("Unexpected character")
         return Pair(at, phraseLen);
     }
+
+    /** Get rest of line. */
+
+    fun nextLine() {
+        bufPtr = bufEndAddr
+        bufLen = bufEndAddr - bufStartAddr
+    }
+
+    val atEnd get() = bufPtr == bufStartAddr + bufLen
 }

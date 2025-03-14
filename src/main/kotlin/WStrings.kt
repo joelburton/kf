@@ -25,16 +25,14 @@ class WStrings(val vm: ForthVM) : WordClass {
     }
 
     fun w_sQuote() {
-        var s: String = vm.interpScanner!!.findInLine(".+?\"")
-            ?: throw ForthError("String literal not closed")
-        // get rid of leading single space and terminating quote
-        s = s.substring(1, s.length - 1)
+        val (addr, len) = vm.interpScanner.parse('"')
+        val s = vm.interpScanner.getAsString(addr, len)
         val strAddr: Int = vm.appendStrToData(s)
         vm.dstk.push(strAddr)
         vm.dstk.push(s.length)
     }
 
-    // TODO maybe? this is a kludge
+    // FIXME: needs to be integrated with new scanner
     // since we keep the lineBuf as a Java string throughout,
     // using source copies it
     // but it should be modifiable, like:
@@ -49,10 +47,8 @@ class WStrings(val vm: ForthVM) : WordClass {
     /** `."` `( -- : out:"str" : print string following )` */
 
     private fun w_dotQuote() {
-        var s: String = vm.interpScanner!!.findInLine(".+?\"")
-            ?: throw ParseError("String literal not closed")
-        // get rid of leading single space and terminating quote
-        s = s.substring(1, s.length - 1)
+        val (addr, len) = vm.interpScanner.parse('"')
+        val s = vm.interpScanner.getAsString(addr, len)
         vm.io.print(s)
     }
 

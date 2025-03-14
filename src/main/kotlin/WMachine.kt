@@ -104,10 +104,8 @@ class WMachine(val vm: ForthVM): WordClass {
     /**  `abort"` ( f in:"msg" -- : if flag non-zero, abort w/msg )
      */
     private fun w_abortQuote() {
-        var s: String = vm.interpScanner!!.findInLine(".+?\"")
-            ?: throw ForthError("String literal not closed")
-        // get rid of leading single space and terminating quote
-        s = s.substring(1, s.length - 1)
+        val (addr, len) = vm.interpScanner.parse('"')
+        val s = vm.interpScanner.getAsString(addr, len)
         val flag: Int = vm.dstk.pop()
         if (flag != 0) {
             vm.io.danger("ABORT: $s")

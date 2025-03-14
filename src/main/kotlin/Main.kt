@@ -10,24 +10,44 @@ import com.github.ajalt.mordant.rendering.AnsiLevel
 import com.github.ajalt.mordant.terminal.Terminal
 
 class Hello : CliktCommand("PupForth") {
-    val verbosity: Int by option("-v", "--verbosity").int().default(1)
+
+    val verbosity: Int by option("-v", "--verbosity").int()
+        .default(1)
         .help("verbosity level (default: 1)")
-    val ansiLevel: AnsiLevel? by option().switch(
-        "--ansi" to AnsiLevel.TRUECOLOR,
-        "--dumb" to AnsiLevel.NONE,
-    ).help("terminal type (default: detect)")
-    val paths: List<String> by argument().multiple()
-    val size: IMemConfig by option().switch(
-        "--large" to LargeMemConfig,
-        "--medium" to MedMemConfig,
-        "--small" to SmallMemConfig,
-    ).default(MedMemConfig).help("VM memory size (default: medium)")
-    val gateway: String? by option().switch(
-        "--http" to "http",
-        "--websocket" to "websocket",
-    ).help("gateway type (default: none)")
-    val listMemConfigs: Boolean by option("--list-mem-configs").flag(default = false)
+
+    val ansiLevel: AnsiLevel? by option()
+        .switch(
+            "--ansi" to AnsiLevel.TRUECOLOR,
+            "--dumb" to AnsiLevel.NONE,
+        )
+        .help("terminal type (default: detect)")
+
+    val paths: List<String> by argument()
+        .multiple()
+
+    val size: IMemConfig by option()
+        .switch(
+            "--large" to LargeMemConfig,
+            "--medium" to MedMemConfig,
+            "--small" to SmallMemConfig,
+        )
+        .default(MedMemConfig)
+        .help("VM memory size (default: medium)")
+
+    val gateway: String? by option()
+        .switch(
+            "--http" to "http",
+            "--websocket" to "websocket",
+        )
+        .help("gateway type (default: none)")
+
+    val listMemConfigs: Boolean by option("--list-mem-configs")
+        .flag(default = false)
         .help("list available memory configurations")
+
+    val version: Boolean by option("-V", "--version")
+        .flag(default = false)
+        .help("show version")
 
     fun runFiles(vm: ForthVM) {
         for (path in paths) {
@@ -45,6 +65,10 @@ class Hello : CliktCommand("PupForth") {
     }
 
     fun wrappedRun() {
+        if (version) {
+            println(VERSION_STRING)
+            return
+        }
         if (listMemConfigs) {
             for (memConfig in memoryConfigs) {
                 println("${memConfig.name}:")

@@ -8,6 +8,8 @@ interface IMemConfig {
     val codeEnd: Int
     val dataStart: Int
     val dataEnd: Int
+    val interpBufferStart: Int
+    val interpBufferEnd: Int
     val dstackStart: Int
     val dstackEnd: Int
     val rstackStart: Int
@@ -17,13 +19,14 @@ interface IMemConfig {
     val upperBound: Int
 
     fun show() {
-        println("Registers: ${regsStart.addr}-${regsEnd.addr}")
-        println("Code: ${codeStart.addr}-${codeEnd.addr}")
-        println("Data: ${dataStart.addr}-${dataEnd.addr}")
-        println("Dstack: ${dstackStart.addr}-${dstackEnd.addr}")
-        println("Rstack: ${rstackStart.addr}-${rstackEnd.addr}")
-        println("Lstack: ${lstackStart.addr}-${lstackEnd.addr}")
-        println("Upper bound: ${upperBound.addr}")
+        println("Registers:     ${regsStart.addr}-${regsEnd.addr}")
+        println("Code:          ${codeStart.addr}-${codeEnd.addr}")
+        println("Data:          ${dataStart.addr}-${dataEnd.addr}")
+        println("Interp buffer: ${dstackStart.addr}-${dstackEnd.addr}")
+        println("Dstack:        ${dstackStart.addr}-${dstackEnd.addr}")
+        println("Rstack:        ${rstackStart.addr}-${rstackEnd.addr}")
+        println("Lstack:        ${lstackStart.addr}-${lstackEnd.addr}")
+        println("Upper bound:   ${upperBound.addr}")
     }
 }
 
@@ -34,7 +37,9 @@ object SmallMemConfig : IMemConfig {
     override val codeStart: Int = 0x0010
     override val codeEnd: Int = 0x01ff
     override val dataStart: Int = 0x0200
-    override val dataEnd: Int = 0x02ff
+    override val dataEnd: Int = 0x027f
+    override val interpBufferStart: Int = 0x0280
+    override val interpBufferEnd: Int = 0x02ff
     override val dstackStart: Int = 0x0300
     override val dstackEnd: Int = 0x03df
     override val rstackStart: Int = 0x03e0
@@ -51,7 +56,9 @@ object MedMemConfig: IMemConfig {
     override val codeStart: Int = 0x0010
     override val codeEnd: Int = 0x0fff
     override val dataStart: Int = 0x1000
-    override val dataEnd: Int = 0x1fff
+    override val dataEnd: Int = 0x1f7f
+    override val interpBufferStart: Int = 0x1f80
+    override val interpBufferEnd: Int = 0x1fff
     override val dstackStart: Int = 0x2000
     override val dstackEnd: Int = 0x2dff
     override val rstackStart: Int = 0x2e00
@@ -68,7 +75,9 @@ object LargeMemConfig: IMemConfig {
     override val codeStart: Int = 0x0100
     override val codeEnd: Int = 0x4fff
     override val dataStart: Int = 0x5000
-    override val dataEnd: Int = 0xafff
+    override val dataEnd: Int = 0xaeff
+    override val interpBufferStart = 0xaf00
+    override val interpBufferEnd: Int = 0xafff
     override val dstackStart: Int = 0xb000
     override val dstackEnd: Int = 0xefff
     override val rstackStart: Int = 0xf000

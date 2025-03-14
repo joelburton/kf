@@ -1,6 +1,6 @@
 package kf
 
-const val D = true
+const val D = false
 const val VERSION_STRING = "KPupForth 0.1.0"
 
 @Suppress("KotlinConstantConditions")

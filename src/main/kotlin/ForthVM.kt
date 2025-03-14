@@ -4,10 +4,8 @@ package kf
 import com.github.ajalt.mordant.rendering.TextColors.*
 import com.github.ajalt.mordant.terminal.StandardTerminalInterface
 import com.github.ajalt.mordant.terminal.Terminal
-import com.github.ajalt.mordant.terminal.TerminalInterface
 import com.github.ajalt.mordant.terminal.danger
 import com.github.ajalt.mordant.terminal.warning
-import java.util.*
 import kotlin.time.TimeSource
 
 
@@ -258,7 +256,7 @@ class ForthVM(
                 // For ForthErrors, just show the user a message, reset
                 // the machine (empty stacks, etc.), and let them continue.
                 io.danger("ERROR: " + e.message)
-                if (this@ForthVM.verbosity >= 1)
+                if (verbosity >= 2)
                     e.printStackTrace()
                 reset()
             } catch (e: ForthBrk) {
@@ -294,7 +292,8 @@ class ForthVM(
     var interpToken: String? = null
 
     /**  Scanner for reading and tokenizing input line. */
-    var interpScanner: Scanner? = null
+    var interpScanner: FScanner = FScanner(
+        this, memConfig.interpBufferStart, memConfig.interpBufferEnd)
 
     /**  Current input line read from input device. */
     var interpLineBuf: String? = null
@@ -309,7 +308,7 @@ class ForthVM(
         interpToken = ""
         interpState = INTERP_STATE_INTERPRETING
         currentWord = Word.noWord
-        interpScanner = null // it will make one once it gets some input
+        interpScanner.reset() // it will make one once it gets some input
         interpLineBuf = ""
 
         // Poke interpreter code into memory: the VM will start executing
@@ -383,6 +382,7 @@ class ForthVM(
 
 
 // *************************************************** the Forth interpreter
+
     /** Instructions for the VM for the Forth interpreter
      *
      * This is poked into memory during the reboot process; this is the
@@ -447,8 +447,9 @@ class ForthVM(
 
     fun getToken(): String {
         if (D) dbg(3, "getToken")
-        interpToken = interpScanner?.takeIf { sc -> sc.hasNext() }?.next()
-            ?: throw ForthMissingToken()
+        val (addr, len) = interpScanner.parseName()
+        interpToken = interpScanner.getAsString(addr, len)
+//            ?: throw ForthMissingToken()
         return interpToken!!
     }
 

@@ -1,5 +1,14 @@
 package kf
 
+import com.github.ajalt.mordant.input.KeyboardEvent
+import com.github.ajalt.mordant.input.enterRawModeOrNull
+import com.github.ajalt.mordant.input.isCtrlC
+import com.github.ajalt.mordant.input.receiveKeyEvents
+import com.github.ajalt.mordant.terminal.prompt
+import com.github.ajalt.mordant.terminal.warning
+import kotlin.time.Duration.Companion.seconds
+import com.github.ajalt.mordant.rendering.TextColors.*
+
 
 class WInputOutput(val vm: ForthVM) : WordClass {
     override val name = "InputOutput"
@@ -82,14 +91,38 @@ class WInputOutput(val vm: ForthVM) : WordClass {
     // *************************************************************************
 
 
-    /** `key` ( -- char : get a single keystroke )` */
+    /** `key` ( -- char : get a single keystroke )`
+     *
+     * In real, interactive terminals, this will wait for a keystroke.
+     *
+     * */
 
     fun w_key() {
-        TODO("Can't implement properly unless we have a cooked term")
+        val ti = vm.io.terminalInterface
+        if (ti is TerminalFileInterface || ti is TerminalTestInterface)
+            throw RuntimeException("Cannot use `key` from file input")
+
+        val rawMode = vm.io.enterRawModeOrNull()
+        if (rawMode == null) {
+            var s = vm.io.prompt(yellow("Enter 1 character"))
+            while (s == null || s.length != 1) {
+                s = vm.io.prompt(yellow("Try again, enter 1 character"))
+            }
+            vm.dstk.push(s[0].code)
+        } else {
+            rawMode.use {
+                var k: Char = rawMode.run {
+                    var keyEv: KeyboardEvent? = null
+                    while (keyEv == null) keyEv = rawMode.readKeyOrNull()
+                    keyEv.key[0].toChar()
+                }
+                vm.dstk.push(k.code)
+            }
+        }
     }
 
 
-    // *************************************************************************
+// *************************************************************************
 
 
     /** `.`  `( x -- out:"" : pop & print top of stack )` */
@@ -146,7 +179,7 @@ class WInputOutput(val vm: ForthVM) : WordClass {
     }
 
 
-    // *************************************************************************
+// *************************************************************************
 
 
     /** `char` `( in:char -- char : get literal value of char )` */

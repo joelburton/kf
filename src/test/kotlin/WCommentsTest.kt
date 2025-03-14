@@ -12,31 +12,31 @@ class WCommentsTest : ForthTestCase() {
 
     @Test
     fun w_parenComment() {
-        vm.interpScanner = Scanner("( test )")
+        vm.interpScanner.fill("( test )")
         comments.w_parenComment()
-        assertEquals(false, vm.interpScanner!!.hasNext())
+        assertEquals(true, vm.interpScanner.atEnd)
 
-        vm.interpScanner = Scanner("( test )   foo")
+        vm.interpScanner.fill("( test )   foo")
         comments.w_parenComment()
-        assertEquals("foo", vm.interpScanner!!.next())
+        assertEquals(false, vm.interpScanner.atEnd)
 
-        vm.interpScanner = Scanner("( test    foo")
+        vm.interpScanner.fill("( test    foo")
         assertFailsWith<ParseError> { comments.w_parenComment() }
     }
 
     @Test
     fun w_backslashComment() {
-        vm.interpScanner = Scanner("\\ test )")
+        vm.interpScanner.fill("\\ test )")
         comments.w_backslashComment()
-        assertEquals(false, vm.interpScanner!!.hasNext())
+        assertEquals(true, vm.interpScanner.atEnd)
 
-        vm.interpScanner = Scanner("   \\ ( test )")
+        vm.interpScanner.fill("   \\ ( test )")
         comments.w_backslashComment()
-        assertEquals(false, vm.interpScanner!!.hasNext())
+        assertEquals(true, vm.interpScanner.atEnd)
 
-        vm.interpScanner = Scanner("  foo  \\ ( test )")
-        vm.interpScanner!!.next()
+        vm.interpScanner.fill("  foo  \\ ( test )")
+        vm.interpScanner.parseName()
         comments.w_backslashComment()
-        assertEquals(false, vm.interpScanner!!.hasNext())
+        assertEquals(true, vm.interpScanner.atEnd)
     }
 }
