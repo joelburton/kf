@@ -61,7 +61,9 @@ class WDoes(val vm: ForthVM) : WordClass {
         vm.ip = vm.currentWord.cpos
     }
 
-    /**  create: add an empty, new word */
+    /**  create: add an empty, new word, and sets the DPOS to current CEND.
+     *
+     * */
 
     fun w_create() {
         val name: String = vm.getToken()
