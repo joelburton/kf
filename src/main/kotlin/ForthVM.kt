@@ -5,7 +5,7 @@ import com.github.ajalt.mordant.terminal.StandardTerminalInterface
 import com.github.ajalt.mordant.terminal.Terminal
 import com.github.ajalt.mordant.terminal.danger
 import com.github.ajalt.mordant.terminal.info
-import com.github.ajalt.mordant.terminal.muted
+import com.github.ajalt.mordant.rendering.TextColors.gray
 import com.github.ajalt.mordant.terminal.success
 import com.github.ajalt.mordant.terminal.warning
 import kotlin.time.TimeSource
@@ -459,7 +459,7 @@ class ForthVM(
         if (verbosity < lvl) return
         when (lvl) {
             0, 1, 2 -> io.info(s)
-            else -> io.muted(s)
+            else -> io.println(gray(s))
         }
     }
 

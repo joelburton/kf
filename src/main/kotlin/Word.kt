@@ -3,6 +3,7 @@ package kf
 import com.github.ajalt.mordant.rendering.TextColors.*
 
 typealias CallableWord = Word.(ForthVM) -> Unit
+typealias StaticFunc = (ForthVM) -> Unit
 
 class Word(
     val name:String,
@@ -15,6 +16,7 @@ class Word(
     var interpO: Boolean = false,
     var recursive: Boolean = false,
     var wn: Int = 0,
+    val staticFunc: StaticFunc? = null,
     var callable: CallableWord,
 ) {
    companion object {
@@ -31,7 +33,15 @@ class Word(
     operator fun invoke(vm: ForthVM) {
         if (D) vm.dbg(2, "word.exec $name -->")
         vm.currentWord = this
-        callable(vm)
+        if (staticFunc != null) {
+            var s = staticFunc.toString()
+                .removeSuffix("(kf.ForthVM): kotlin.Unit")
+                .removePrefix("fun ")
+            if (D) vm.dbg(3, "word.exec $name $s")
+            staticFunc(vm)
+        } else {
+            callable(vm)
+        }
         if (D) vm.dbg(2, "word.exec $name <--")
     }
 

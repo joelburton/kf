@@ -1,3 +1,5 @@
+@file:Suppress("unused")
+
 package kf
 
 import com.github.ajalt.mordant.rendering.OverflowWrap
@@ -22,6 +24,9 @@ class WWords(val vm: ForthVM) : WordClass {
 
         Word("[defined]", imm = true) { w_bracketDefined() },
         Word("[undefined]", imm = true) { w_bracketUndefined() },
+        Word("callable.") { w_callableDot() },
+        Word("foo", staticFunc = WWordsF::foo) { w_callableDot() },
+        Word("bar", staticFunc = ::w_bar) { w_callableDot() },
     )
 
     /**  `\[defined\]` I ( in:"name" -- f : is this word defined? )
@@ -166,7 +171,31 @@ class WWords(val vm: ForthVM) : WordClass {
         val w: Word = vm.dict[wn]
         vm.io.print(w.name + " ")
     }
-} // 5 ' .   ( n xt )
+
+    /** `callable.` ( "word" -- : print callable addr ) */
+
+    fun w_callableDot() {
+        val token: String = vm.getToken()
+        val w: Word = vm.dict[token]
+        vm.io.println(w.callable.toString())
+        vm.io.println(WWordsF::foo)
+    }
+
+    // playing with the idea of switching words to plain funcs
+
+}
+
+object WWordsF {
+        fun foo(vm: ForthVM) {
+            println("foo /Users/joel/src/kf/src/main/kotlin/WWords.kt")
+        }
+}
+
+fun w_bar(vm: ForthVM) {
+    println("bar https://bar.com/")
+}
+
+// 5 ' .   ( n xt )
 //execute ( )      \ execute the xt of .
 //\ does not work as intended:
 //\ : foo ' . ;
