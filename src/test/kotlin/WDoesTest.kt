@@ -1,36 +1,26 @@
-import kf.WDoes
 import kf.Word
-import org.junit.jupiter.api.Assertions.*
-import org.junit.jupiter.api.BeforeEach
+import kf.primitives.WDoes
+import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 
 class WDoesTest : ForthTestCase() {
-    val mod: WDoes
-
-    init {
-        mod = vm.modulesLoaded["Does"]!! as WDoes
-    }
-
-    @BeforeEach
-    fun setUp() {
-//        TODO("Not yet implemented")
-    }
+    val mod: WDoes = vm.modulesLoaded["Does"]!! as WDoes
 
     @Test
-    fun doesAngle() {
-        mod.doesAngle()
+    fun w_doesAngle() {
+        mod.w_doesAngle(vm)
         assertEquals(vm.dict["does"].wn, vm.mem[vm.cend - 2])
         assertEquals(vm.dict["return"].wn, vm.mem[vm.cend - 1])
     }
 
     @Test
     fun w_does() {
-        val w = Word("foo", callable = vm.dict["addrcall"].callable)
+        val w = Word("foo", vm.dict["addrcall"].fn)
         vm.dict.add(w)
         vm.currentWord = w
         vm.ip = 0x100
-        mod.w_does()
-        assertEquals(vm.dict["addrcall"].callable, w.callable)
+        mod.w_does(vm)
+        assertEquals(vm.dict["addrcall"].fn, w.fn)
         assertEquals(0x101, w.cpos)
     }
 
@@ -38,9 +28,9 @@ class WDoesTest : ForthTestCase() {
     @Test
     fun w_addr() {
         vm.mem[0x110] = 42
-        val w = Word("foo", dpos=0x110, callable = vm.dict["addrcall"].callable)
+        val w = Word("foo", vm.dict["addrcall"].fn, dpos=0x110)
         vm.currentWord = w
-        mod.w_addr()
+        mod.w_addr(vm)
         assertDStack(0x110)
     }
 
@@ -53,7 +43,7 @@ class WDoesTest : ForthTestCase() {
             "foo",
             cpos=0x150,
             dpos=0x200,
-            callable = vm.dict["addrcall"].callable)
+            fn = vm.dict["addrcall"].fn)
         vm.dict.add(w)
         eval("foo")
         assertDStack(42)

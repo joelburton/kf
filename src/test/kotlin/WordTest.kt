@@ -1,4 +1,3 @@
-import kf.CallableWord
 import kf.ForthVM
 import kf.Word
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -16,14 +15,14 @@ class WordTest {
     fun testToString() {
         assertEquals(
             "test",
-            Word("test", callable = dummyFunc).toString()
+            Word("test", ::dummyFn).toString()
         )
     }
 
     @Test
     fun invoke() {
         val vm = ForthVM()
-        val word = Word("test", callable = dummyFunc)
+        val word = Word("test", ::dummyFn)
         word.invoke(vm)
         assertEquals(2, vm.ip)
     }

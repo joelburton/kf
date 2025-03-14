@@ -1,53 +1,52 @@
-@file:Suppress("unused")
-
-package kf
+package kf.primitives
 
 import com.github.ajalt.mordant.rendering.OverflowWrap
 import com.github.ajalt.mordant.rendering.TextColors.*
 import com.github.ajalt.mordant.rendering.Whitespace
+import kf.ForthVM
+import kf.Word
+import kf.WordClass
 
-class WWords(val vm: ForthVM) : WordClass {
+object WWords : WordClass {
     override val name = "Words"
     override val primitives: Array<Word> = arrayOf(
-        Word("words") { w_words() },
-        Word("synonym") { w_synonym() },
-        Word("forget") { w_forget() },
-        Word("wn-forget") { w_wnForget() },
-        Word("marker") { w_marker() },
-        Word("'") { w_tick() },
+        Word("words", ::w_words ) ,
+        Word("synonym", ::w_synonym ) ,
+        Word("forget", ::w_forget ) ,
+        Word("wn-forget", ::w_wnForget ) ,
+        Word("marker", ::w_marker ) ,
+        Word("'", ::w_tick ) ,
 
-        Word(".dict") { w_dotDict() },
-        Word(".wn-hide") { w_hideWord() },
-        Word(".wn-unhide") { w_unhideWord() },
-        Word("id.") { w_wordId() },
-        Word(".unhide-all") { w_unhideAll() },
+        Word(".dict", ::w_dotDict ) ,
+        Word(".wn-hide", ::w_hideWord ) ,
+        Word(".wn-unhide", ::w_unhideWord ) ,
+        Word("id.", ::w_wordId ) ,
+        Word(".unhide-all", ::w_unhideAll ) ,
 
-        Word("[defined]", imm = true) { w_bracketDefined() },
-        Word("[undefined]", imm = true) { w_bracketUndefined() },
-        Word("callable.") { w_callableDot() },
-        Word("foo", staticFunc = WWordsF::foo) { w_callableDot() },
-        Word("bar", staticFunc = ::w_bar) { w_callableDot() },
+        Word("[defined]", ::w_bracketDefined , imm = true) ,
+        Word("[undefined]", ::w_bracketUndefined , imm = true) ,
+        Word("callable.", ::w_callableDot ) ,
     )
 
     /**  `\[defined\]` I ( in:"name" -- f : is this word defined? )
      */
-    private fun w_bracketDefined() {
+    private fun w_bracketDefined(vm: ForthVM) {
         val token: String = vm.getToken()
         val def = vm.dict.getSafe(token) != null
-        vm.dstk.push(if (def) ForthVM.TRUE else ForthVM.FALSE)
+        vm.dstk.push(if (def) ForthVM.Companion.TRUE else ForthVM.Companion.FALSE)
     }
 
     /**  `\[undefined\]` I ( in:"name" -- f : is this word undefined? )
      */
-    private fun w_bracketUndefined() {
+    private fun w_bracketUndefined(vm: ForthVM) {
         val token: String = vm.getToken()
         val def = vm.dict.getSafe(token) != null
-        vm.dstk.push(if (def) ForthVM.FALSE else ForthVM.TRUE)
+        vm.dstk.push(if (def) ForthVM.Companion.FALSE else ForthVM.Companion.TRUE)
     }
 
     /**  `words` ( -- :dump words )
      */
-    fun w_words() {
+    fun w_words(vm: ForthVM) {
         vm.io.println(
             vm.dict.words.joinToString(" ") { it.name },
             whitespace = Whitespace.NORMAL,
@@ -57,17 +56,17 @@ class WWords(val vm: ForthVM) : WordClass {
 
     /**  `.dict` ( -- : list all words with internal info )
      */
-    fun w_dotDict() {
+    fun w_dotDict(vm: ForthVM) {
         for (i in 0..<vm.dict.size) {
             val w: Word = vm.dict[i]
             vm.io.print(w.getHeaderStr())
         }
-        vm.io.println(gray(Word.HEADER_STR))
+        vm.io.println(gray(Word.Companion.HEADER_STR))
     }
 
     /**  `hide` ( in:"name" -- : hides word )
      */
-    fun w_hideWord() {
+    fun w_hideWord(vm: ForthVM) {
         val name: String = vm.getToken()
         val w: Word = vm.dict[name]
         w.hidden = true
@@ -76,7 +75,7 @@ class WWords(val vm: ForthVM) : WordClass {
 
     /**  `unhide` ( in:"name" -- : un-hides word )
      */
-    fun w_unhideWord() {
+    fun w_unhideWord(vm: ForthVM) {
         val name: String = vm.getToken()
         val w: Word = vm.dict[name]
         w.hidden = false
@@ -84,7 +83,7 @@ class WWords(val vm: ForthVM) : WordClass {
 
     /**  `unhide-all` ( -- : un-hides all words )
      */
-    fun w_unhideAll() {
+    fun w_unhideAll(vm: ForthVM) {
         for (i in 0..<vm.dict.size) {
             vm.dict[i].hidden = false
         }
@@ -93,13 +92,13 @@ class WWords(val vm: ForthVM) : WordClass {
     // newname old-name
     /** `synonym` ( in:"new" in:"old" -- : makes new word as alias of old )
      */
-    fun w_synonym() {
+    fun w_synonym(vm: ForthVM) {
         val newName: String = vm.getToken()
         val oldName: String = vm.getToken()
         val curWord: Word = vm.dict[oldName]
         val nw = Word(
             newName,
-            callable = curWord.callable,
+            fn = curWord.fn,
             cpos = curWord.cpos,
             dpos = curWord.dpos,
             compO = curWord.compO,
@@ -111,16 +110,16 @@ class WWords(val vm: ForthVM) : WordClass {
 
     /**  `forget` ( in:"name" -- : delete word and all following words )
      */
-    fun w_forget() {
+    fun w_forget(vm: ForthVM) {
         val newName: String = vm.getToken()
         val w: Word = vm.dict[newName]
         vm.dict.truncateAt(w.wn)
-        if (w.cpos != Word.NO_ADDR) vm.cend = w.cpos
+        if (w.cpos != Word.Companion.NO_ADDR) vm.cend = w.cpos
     }
 
     /**  `wn-forget` ( wn -- : delete word and all following words )
      */
-    fun w_wnForget() {
+    fun w_wnForget(vm: ForthVM) {
         val wn: Int = vm.dstk.pop()
         val w: Word = vm.dict[wn]
         vm.dict.truncateAt(wn)
@@ -138,15 +137,15 @@ class WWords(val vm: ForthVM) : WordClass {
      *
      * Will forget back to (and including) when the "foo" marker was made.
      */
-    fun w_marker() {
+    fun w_marker(vm: ForthVM) {
         val wCall = vm.dict["call"]
         val newName: String = vm.getToken()
         val w = Word(
             newName,
-            callable = wCall.callable,
+            fn = wCall.fn,
             cpos = vm.cend,
             cposEnd = vm.cend + 4,
-            dpos = Word.NO_ADDR
+            dpos = Word.Companion.NO_ADDR
         )
         vm.dict.add(w)
         vm.appendLit(w.wn)
@@ -158,7 +157,7 @@ class WWords(val vm: ForthVM) : WordClass {
      *
      * Example: ' dup => pushes wn-of-dup to dstk
      */
-    fun w_tick() {
+    fun w_tick(vm: ForthVM) {
         val token: String = vm.getToken()
         val wn: Int = vm.dict.getNum(token)
         vm.dstk.push(wn)
@@ -166,7 +165,7 @@ class WWords(val vm: ForthVM) : WordClass {
 
     /**  `id.` ( wn -- : print name of word )
      */
-    fun w_wordId() {
+    fun w_wordId(vm: ForthVM) {
         val wn: Int = vm.dstk.pop()
         val w: Word = vm.dict[wn]
         vm.io.print(w.name + " ")
@@ -174,25 +173,12 @@ class WWords(val vm: ForthVM) : WordClass {
 
     /** `callable.` ( "word" -- : print callable addr ) */
 
-    fun w_callableDot() {
+    fun w_callableDot(vm: ForthVM) {
         val token: String = vm.getToken()
         val w: Word = vm.dict[token]
-        vm.io.println(w.callable.toString())
-        vm.io.println(WWordsF::foo)
+        vm.io.println(w.fn.toString())
     }
 
-    // playing with the idea of switching words to plain funcs
-
-}
-
-object WWordsF {
-        fun foo(vm: ForthVM) {
-            println("foo /Users/joel/src/kf/src/main/kotlin/WWords.kt")
-        }
-}
-
-fun w_bar(vm: ForthVM) {
-    println("bar https://bar.com/")
 }
 
 // 5 ' .   ( n xt )

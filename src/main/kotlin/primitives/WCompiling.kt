@@ -1,25 +1,28 @@
-package kf
+package kf.primitives
 
 import com.github.ajalt.mordant.terminal.muted
+import kf.ForthVM
+import kf.Word
+import kf.WordClass
 
-class WCompiling(val vm: ForthVM) : WordClass {
+object WCompiling : WordClass {
     override val name = "Compiling"
 
     override val primitives: Array<Word> = arrayOf(
-        Word(":", interpO = true) {  w_colon() },
-        Word(";", imm = true, compO = true) {  w_semicolon() },
-        Word("[literal]", compO = true) {  w_bracketLiteral() },
-        Word("literal", imm=true, compO = true) {  w_literal() },
-        Word("[']", imm = true, compO = true) {  w_bracketTick() },
-        Word("immediate", imm = true) {  w_immediate() },
-        Word("recursive", imm = true, compO = true) {  w_recursive() },
-        Word("postpone", imm = true, compO = true) {  w_postpone() },
-        Word("dolit") {  w_doLit() },
+        Word(":", ::w_colon, interpO = true),
+        Word(";", ::w_semicolon ,imm = true, compO = true),
+        Word("[literal]", ::w_bracketLiteral, compO = true),
+        Word("literal", ::w_literal, imm = true, compO = true),
+        Word("[']", ::w_bracketTick, imm = true, compO = true),
+        Word("immediate", ::w_immediate, imm = true),
+        Word("recursive", ::w_recursive, imm = true, compO = true ),
+        Word("postpone", ::w_postpone, imm = true, compO = true),
+        Word("dolit", ::w_doLit),
     )
 
     /**  `:` X ( in:"name" -- : create word 'name' and start compiling mode )
      */
-    fun w_colon() {
+    fun w_colon(vm: ForthVM) {
         val name: String = vm.getToken()
 
         // Words start off not-recursive hidden, so they can't call themselves
@@ -36,22 +39,22 @@ class WCompiling(val vm: ForthVM) : WordClass {
         val w = Word(
             name,
             cpos = vm.cend,
-            dpos = Word.NO_ADDR,
-            callable = wCall.callable
+            dpos = Word.Companion.NO_ADDR,
+            fn = wCall.fn
         )
         vm.dict.add(w)
-        vm.interpState = ForthVM.INTERP_STATE_COMPILING
+        vm.interpState = ForthVM.Companion.INTERP_STATE_COMPILING
         vm.dict.currentlyDefining = w
     }
 
     /** `;` IC ( -- : complete word definition and exit compiling mode )`
      */
-    fun w_semicolon() {
+    fun w_semicolon(vm: ForthVM) {
         val w: Word = vm.dict.last
         vm.appendWord("return")
         w.cposEnd = vm.cend
         vm.dict.currentlyDefining = null
-        vm.interpState = ForthVM.INTERP_STATE_INTERPRETING
+        vm.interpState = ForthVM.Companion.INTERP_STATE_INTERPRETING
     }
 
     //    ///  ( -- ) really lit ? is it ok to just use lit for this?
@@ -67,7 +70,7 @@ class WCompiling(val vm: ForthVM) : WordClass {
 
     /** `dolit` ( -- 'lit : push wn for 'lit' onto stack )
      */
-    fun w_doLit() {
+    fun w_doLit(vm: ForthVM) {
         val wn: Int = vm.dict.getNum("lit")
         vm.dstk.push(wn)
     }
@@ -81,7 +84,7 @@ class WCompiling(val vm: ForthVM) : WordClass {
      * but can't put in fn, like `: b a ;`
      * perhaps imm-mode-in-immediate-already is bad?
      */
-    fun w_bracketTick() {
+    fun w_bracketTick(vm: ForthVM) {
         val token: String = vm.getToken()
         val wn: Int = vm.dict.getNum(token)
         vm.appendLit(wn)
@@ -98,7 +101,7 @@ class WCompiling(val vm: ForthVM) : WordClass {
      * when the user may have forgotten there was another function defined
      * between thw one they wanted to make immediate)
      */
-    fun w_immediate() {
+    fun w_immediate(vm: ForthVM) {
         val w: Word = vm.dict.last
         w.imm = true
         if (vm.dict.currentlyDefining == null) {
@@ -111,7 +114,7 @@ class WCompiling(val vm: ForthVM) : WordClass {
 
     /** `recursive` CI ( -- : from this point onward, word can recurse )
      */
-    fun w_recursive() {
+    fun w_recursive(vm: ForthVM) {
         val w: Word = vm.dict.currentlyDefining!!
         w.recursive = true
     }
@@ -119,11 +122,11 @@ class WCompiling(val vm: ForthVM) : WordClass {
 
     /**  postpone
      */
-    fun w_postpone() {
+    fun w_postpone(vm: ForthVM) {
         val token: String = vm.getToken()
         val w: Word = vm.dict[token]
         if (w.imm) {
-            vm.dict.last.callable = w.callable
+            vm.dict.last.fn = w.fn
         } else {
             vm.io.muted("??? using `postpone` with non-immediate word")
         }
@@ -131,14 +134,14 @@ class WCompiling(val vm: ForthVM) : WordClass {
 
     /**  `bracketLiteral` C ( n -- : write lit token & n to code area )
      */
-    fun w_bracketLiteral() {
+    fun w_bracketLiteral(vm: ForthVM) {
         val v: Int = vm.dstk.pop()
         vm.appendLit(v)
     }
 
     /**  `literal` IC ( n -- : write lit token & n to code area )
      */
-    fun w_literal() {
+    fun w_literal(vm: ForthVM) {
         val v: Int = vm.dstk.pop()
         vm.appendLit(v)
     }

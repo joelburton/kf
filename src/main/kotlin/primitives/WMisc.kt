@@ -1,21 +1,24 @@
-package kf
+package kf.primitives
 
+import kf.ForthVM
+import kf.Word
+import kf.WordClass
 import kotlinx.datetime.Clock
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 
 
-class WMisc(val vm: ForthVM): WordClass {
+object WMisc : WordClass {
     override val name = "Misc"
     override val primitives: Array<Word> = arrayOf(
-        Word("millis") { w_millis() },
-        Word("ms") { w_ms() },
-        Word("time&date") { w_timeAmpDate() },
-        )
+        Word("millis", ::w_millis),
+        Word("ms", ::w_ms),
+        Word("time&date", ::w_timeAmpDate),
+    )
 
     /** `time&date` ( -- secs minutes hours dayOfMonth monthNum year : get now )
      */
-    private fun w_timeAmpDate() {
+    private fun w_timeAmpDate(vm: ForthVM) {
         val now = Clock.System.now()
         val lt = now.toLocalDateTime(TimeZone.currentSystemDefault())
         vm.dstk.push(
@@ -29,14 +32,14 @@ class WMisc(val vm: ForthVM): WordClass {
     }
 
     /** `ms` ( n -- : pause VM for n milliseconds )
-      */
-    private fun w_ms() {
+     */
+    private fun w_ms(vm: ForthVM) {
         Thread.sleep(vm.dstk.pop().toLong())
     }
 
     /** `millis` ( -- n : number of milliseconds elapsed since VM started. )
      */
-    private fun w_millis() {
+    private fun w_millis(vm: ForthVM) {
         val millis = vm.timeMarkCreated.elapsedNow().inWholeMilliseconds.toInt()
         vm.dstk.push(millis)
     }

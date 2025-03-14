@@ -1,9 +1,13 @@
-package kf
+package kf.primitives
 
-class WDoubleNum (val vm: ForthVM) : WordClass {
+import kf.ForthVM
+import kf.Word
+import kf.WordClass
+
+object WDoubleNum  : WordClass {
     override val name = "DoubleNum"
     override val primitives: Array<Word> = arrayOf(
-        Word("d.") { w_dDot() },
+        Word("d.", ::w_dDot),
     )
 
     /** `d.` `( d1 d2 -- : print double-number )`
@@ -18,7 +22,7 @@ class WDoubleNum (val vm: ForthVM) : WordClass {
      * followed by a space.
      */
 
-    private fun w_dDot() {
+    private fun w_dDot(vm: ForthVM) {
         val hi: Int = vm.dstk.pop()
         val lo: Int = vm.dstk.pop()
         val combined = (hi.toLong() shl 32) or (lo.toLong() and 0xFFFFFFFFL)

@@ -9,7 +9,7 @@ import com.github.ajalt.clikt.parameters.types.int
 import com.github.ajalt.mordant.rendering.AnsiLevel
 import com.github.ajalt.mordant.terminal.Terminal
 
-class Hello : CliktCommand("PupForth") {
+class ForthCLI : CliktCommand("PupForth") {
 
     val verbosity: Int by option("-v", "--verbosity").int()
         .default(1)
@@ -111,4 +111,4 @@ class Hello : CliktCommand("PupForth") {
     }
 }
 
-fun main(args: Array<String>) = Hello().main(args)
+fun main(args: Array<String>) = ForthCLI().main(args)

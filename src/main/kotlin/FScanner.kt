@@ -38,12 +38,12 @@ class FScanner(val vm: ForthVM, val bufStartAddr: Int, val bufEndAddr: Int) {
         var len = 0
 
         while (bufPtr < max && vm.mem[bufPtr] == SPACE) bufPtr += 1
-        at = bufPtr;
+        at = bufPtr
         while (bufPtr < max && vm.mem[bufPtr] != SPACE) bufPtr += 1
-        len = bufPtr - at;
+        len = bufPtr - at
         if (bufPtr < max && vm.mem[bufPtr++] != SPACE)
             throw Exception("WOULD NEVER HAPPEN?")
-        return Pair(at, len);
+        return Pair(at, len)
     }
 
     /** General parse for an ending character. Returns (addr, len) */
@@ -55,11 +55,11 @@ class FScanner(val vm: ForthVM, val bufStartAddr: Int, val bufEndAddr: Int) {
 
         while (bufPtr < max && vm.mem[bufPtr] != term.code) bufPtr += 1
         if (bufPtr == max) throw ParseError("Expected terminator")
-        phraseLen = bufPtr - at;
+        phraseLen = bufPtr - at
         bufPtr += 1  // advance past closing term
         if (bufPtr < max) if (vm.mem[bufPtr++] != SPACE)
             throw ParseError("Unexpected character")
-        return Pair(at, phraseLen);
+        return Pair(at, phraseLen)
     }
 
     /** Get rest of line. */

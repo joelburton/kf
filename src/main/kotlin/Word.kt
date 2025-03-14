@@ -1,12 +1,13 @@
 package kf
 
 import com.github.ajalt.mordant.rendering.TextColors.*
+import com.github.ajalt.mordant.terminal.warning
 
-typealias CallableWord = Word.(ForthVM) -> Unit
 typealias StaticFunc = (ForthVM) -> Unit
 
 class Word(
-    val name:String,
+    val name: String,
+    var fn: StaticFunc,
     var cpos: Int = NO_ADDR,
     var cposEnd: Int = NO_ADDR,
     var dpos: Int = NO_ADDR,
@@ -16,32 +17,33 @@ class Word(
     var interpO: Boolean = false,
     var recursive: Boolean = false,
     var wn: Int = 0,
-    val staticFunc: StaticFunc? = null,
-    var callable: CallableWord,
 ) {
-   companion object {
-       const val NO_ADDR: Int = 0xffff
-       val noWord = Word("noWord", hidden=true, callable = { _: ForthVM -> })
-       /**  Explanation for header strings */
-       const val HEADER_STR: String =
-           " IMmediate Compile-Only Interp-Only REcurse HIdden Code Data"
+    companion object {
+        fun noWordFn(vm: ForthVM) {
+            vm.io.warning("No Word Fn ran")
+        }
+        const val NO_ADDR: Int = 0xffff
+        val noWord = Word("noWord", ::noWordFn, hidden = true)
+
+        /**  Explanation for header strings */
+        const val HEADER_STR: String =
+            " IMmediate Compile-Only Interp-Only REcurse HIdden Code Data"
 
 
-   }
+    }
 
-    override fun toString() = name;
+    override fun toString() = name
     operator fun invoke(vm: ForthVM) {
         if (D) vm.dbg(2, "word.exec $name -->")
         vm.currentWord = this
-        if (staticFunc != null) {
-            var s = staticFunc.toString()
-                .removeSuffix("(kf.ForthVM): kotlin.Unit")
-                .removePrefix("fun ")
-            if (D) vm.dbg(3, "word.exec $name $s")
-            staticFunc(vm)
-        } else {
-            callable(vm)
-        }
+        var s = fn.toString()
+            .removeSuffix("(kf.ForthVM): kotlin.Unit")
+            .removePrefix("fun ")
+        if (D) vm.dbg(3, "word.exec $name $s")
+        fn(vm)
+//        } else {
+//            callable!!(vm)
+//        }
         if (D) vm.dbg(2, "word.exec $name <--")
     }
 

@@ -27,7 +27,7 @@ class FStack(
     fun asArray() = vm.mem.copyOfRange(sp, endAt + 1).reversedArray()
 
     /**  Just useful for debuggers. */
-    override fun toString(): String = "${name} ${asArray().contentToString()}"
+    override fun toString(): String = "$name ${asArray().contentToString()}"
 
     /** Retrieves value from stack at a index relative to the stack origin. */
     fun getAt(n: Int): Int {
@@ -81,7 +81,7 @@ class FStack(
         val str = (endAt downTo sp).joinToString(separator = " ") {
             vm.mem[it].toString()
         }
-        vm.io.print("<${size}> ${str}")
+        vm.io.print("<${size}> $str")
     }
 
     /**  Print a verbose stack dump. */

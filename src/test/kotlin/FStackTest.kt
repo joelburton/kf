@@ -117,11 +117,12 @@ class FStackTest : ForthTestCase() {
         stk.push(65)
         stk.push(2)
         stk.dump()
-        assertEquals("""
-myStack[0] = ${'$'}00000001 (         1)
-myStack[1] = ${'$'}000000ff (       255)
-myStack[2] = ${'$'}00000041 (        65) 'A'
-myStack[3] = ${'$'}00000002 (         2)   <- top
+        assertEquals(
+            """
+myStack[0] = $00000001 (         1)
+myStack[1] = $000000ff (       255)
+myStack[2] = $00000041 (        65) 'A'
+myStack[3] = $00000002 (         2)   <- top
 
         """.trimIndent(), getOutput())
     }

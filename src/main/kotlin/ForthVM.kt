@@ -8,6 +8,25 @@ import com.github.ajalt.mordant.terminal.info
 import com.github.ajalt.mordant.rendering.TextColors.gray
 import com.github.ajalt.mordant.terminal.success
 import com.github.ajalt.mordant.terminal.warning
+import kf.primitives.WComments
+import kf.primitives.WCompiling
+import kf.primitives.WDoes
+import kf.primitives.WDoubleNum
+import kf.primitives.WFunctions
+import kf.primitives.WIfThen
+import kf.primitives.WInclude
+import kf.primitives.WInputOutput
+import kf.primitives.WInternals
+import kf.primitives.WInterp
+import kf.primitives.WLoops
+import kf.primitives.WMachine
+import kf.primitives.WMathLogic
+import kf.primitives.WMemory
+import kf.primitives.WMisc
+import kf.primitives.WStackOps
+import kf.primitives.WStrings
+import kf.primitives.WTools
+import kf.primitives.WWords
 import kotlin.time.TimeSource
 
 import kotlin.reflect.KProperty
@@ -148,8 +167,8 @@ class ForthVM(
         currentWord = Word.noWord
 
         dict.reset()
-        dict.addModule(WMachine(this))
-        dict.addModule(WInterp(this))
+        dict.addModule(WMachine)
+        dict.addModule(WInterp)
         if (includePrimitives) addCorePrimitives()
 
         rebootInterpreter()
@@ -181,24 +200,24 @@ class ForthVM(
         for (mod in arrayOf(
             // Machine    // nt
             // Interp     // nt
-            WInclude(this), // nt
-            WRegisters(this), // nt
-            WTools(this), // nt
-            WComments(this),
-            WInputOutput(this),
-            WStackOps(this), // nt
-            WMathLogic(this),
-            WMemory(this), // nt
-            WFunctions(this),
-            WCompiling(this),
-            WIfThen(this),
-            WLoops(this), // nt
-            WDoes(this), // nt
-            WMisc(this), // nt
-            WInternals(this),
-            WWords(this), // nt
-            WStrings(this), // nt
-            WDoubleNum(this), // nt
+            WInclude, // nt
+//            WRegisters(this), // nt
+            WTools, // nt
+            WComments,
+            WInputOutput,
+            WStackOps, // nt
+            WMathLogic,
+            WMemory, // nt
+            WFunctions,
+            WCompiling,
+            WIfThen,
+            WLoops, // nt
+            WDoes, // nt
+            WMisc, // nt
+            WInternals,
+            WWords, // nt
+            WStrings, // nt
+            WDoubleNum, // nt
         )) dict.addModule(mod)
     }
 

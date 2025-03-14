@@ -32,7 +32,7 @@ class TerminalTestInterface : TerminalInterface by recorder  {
 /** A terminal interface from reading from files. THe files are read up front,
  * and the "terminal" gets lines from the cached file input.
  */
-class TerminalFileInterface(val path: String) : StandardTerminalInterface()  {
+class TerminalFileInterface(path: String) : StandardTerminalInterface()  {
     val content: String
 
     init {
@@ -47,7 +47,7 @@ class TerminalFileInterface(val path: String) : StandardTerminalInterface()  {
 
 /** A terminal interface for strings. */
 
-class TerminalStringInterface(val content: String) : StandardTerminalInterface()  {
+class TerminalStringInterface(content: String) : StandardTerminalInterface()  {
     val inputs: MutableList<String> = content.split("\n").toMutableList()
     override fun readLineOrNull(hideInput: Boolean) = inputs.removeFirstOrNull()
 }

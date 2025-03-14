@@ -1,9 +1,9 @@
 package kf
 
 interface IMemConfig {
-    val name: String;
-    val regsStart: Int;
-    val regsEnd: Int;
+    val name: String
+    val regsStart: Int
+    val regsEnd: Int
     val codeStart: Int
     val codeEnd: Int
     val dataStart: Int

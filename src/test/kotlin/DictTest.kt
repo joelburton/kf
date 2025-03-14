@@ -6,11 +6,11 @@ import kotlin.test.assertFailsWith
 
 
 
-class FakeMod: WordClass {
+object FakeMod: WordClass {
     override val name = "FakeMod"
     override val primitives = arrayOf<Word>(
-        Word("word1", callable = dummyFunc),
-        Word("word2", callable = dummyFunc),
+        Word("word1", fn = ::dummyFn),
+        Word("word2", fn = ::dummyFn),
     )
 }
 
@@ -20,7 +20,7 @@ class DictTest  : ForthTestCase() {
 
     @Test
     fun reset() {
-        val word = Word("word", callable = dummyFunc)
+        val word = Word("word", fn=::dummyFn)
         dict.add(word)
         dict.currentlyDefining = word
         assertEquals(1, dict.size)
@@ -31,37 +31,37 @@ class DictTest  : ForthTestCase() {
 
     @Test
     fun size() {
-        val word = Word("word", callable = dummyFunc)
+        val word = Word("word", fn=::dummyFn)
         dict.add(word)
         assertEquals(1, dict.size)
     }
 
     @Test
     fun last() {
-        val word = Word("word", callable = dummyFunc)
+        val word = Word("word", fn=::dummyFn)
         dict.add(word)
         assertEquals(word, dict.last)
     }
 
     @Test
     fun get() {
-        val word = Word("word", callable = dummyFunc)
+        val word = Word("word", fn=::dummyFn)
         dict.add(word)
         assertFailsWith<WordNotFoundException> { dict["no-word"] }
-        assertEquals(word, dict.get("word"))
+        assertEquals(word, dict["word"])
     }
 
     @Test
     fun testGet() {
-        val word = Word("word", callable = dummyFunc)
+        val word = Word("word", fn=::dummyFn)
         dict.add(word)
         assertFailsWith<WordNotFoundException> { dict[-1] }
-        assertEquals(word, dict.get(0))
+        assertEquals(word, dict[0])
     }
 
     @Test
     fun getNum() {
-        val word = Word("word", callable = dummyFunc)
+        val word = Word("word", fn=::dummyFn)
         dict.add(word)
         assertFailsWith<WordNotFoundException> { dict["no-word"] }
         assertEquals(0, dict.getNum("word"))
@@ -69,13 +69,13 @@ class DictTest  : ForthTestCase() {
 
     @Test
     fun addModule() {
-        dict.addModule(FakeMod())
+        dict.addModule(FakeMod)
         assertEquals(2, dict.size)
     }
 
     @Test
     fun dictFull() {
-        val w = Word("word1", callable = dummyFunc)
+        val w = Word("word1", fn=::dummyFn)
         dict.add(w)
         dict.add(w)
         dict.add(w)
@@ -84,7 +84,7 @@ class DictTest  : ForthTestCase() {
 
     @Test
     fun truncate() {
-        val w = Word("word1", callable = dummyFunc)
+        val w = Word("word1", fn=::dummyFn)
         dict.add(w)
         dict.add(w)
         dict.add(w)
@@ -96,7 +96,7 @@ class DictTest  : ForthTestCase() {
 
     @Test
     fun removeLast() {
-        val w = Word("word1", callable = dummyFunc)
+        val w = Word("word1", fn=::dummyFn)
         dict.add(w)
         dict.add(w)
         dict.add(w)

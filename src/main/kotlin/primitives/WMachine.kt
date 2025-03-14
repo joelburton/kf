@@ -1,33 +1,44 @@
-package kf
+@file:Suppress("unused")
+
+package kf.primitives
 
 import com.github.ajalt.mordant.terminal.danger
+import kf.D
+import kf.ForthBrk
+import kf.ForthBye
+import kf.ForthColdStop
+import kf.ForthQuit
+import kf.ForthVM
+import kf.Word
+import kf.WordClass
+import kf.addr
 
-class WMachine(val vm: ForthVM): WordClass {
+object WMachine : WordClass {
     override val name = "Machine"
     override val primitives: Array<Word> = arrayOf(
         // Keep on top -- this when, if the VM somehow starts running from
         // initialized memory (0), it will try to run word# 0, which will be
         // this, and we'll break.
-        Word("brk") { w_brk() },
-        Word("nop") { w_nop() },
+        Word("brk", ::w_brk),
+        Word("nop", ::w_nop),
 
         // branching
-        Word("0branch") { w_0branch() },
-        Word("branch") { w_branch() },
-        Word("0rel-branch") { w_0relBranch() },
-        Word("rel-branch") { w_relBranch() },
+        Word("0branch", ::w_0branch),
+        Word("branch", ::w_branch),
+        Word("0rel-branch", ::w_0relBranch),
+        Word("rel-branch", ::w_relBranch),
 
         // fundamental machine state
-        Word("abort") { w_abort() },
-        Word("abort\"") { w_abortQuote() },
-        Word("reboot", imm = true, interpO = true,) { w_reboot() },
-        Word("reboot-raw", imm = true, interpO = true) { w_rebootRaw() },
-        Word("bye") { w_bye() },
-        Word("cold", imm=true, interpO = true) { w_cold() },
-        Word("quit") { w_quit() },
+        Word("abort", ::w_abort),
+        Word("abort\"", ::w_abortQuote),
+        Word("reboot", ::w_reboot, imm = true, interpO = true),
+        Word("reboot-raw", ::w_rebootRaw, imm = true, interpO = true),
+        Word("bye", ::w_bye),
+        Word("cold", ::w_cold, imm = true, interpO = true),
+        Word("quit", ::w_quit),
 
         // fundamental
-        Word("lit", compO = true) { w_lit() },  // registers
+        Word("lit", ::w_lit, compO = true),  // registers
 
         // ~~  *terminal*:lineno:char:<2> 20 10
 
@@ -40,7 +51,7 @@ class WMachine(val vm: ForthVM): WordClass {
      * Make sure this is the first word in the dictionary. It's useful to hit
      * `brk` if the VM starts executing in uninitialized memory.
      */
-    fun w_brk() {
+    fun w_brk(vm: ForthVM) {
         throw ForthBrk("brk at " + vm.ip)
     }
 
@@ -50,17 +61,17 @@ class WMachine(val vm: ForthVM): WordClass {
      * without having to redefine them. Plus, it wastes the computer's time,
      * and that's always fun.
      */
-    fun w_nop() {
+    fun w_nop(vm: ForthVM) {
     }
 
     // *************************************************************** branching
     /** `0branch` ( flag -- in:addr : Jump to addr if flag=0 )
      */
-    fun w_0branch() {
+    fun w_0branch(vm: ForthVM) {
         val flag = vm.dstk.pop()
         if (flag == 0) {
             if (D) vm.dbg(3, "w_0branch =0 --> ${vm.ip}}")
-            vm.ip = vm.mem.get(vm.ip)
+            vm.ip = vm.mem[vm.ip]
         } else {
             vm.ip += 1
         }
@@ -68,19 +79,19 @@ class WMachine(val vm: ForthVM): WordClass {
 
     /** `branch` ( -- in:addr : Unconditional jump )
      */
-    fun w_branch() {
-        vm.ip = vm.mem.get(vm.ip)
+    fun w_branch(vm: ForthVM) {
+        vm.ip = vm.mem[vm.ip]
     }
 
     /** `0rel-branch` ( flag -- in:offset : Jump to cptr+offset if flag=0 )
      *
      * This is not a conventional Forth word, but it's useful.
      */
-    fun w_0relBranch() {
+    fun w_0relBranch(vm: ForthVM) {
         val flag = vm.dstk.pop()
         if (0 == flag) {
             if (D) vm.dbg(3, "w_0branch =0 --> ${vm.mem[vm.ip].addr}")
-            vm.ip = vm.mem.get(vm.ip) + vm.ip
+            vm.ip = vm.mem[vm.ip] + vm.ip
         } else {
             vm.ip += 1
         }
@@ -90,20 +101,20 @@ class WMachine(val vm: ForthVM): WordClass {
      *
      * This is not a conventional Forth word, but it's useful.
      */
-    fun w_relBranch() {
-        vm.ip = vm.mem.get(vm.ip) + vm.ip
+    fun w_relBranch(vm: ForthVM) {
+        vm.ip = vm.mem[vm.ip] + vm.ip
     }
 
     // **************************************************** exiting & restarting
     /** `reset` ( -- : Reset machine state {stacks, cptr, etc} )
      */
-    fun w_abort() {
+    fun w_abort(vm: ForthVM) {
         vm.reset()
     }
 
     /**  `abort"` ( f in:"msg" -- : if flag non-zero, abort w/msg )
      */
-    private fun w_abortQuote() {
+    private fun w_abortQuote(vm: ForthVM) {
         val (addr, len) = vm.interpScanner.parse('"')
         val s = vm.interpScanner.getAsString(addr, len)
         val flag: Int = vm.dstk.pop()
@@ -115,7 +126,7 @@ class WMachine(val vm: ForthVM): WordClass {
 
     /** `reboot` ( -- : Reboots machine {clear all mem, stacks, state, etc.} )
      */
-    fun w_reboot() {
+    fun w_reboot(vm: ForthVM) {
         vm.reboot(true)
     }
 
@@ -126,7 +137,7 @@ class WMachine(val vm: ForthVM): WordClass {
      * `include-primitives` (which, fortunately, is provided by the
      * interpreter :-)
      */
-    fun w_rebootRaw() {
+    fun w_rebootRaw(vm: ForthVM) {
         vm.reboot(false)
     }
 
@@ -141,7 +152,7 @@ class WMachine(val vm: ForthVM): WordClass {
      * When running as a long-running gateway to a VM, this is caught and
      * just reboots the machine, starting a new interpreter.
      */
-    fun w_bye() {
+    fun w_bye(vm: ForthVM) {
         throw ForthBye("Bye!")
     }
 
@@ -150,7 +161,7 @@ class WMachine(val vm: ForthVM): WordClass {
      * This is a harsh, but conventional Forth word. It's practically the only
      * way to stop the gateway. This should not be caught or prevented.
      */
-    fun w_cold() {
+    fun w_cold(vm: ForthVM) {
         throw ForthColdStop("1")
     }
 
@@ -159,7 +170,7 @@ class WMachine(val vm: ForthVM): WordClass {
      * This is a harsh, but conventional Forth word. It's practically the only
      * way to stop the gateway. This should not be caught or prevented.
      */
-    fun w_quit() {
+    fun w_quit(vm: ForthVM) {
         throw ForthQuit("Quit")
     }
 
@@ -170,7 +181,7 @@ class WMachine(val vm: ForthVM): WordClass {
      * This what the compiler emits for `: a 65 ;` => `lit 65`. When this code
      * is being run, this functions get the 65 and pushes it onto the stack.
      */
-    fun w_lit() {
+    fun w_lit(vm: ForthVM) {
         val v: Int = vm.mem[vm.ip++]
         vm.dstk.push(v)
     }

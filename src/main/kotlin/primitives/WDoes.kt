@@ -1,14 +1,18 @@
-package kf
+package kf.primitives
 
-class WDoes(val vm: ForthVM) : WordClass {
+import kf.ForthVM
+import kf.Word
+import kf.WordClass
+
+object WDoes : WordClass {
     override val name = "Does"
 
     override val primitives: Array<Word> = arrayOf(
-        Word("does>", imm = true, compO = true) {  doesAngle() },
-        Word("does") { w_does() },
-        Word("addr", compO = true) {  w_addr() },
-        Word("addrcall", compO = true) {  w_addrCall() },
-        Word("create") { w_create() },
+        Word("does>", ::w_doesAngle, imm = true, compO = true),
+        Word("does", ::w_does),
+        Word("addr", ::w_addr),
+        Word("addrcall", ::w_addrCall, compO = true),
+        Word("create", ::w_create),
     )
 
     /**  does> : inside of compilation, adds "does" + "ret"
@@ -24,22 +28,22 @@ class WDoes(val vm: ForthVM) : WordClass {
      *
      * */
 
-    fun doesAngle() {
+    fun w_doesAngle(vm: ForthVM) {
         vm.appendWord("does")
         vm.appendWord("return")
     }
 
     /**  does: change most recent word from data to call-fn-with-data-num */
 
-    fun w_does() {
+    fun w_does(vm: ForthVM) {
         val w: Word = vm.dict.last
-        w.callable = vm.dict["addrcall"].callable
+        w.fn = vm.dict["addrcall"].fn
         w.cpos = vm.ip + 1
     }
 
     /**  Used for pure-data things, like "create age 1 allot" (ie variable) */
 
-    fun w_addr() {
+    fun w_addr(vm: ForthVM) {
         val addr: Int = vm.currentWord.dpos
         vm.dstk.push(addr)
     }
@@ -51,7 +55,7 @@ class WDoes(val vm: ForthVM) : WordClass {
      * made by create + does will have that.
      * */
 
-    fun w_addrCall() {
+    fun w_addrCall(vm: ForthVM) {
         // push addr
         val addr: Int = vm.currentWord.dpos
         vm.dstk.push(addr)
@@ -65,13 +69,13 @@ class WDoes(val vm: ForthVM) : WordClass {
      *
      * */
 
-    fun w_create() {
+    fun w_create(vm: ForthVM) {
         val name: String = vm.getToken()
         val w = Word(
             name,
-            cpos = Word.NO_ADDR,
+            cpos = Word.Companion.NO_ADDR,
             dpos = vm.dend,
-            callable =  {  w_addr() })
+            fn = ::w_addr)
         vm.dict.add(w)
     }
 }

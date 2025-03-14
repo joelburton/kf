@@ -1,18 +1,26 @@
-package kf
+package kf.primitives
 
 import com.github.ajalt.mordant.terminal.Terminal
+import kf.D
+import kf.ForthEOF
+import kf.ForthError
+import kf.ForthQuitNonInteractive
+import kf.ForthVM
+import kf.TerminalFileInterface
+import kf.Word
+import kf.WordClass
 
-class WInclude(val vm: ForthVM) : WordClass {
+object WInclude : WordClass {
     override val name = "Include"
     override val primitives = arrayOf(
         // including new primitives and forth files
-        Word("include") { w_include() },
-        Word("include-primitives") { w_includeBinary() },
+        Word("include", ::w_include),
+        Word("include-primitives", ::w_includeBinary),
     )
 
     /**  Read in a primitive class dynamically
      */
-    fun readPrimitiveClass(name: String) {
+    fun readPrimitiveClass(vm: ForthVM, name: String) {
         if (D) vm.dbg(3, "vm.readPrimitiveClass: $name")
         try {
             val cls: Class<*> = Class.forName(name)
@@ -36,7 +44,7 @@ class WInclude(val vm: ForthVM) : WordClass {
 
     /**  `include` `( in:"file" -- : read Forth file in )` */
 
-    fun w_include() {
+    fun w_include(vm: ForthVM) {
         val path = vm.getToken()
 
         val prevIO: Terminal = vm.io
@@ -61,8 +69,8 @@ class WInclude(val vm: ForthVM) : WordClass {
      * These can be anything the JVM can understand: Java, Kotlin, Groovy, etc.
      * */
 
-    fun w_includeBinary() {
+    fun w_includeBinary(vm: ForthVM) {
         val path = vm.getToken()
-        readPrimitiveClass(path)
+        readPrimitiveClass(vm, path)
     }
 }

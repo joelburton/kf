@@ -1,4 +1,8 @@
-package kf
+package kf.primitives
+
+import kf.ForthVM
+import kf.Word
+import kf.WordClass
 
 //interface TestWord {
 //    val name: String
@@ -46,12 +50,12 @@ package kf
 //    )
 //}
 
-class WComments(val vm: ForthVM) : WordClass {
+object WComments : WordClass {
     override val name = "Comments"
 
-    override val primitives: Array<Word> = arrayOf(
-        Word("\\", imm = true) { w_backslashComment() },
-        Word("(", imm = true) { w_parenComment() },
+    override val primitives = arrayOf(
+        Word("\\", imm = true, fn = ::w_backslashComment),
+        Word("(", imm = true, fn = ::w_parenComment),
     )
 
     /**  ( -- : handles parentheses comments )
@@ -59,14 +63,14 @@ class WComments(val vm: ForthVM) : WordClass {
      * These can only be on one line; if a comment isn't closed by EOL,
      * the scanner will throw an error.
      */
-    fun w_parenComment() {
+    fun w_parenComment(vm: ForthVM) {
         vm.interpScanner.parse(')')
     }
 
 
     /**  ( -- : handles backslash comments )
      */
-    fun w_backslashComment() {
+    fun w_backslashComment(vm: ForthVM) {
         vm.interpScanner.nextLine()
     }
 }

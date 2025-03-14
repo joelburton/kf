@@ -1,7 +1,7 @@
 import kf.InvalidState
 import kf.ParseError
 import kf.StackOverflow
-import kf.WCompiling
+import kf.primitives.WCompiling
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.Disabled
@@ -10,11 +10,7 @@ import kotlin.test.assertFailsWith
 
 
 class WCompilingTest : ForthTestCase() {
-    val mod: WCompiling
-
-    init {
-        mod = vm.modulesLoaded["Compiling"]!! as WCompiling
-    }
+    val mod: WCompiling = vm.modulesLoaded["Compiling"]!! as WCompiling
 
     @Test
     fun w_colon() {
@@ -38,7 +34,7 @@ class WCompilingTest : ForthTestCase() {
 
     @Test
     fun w_doLit() {
-        mod.w_doLit()
+        mod.w_doLit(vm)
         assertEquals(vm.dict.getNum("lit"), vm.dstk.pop())
     }
 
@@ -88,6 +84,7 @@ class WCompilingTest : ForthTestCase() {
 
     @Test
     fun w_postpone() {
+        TODO()
     }
 
     @Test

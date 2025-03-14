@@ -26,7 +26,7 @@ class Dict(val vm: ForthVM, val capacity: Int = 1024)  {
     val last: Word get() = _words.last()
 
     operator fun get(wn: Int): Word {
-        if (wn < 0 || wn >= _words.size) throw WordNotFoundException("${wn}")
+        if (wn < 0 || wn >= _words.size) throw WordNotFoundException("$wn")
         return _words[wn]
     }
 
@@ -37,8 +37,8 @@ class Dict(val vm: ForthVM, val capacity: Int = 1024)  {
         throw WordNotFoundException(name)
     }
 
-    fun getSafe(Name: String): Word? =
-        _words.asReversed().find { it.name.equals(Name, ignoreCase = true) }
+    fun getSafe(name: String): Word? =
+        _words.asReversed().find { it.name.equals(name, ignoreCase = true) }
 
     /**  Get word for if it uses this address.
      *

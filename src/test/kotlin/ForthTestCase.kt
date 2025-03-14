@@ -1,15 +1,14 @@
 import com.github.ajalt.mordant.rendering.AnsiLevel
 import com.github.ajalt.mordant.terminal.Terminal
-import kf.CallableWord
 import kf.ForthEOF
 import kf.ForthVM
 import kf.TerminalTestInterface
-import kf.WTools
+import kf.primitives.WTools
 import kf.recorder
 import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
 
-val dummyFunc: CallableWord = { it.ip = 2 }
+fun dummyFn(vm: ForthVM) { vm.ip = 2 }
 
 open class ForthTestCase {
     val testIO = TerminalTestInterface()

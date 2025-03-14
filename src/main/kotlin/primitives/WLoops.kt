@@ -1,59 +1,64 @@
-package kf
+package kf.primitives
 
-class WLoops(val vm: ForthVM): WordClass {
+import kf.D
+import kf.ForthVM
+import kf.Word
+import kf.WordClass
+
+object WLoops: WordClass {
     override val name = "Loops"
     override val primitives: Array<Word> = arrayOf(
-        Word("begin", imm = true, compO = true) { w_begin() },
-        Word("again", imm=true, compO=true) { w_again() },
-        Word("until", imm=true, compO=true) { w_until() },
-        Word("while", imm=true, compO=true) { w_while() },
-        Word("repeat", imm=true, compO=true) { w_repeat() },
+        Word("begin", ::w_begin , imm = true, compO = true) ,
+        Word("again", ::w_again , imm = true, compO = true) ,
+        Word("until", ::w_until , imm = true, compO = true) ,
+        Word("while", ::w_while , imm = true, compO = true) ,
+        Word("repeat", ::w_repeat , imm = true, compO = true) ,
 
-        Word("do", imm=true, compO=true) { w_do() },
-        Word("(do)", compO = true, hidden = true) { w_parenDo() },
-        Word("loop", imm=true, compO=true) { w_loop() },
-        Word("i", compO=true) { w_i() },
-        Word("j", compO=true) { w_j() },
-        Word("k", compO=true) { w_k() },
-        Word("l", compO=true) { w_l() },
-        Word("m", compO=true) { w_m() },
+        Word("do", ::w_do , imm = true, compO = true) ,
+        Word("(do)", ::w_parenDo , compO = true, hidden = true) ,
+        Word("loop", ::w_loop , imm = true, compO = true) ,
+        Word("i", ::w_i , compO = true) ,
+        Word("j", ::w_j , compO = true) ,
+        Word("k", ::w_k , compO = true) ,
+        Word("l", ::w_l , compO = true) ,
+        Word("m", ::w_m , compO = true) ,
 
-        Word("(loop)", compO = true, hidden = true) { w_parenLoop() },
-        Word("+loop", imm=true, compO=true) { w_plusLoop() },
+        Word("(loop)", ::w_parenLoop , compO = true, hidden = true) ,
+        Word("+loop", ::w_plusLoop , imm = true, compO = true) ,
 
-        Word("leave", imm=true, compO=true) { w_leave() },
+        Word("leave", ::w_leave , imm = true, compO = true) ,
 
-        Word(".lstk") { w_lstk() },  // ?do - enter loop if true
+        Word(".lstk", ::w_lstk ) ,  // ?do - enter loop if true
         // -do down-counting
 
     )
 
 
     /**  begin (a loop) */
-    fun w_begin() {
+    fun w_begin(vm: ForthVM) {
         vm.dstk.push(vm.cend)
     }
 
     /**  again */
-    fun w_again() {
+    fun w_again(vm: ForthVM) {
         val bwref: Int = vm.dstk.pop()
         vm.appendJump("branch", bwref)
     }
 
     /**  until */
-    fun w_until() {
+    fun w_until(vm: ForthVM) {
         val bwref: Int = vm.dstk.pop()
         vm.appendJump("branch", bwref)
     }
 
-    private fun w_while() {
+    private fun w_while(vm: ForthVM) {
         vm.appendJump("0branch", 0xffff)
         vm.dstk.push(vm.cend) // location of while
     }
 
-    private fun w_repeat() {
-        val while_ref: Int = vm.dstk.pop()
-        vm.mem[while_ref - 1] = vm.cend + 2 // failing while goes past me
+    private fun w_repeat(vm: ForthVM) {
+        val whileRef: Int = vm.dstk.pop()
+        vm.mem[whileRef - 1] = vm.cend + 2 // failing while goes past me
         val bwref: Int = vm.dstk.pop()
         vm.appendJump("branch", bwref)
         vm.appendWord("drop")
@@ -61,7 +66,7 @@ class WLoops(val vm: ForthVM): WordClass {
 
 
     /**  loop  (limit start -- limit start R:addr  ) */
-    fun w_do() {
+    fun w_do(vm: ForthVM) {
         vm.appendWord("(do)")
         vm.rstk.push(vm.cend) // start of do loop, so end can come back to us
 
@@ -72,7 +77,7 @@ class WLoops(val vm: ForthVM): WordClass {
     }
 
     // "do"  adds this to def (this is actually run at runtime)
-    fun w_parenDo() {
+    fun w_parenDo(vm: ForthVM) {
         // swap
         val a = vm.dstk.pop()
         val b = vm.dstk.pop()
@@ -86,7 +91,7 @@ class WLoops(val vm: ForthVM): WordClass {
     }
 
     /**  loop */
-    fun w_loop() {
+    fun w_loop(vm: ForthVM) {
         vm.appendLit(1)
         val bwref: Int = vm.rstk.pop() // beginning of loop
         vm.appendJump("(loop)", bwref + 4)
@@ -96,7 +101,7 @@ class WLoops(val vm: ForthVM): WordClass {
     }
 
     /**  +loop */
-    fun w_plusLoop() {
+    fun w_plusLoop(vm: ForthVM) {
         val bwref: Int = vm.rstk.pop() // beginning of loop
         vm.appendJump("(loop)", bwref + 4)
 
@@ -105,7 +110,7 @@ class WLoops(val vm: ForthVM): WordClass {
     }
 
     // loop-fn
-    fun w_parenLoop() {
+    fun w_parenLoop(vm: ForthVM) {
         val incrementBy = vm.dstk.pop()
         vm.lstk.push(vm.lstk.pop() + incrementBy)
         val loopIdx = vm.lstk.pop()
@@ -121,27 +126,27 @@ class WLoops(val vm: ForthVM): WordClass {
         }
     }
 
-    private fun w_i() {
+    private fun w_i(vm: ForthVM) {
         vm.dstk.push(vm.lstk.getAt(1))
     }
 
-    private fun w_j() {
+    private fun w_j(vm: ForthVM) {
         vm.dstk.push(vm.lstk.getAt(3))
     }
 
-    private fun w_k() {
+    private fun w_k(vm: ForthVM) {
         vm.dstk.push(vm.lstk.getAt(5))
     }
 
-    private fun w_l() {
+    private fun w_l(vm: ForthVM) {
         vm.dstk.push(vm.lstk.getAt(7))
     }
 
-    private fun w_m() {
+    private fun w_m(vm: ForthVM) {
         vm.dstk.push(vm.lstk.getAt(9))
     }
 
-    private fun w_leave() {
+    private fun w_leave(vm: ForthVM) {
         val leaveAddr: Int = vm.rstk.peek() + 2
         vm.appendWord("L>")
         vm.appendWord("L>")
@@ -150,7 +155,7 @@ class WLoops(val vm: ForthVM): WordClass {
         vm.appendJump("jump", leaveAddr)
     }
 
-    private fun w_lstk() {
+    private fun w_lstk(vm: ForthVM) {
         vm.lstk.dump()
     }
 } // : *begin .cend @ . .cend @ immediate ;
