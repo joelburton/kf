@@ -12,7 +12,7 @@ interface WordClass {
 }
 
 class Dict(val vm: ForthVM, val capacity: Int = 1024)  {
-    private val words = arrayListOf<Word>()
+    val words = arrayListOf<Word>()
     var currentlyDefining: Word? = null
 
     fun reset() {

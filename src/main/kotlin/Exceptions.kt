@@ -24,3 +24,5 @@ class ForthQuitNonInteractive : RuntimeException()
 class ParseError(message: String) : ForthError("Parse error: $message")
 
 class InvalidState(message: String) : ForthError("Invalid state: $message")
+
+class FileError(message: String) : ForthError("File error: $message")

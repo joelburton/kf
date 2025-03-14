@@ -8,7 +8,7 @@ class WInclude(val vm: ForthVM) : WordClass {
         // including new primitives and forth files
         Word("include") { w_include() },
         Word("include-primitives") { w_includeBinary() },
-        )
+    )
 
     /**  Read in a primitive class dynamically
      */
@@ -42,15 +42,11 @@ class WInclude(val vm: ForthVM) : WordClass {
         val prevIO: Terminal = vm.io
         val prevVerbosity: Int = vm.verbosity
 
-        try {
-//            vm.io = IOFile(path)  // FIXME
-        } catch (e: FileSystemException) {
-            throw ForthError("No such file: $path")
-        }
-
+        vm.io = Terminal(terminalInterface = TerminalFileInterface(path))
+        vm.verbosity = -2
         try {
             vm.runVM()
-        } catch (e: ForthQuitNonInteractive) {
+        } catch (_: ForthQuitNonInteractive) {
             // Caused by the EOF or \\\ commands --- stop reading this file, but
             // not an error --- will proceed to next file or to console
         } catch (_: ForthEOF) {

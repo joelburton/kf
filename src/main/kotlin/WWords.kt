@@ -1,6 +1,8 @@
 package kf
 
+import com.github.ajalt.mordant.rendering.OverflowWrap
 import com.github.ajalt.mordant.rendering.TextColors.*
+import com.github.ajalt.mordant.rendering.Whitespace
 
 class WWords(val vm: ForthVM) : WordClass {
     override val name = "Words"
@@ -41,22 +43,11 @@ class WWords(val vm: ForthVM) : WordClass {
     /**  `words` ( -- :dump words )
      */
     fun w_words() {
-        var currLineLen = 0
-        val width: Int = vm.termWidth
-
-        for (i in 0..<vm.dict.size) {
-            val w: Word = vm.dict[i]
-            if (w.hidden) continue
-
-            val s: String = w.name + " "
-            currLineLen += s.length
-            if (currLineLen > width) {
-                vm.io.println()
-                currLineLen = s.length
-            }
-            vm.io.print(s)
-        }
-        vm.io.println()
+        vm.io.println(
+            vm.dict.words.joinToString(" ") { it.name },
+            whitespace = Whitespace.NORMAL,
+            overflowWrap = OverflowWrap.BREAK_WORD
+        )
     }
 
     /**  `.dict` ( -- : list all words with internal info )

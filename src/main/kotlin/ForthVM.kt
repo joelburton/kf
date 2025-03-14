@@ -8,6 +8,8 @@ import com.github.ajalt.mordant.terminal.danger
 import com.github.ajalt.mordant.terminal.warning
 import kotlin.time.TimeSource
 
+import kotlin.reflect.KProperty
+
 
 class ForthVM(
     var io: Terminal = Terminal(),
@@ -15,54 +17,68 @@ class ForthVM(
     val mem: IntArray = IntArray(memConfig.upperBound + 1),
     verbosity: Int = 0,
 ) {
+    inner class RegisterDelegate(val addr: Int) {
+        operator fun getValue(thisRef: Any?, property: KProperty<*>): Int {
+            return mem[addr]
+        }
+
+        operator fun setValue(thisRef: Any?, property: KProperty<*>, value: Int) {
+            mem[addr] = value
+        }
+    }
+
 
     // *************************************************************** registers
 
-    // TODO: maybe these could be delegates?
-    //
-    // var base: Int by registerDelegate(REG_BASE)
+    var base: Int by RegisterDelegate(REG_BASE)
+    var verbosity: Int by RegisterDelegate(REG_VERBOSITY)
+    var cend: Int by RegisterDelegate(REG_CEND)
+    var dend: Int by RegisterDelegate(REG_DEND)
+    var termWidth: Int by RegisterDelegate(REG_TERM_WIDTH)
+    var cstart: Int by RegisterDelegate(REG_CSTART)
+    var dstart: Int by RegisterDelegate(REG_DSTART)
 
-    var base
-        get() = mem[REG_BASE]
-        set(v) {
-            mem[REG_BASE] = v
-        }
-
-    var verbosity
-        get() = mem[REG_VERBOSITY]
-        set(v) {
-            mem[REG_VERBOSITY] = v
-        }
-
-    var cend
-        get() = mem[REG_CEND]
-        set(v) {
-            mem[REG_CEND] = v
-        }
-
-    var dend
-        get() = mem[REG_DEND]
-        set(v) {
-            mem[REG_DEND] = v
-        }
-
-    var termWidth
-        get() = mem[REG_TERM_WIDTH]
-        set(v) {
-            mem[REG_TERM_WIDTH] = v
-        }
-
-    var cstart
-        get() = mem[REG_CSTART]
-        set(v) {
-            mem[REG_CSTART] = v
-        }
-
-    var dstart
-        get() = mem[REG_DSTART]
-        set(v) {
-            mem[REG_DSTART] = v
-        }
+//        var base
+//        get() = mem[REG_BASE]
+//        set(v) {
+//            mem[REG_BASE] = v
+//        }
+//
+//    var verbosity
+//        get() = mem[REG_VERBOSITY]
+//        set(v) {
+//            mem[REG_VERBOSITY] = v
+//        }
+//
+//    var cend
+//        get() = mem[REG_CEND]
+//        set(v) {
+//            mem[REG_CEND] = v
+//        }
+//
+//    var dend
+//        get() = mem[REG_DEND]
+//        set(v) {
+//            mem[REG_DEND] = v
+//        }
+//
+//    var termWidth
+//        get() = mem[REG_TERM_WIDTH]
+//        set(v) {
+//            mem[REG_TERM_WIDTH] = v
+//        }
+//
+//    var cstart
+//        get() = mem[REG_CSTART]
+//        set(v) {
+//            mem[REG_CSTART] = v
+//        }
+//
+//    var dstart
+//        get() = mem[REG_DSTART]
+//        set(v) {
+//            mem[REG_DSTART] = v
+//        }
 
     val cellMeta = Array(memConfig.upperBound + 1) { CellMeta.Unknown }
     val dict = Dict(this)
@@ -83,7 +99,7 @@ class ForthVM(
         if (verbosity > 0) io.println(yellow("Rebooting..."))
         // The only things we want to hold onto
         val curVerbosity: Int = this@ForthVM.verbosity
-        val curTermWidth = if (termWidth == 0) 80 else termWidth
+//        val curTermWidth = if (termWidth == 0) 80 else termWidth
 
         // Clear memory
         mem.fill(0)
@@ -97,7 +113,7 @@ class ForthVM(
         cend = memConfig.codeStart
         dstart = memConfig.dataStart
         dend = memConfig.dataStart
-        termWidth = curTermWidth
+//        termWidth = curTermWidth
         base = 10
         this@ForthVM.verbosity = curVerbosity
 
@@ -242,7 +258,7 @@ class ForthVM(
             } catch (e: ForthQuit) {
                 // For non-interactive (like a file), needs to stop reading all
                 // files --- so rethrow error
-                if (io.terminalInterface !is StandardTerminalInterface) throw e  // FIXME: should check interactive
+                if (io.terminalInterface !is StandardTerminalInterface) throw e
                 // otherwise, it just resets call stack
                 rstk.reset()
             } catch (e: ForthWarning) {

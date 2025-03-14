@@ -4,6 +4,10 @@ package kf
 
 import kotlin.text.HexFormat
 
+const val D = false
+const val VERSION_STRING = "KPupForth 0.1.0"
+
+
 /**  Try a word as an integer:
  *
  * It parses with the provided radix (for safeParseInt("ff", 16) would
@@ -66,3 +70,9 @@ val Int.hex8: String get() = this.toHexString(DollarHex)
 val Int.hex: String get() = this.toHexString(DollarBriefHex)
 val Int.addr: String get() = this.toShort().toHexString(DollarHex)
 val Int.pad10: String get(): String = toString().padStart(10, ' ')
+
+@Suppress("KotlinConstantConditions")
+val Int.charRepr get() =
+    if (this in ' '.code..'~'.code) "'${this.toChar()}'" else ""
+
+fun Int.numToStr(base: Int): String = this.toString(base.coerceIn(2, 36))
