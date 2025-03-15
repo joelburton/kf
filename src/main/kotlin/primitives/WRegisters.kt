@@ -7,13 +7,13 @@ import kf.WordClass
 object WRegisters : WordClass {
     override val name = "Registers"
     override val primitives: Array<Word> = arrayOf(
-        Word("cstart", ::w_cstart),
-        Word("cend", ::w_cend),
-        Word("dstart", ::w_dstart),
-        Word("dend", ::w_dend),
-        Word("base", ::w_base),
-        Word("verbosity", ::w_verbosity),
-        Word("interp-state", ::w_interpState),
+        Word("r:cstart", ::w_cstart),
+        Word("r:cend", ::w_cend),
+        Word("r:dstart", ::w_dstart),
+        Word("r:dend", ::w_dend),
+        Word("r:base", ::w_base),
+        Word("r:verbosity", ::w_verbosity),
+        Word("r:interp-state", ::w_interpState),
     )
 
     fun w_cstart(vm: ForthVM) {

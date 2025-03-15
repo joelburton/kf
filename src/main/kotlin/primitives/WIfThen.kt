@@ -5,9 +5,6 @@ import kf.ForthVM
 import kf.Word
 import kf.WordClass
 
-object Bad {
-
-}
 object WIfThen : WordClass {
     override val name = "IfThen"
 

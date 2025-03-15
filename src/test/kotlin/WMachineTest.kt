@@ -27,25 +27,85 @@ class WMachineTest : ForthTestCase() {
 
     @Test
     fun w_0branch() {
-        TODO()
+        vm.dstk.push(0)
+        vm.mem[0x100] = 0x102
+        vm.ip = 0x100
+        mod.w_0branch(vm)
+        assertEquals(0x102, vm.ip)
+        assertDStack()
+
+        vm.dstk.push(1)
+        vm.mem[0x100] = 0x102
+        vm.ip = 0x100
+        mod.w_0branch(vm)
+        assertEquals(0x101, vm.ip)
+        assertDStack()
     }
 
     @Test
     fun w_branch() {
+        vm.mem[0x100] = 0x102
+        vm.ip = 0x100
+        mod.w_branch(vm)
+        assertEquals(0x102, vm.ip)
+    }
+
+    @Test
+    fun w_branchIntegration() {
         vm.cend = 0x100
-        eval(": test 3 dup . 1- dup 0= if return then branch [ 0x102 ] literal ;")  // FIXME : need a real 102, not a lit one
+        eval(": test 3 dup . 1- dup 0= if return then branch [ 0x102 ,, ] ;")
+        eval("test")
+        assertPrinted("3 2 1 ")
+    }
+
+    @Test
+    fun w_0branchIntegration() {
+        vm.cend = 0x100
+        eval(": test 3 dup . 1- dup 0= 0branch [ 0x102 ,, ] ;")
+        eval("test")
+        assertPrinted("3 2 1 ")
+    }
+
+    @Test
+    fun w_relBranchIntegration() {
+        vm.cend = 0x100
+        eval(": test 3 dup . 1- dup 0= if return then rel-branch [ -9 ,, ] ;")
+        eval("test")
+        assertPrinted("3 2 1 ")
+    }
+
+    @Test
+    fun w_0relBranchIntegration() {
+        vm.cend = 0x100
+        eval(": test 3 dup . 1- dup 0= 0rel-branch [ -6 ,, ] ;")
         see("test")
-        TODO()
+        eval("test")
+        assertPrinted("3 2 1 ")
     }
 
     @Test
     fun w_0relBranch() {
-        TODO()
+        vm.dstk.push(0)
+        vm.mem[0x100] = 0x10
+        vm.ip = 0x100
+        mod.w_0relBranch(vm)
+        assertEquals(0x110, vm.ip)
+        assertDStack()
+
+        vm.dstk.push(1)
+        vm.mem[0x100] = 0x102
+        vm.ip = 0x100
+        mod.w_0relBranch(vm)
+        assertEquals(0x101, vm.ip)
+        assertDStack()
     }
 
     @Test
     fun w_relBranch() {
-        TODO()
+        vm.mem[0x100] = 0x10
+        vm.ip = 0x100
+        mod.w_relBranch(vm)
+        assertEquals(0x110, vm.ip)
     }
 
     @Test

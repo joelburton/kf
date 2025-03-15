@@ -41,9 +41,6 @@ class Word(
             .removePrefix("fun ")
         if (D) vm.dbg(3, "word.exec $name $s")
         fn(vm)
-//        } else {
-//            callable!!(vm)
-//        }
         if (D) vm.dbg(2, "word.exec $name <--")
     }
 

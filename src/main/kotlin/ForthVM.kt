@@ -355,7 +355,6 @@ class ForthVM(
         // Put interpreter code in mem; the VM will start executing here
         addInterpreterCode(cstart)
         resetInterpreter()
-        if (verbosity > 0) WInterp.w_banner(this)
     }
 
     /**  Handle a VM reset at the interpreter layer.
@@ -465,15 +464,16 @@ class ForthVM(
     fun addInterpreterCode(startAddr: Int) {
         if (D) dbg(3, "vm.addInterpreterCode: $startAddr")
 
+        appendWord("banner")
         appendWord("interp-prompt")
         appendWord("interp-refill")
-        appendJump("0branch", startAddr + 10)
+        appendJump("0rel-branch", 7)
         appendWord("interp-read")
-        appendJump("0branch", startAddr)
+        appendJump("0rel-branch", -5)
         appendWord("interp-process")
-        appendJump("branch", startAddr + 4)
+        appendJump("rel-branch", -5)
         appendWord("eof")
-        appendJump("branch", startAddr + 8)
+        appendJump("rel-branch", -12)
     }
 
     fun dbg(lvl: Int, s: String) {

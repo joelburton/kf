@@ -112,7 +112,7 @@ object WInterp: WordClass {
      * the interp). When reading a file, it stops reading that file, and
      * moves to the next (exiting if there are no more). */
     private fun w_eof(vm: ForthVM) {
-        throw ForthEOF()
+//        throw ForthEOF()
     }
 
 
@@ -213,6 +213,6 @@ object WInterp: WordClass {
     /** `banner` `( -- : print welcome banner )` */
 
     fun w_banner(vm: ForthVM) {
-        vm.io.success("\nWelcome to ${VERSION_STRING}\n")
+        if (vm.verbosity > 0) vm.io.success("\nWelcome to ${VERSION_STRING}\n")
     }
 }

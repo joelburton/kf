@@ -89,7 +89,7 @@ object WMachine : WordClass {
      */
     fun w_0relBranch(vm: ForthVM) {
         val flag = vm.dstk.pop()
-        if (0 == flag) {
+        if (flag == 0) {
             if (D) vm.dbg(3, "w_0branch =0 --> ${vm.mem[vm.ip].addr}")
             vm.ip = vm.mem[vm.ip] + vm.ip
         } else {
