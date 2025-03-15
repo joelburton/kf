@@ -1,14 +1,7 @@
 package kf.primitives
 
 import com.github.ajalt.mordant.terminal.Terminal
-import kf.D
-import kf.ForthEOF
-import kf.ForthError
-import kf.ForthQuitNonInteractive
-import kf.ForthVM
-import kf.TerminalFileInterface
-import kf.Word
-import kf.WordClass
+import kf.*
 
 object WInclude : WordClass {
     override val name = "Include"
@@ -23,19 +16,19 @@ object WInclude : WordClass {
     fun readPrimitiveClass(vm: ForthVM, name: String) {
         if (D) vm.dbg(3, "vm.readPrimitiveClass: $name")
         try {
-            val cls: Class<*> = Class.forName(name)
-            val mod = cls.getConstructor(ForthVM::class.java)
-                .newInstance(this) as WordClass
+            // get the actual "forth module" (ie, Kotlin object) -- Kotlin
+            // objects are a type of singleton Java class, so there's a field
+            // always called INSTANCE on the class with the object
+            val mod = Class.forName(name)
+                .getDeclaredField("INSTANCE")
+                .get(null) as WordClass
             vm.dict.addModule(mod)
-        } catch (e: Exception) {
-            when (e) {
-                is ClassNotFoundException,
-                is IllegalAccessException,
-                is NoSuchFieldException ->
-                    throw ForthError("Can't load: $name (${e.message})")
-
-                else -> throw e // Re-throw other unexpected exceptions
-            }
+        } catch (e: ClassNotFoundException) {
+            throw ForthError("Can't find: $name")
+        } catch (e: NoSuchFieldException) {
+            throw ForthError("Not an object")
+        } catch (e: ClassCastException) {
+            throw ForthError("Wrong interface: needs `name`, `primitives`")
         }
     }
 

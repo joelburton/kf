@@ -57,9 +57,12 @@ class ForthVM(
     val mem: IntArray = IntArray(memConfig.upperBound + 1),
 ) {
 
+
+    // *************************************************************** registers
     /** Convenience for creating registers, which have getters/setters that
      * uses the underlying [mem].
      */
+
     inner class RegisterDelegate(val addr: Int) {
         operator fun getValue(thisRef: Any?, prop: KProperty<*>): Int {
             return mem[addr]
@@ -70,8 +73,6 @@ class ForthVM(
         }
     }
 
-
-    // *************************************************************** registers
     /** Base of math output (10 is for decimal and default) */
     var base: Int by RegisterDelegate(REG_BASE)
 
@@ -173,7 +174,6 @@ class ForthVM(
 
         rebootInterpreter()
         reset()
-        if (verbosity > 0) banner()
     }
 
     /** Reset: this what `abort` does */
@@ -201,7 +201,7 @@ class ForthVM(
             // Machine    // nt
             // Interp     // nt
             WInclude, // nt
-//            WRegisters(this), // nt
+            WRegisters, // nt
             WTools, // nt
             WComments,
             WInputOutput,
@@ -354,6 +354,7 @@ class ForthVM(
         // Put interpreter code in mem; the VM will start executing here
         addInterpreterCode(cstart)
         resetInterpreter()
+        if (verbosity > 0) WInterp.w_banner(this)
     }
 
     /**  Handle a VM reset at the interpreter layer.
@@ -480,10 +481,6 @@ class ForthVM(
             0, 1, 2 -> io.info(s)
             else -> io.println(gray(s))
         }
-    }
-
-    fun banner() {
-        io.success("\nWelcome to ${VERSION_STRING}\n")
     }
 
     fun getToken(): String {

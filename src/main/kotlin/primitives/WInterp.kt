@@ -5,6 +5,7 @@ package kf.primitives
 import com.github.ajalt.mordant.rendering.TextColors.green
 import com.github.ajalt.mordant.rendering.TextStyles.bold
 import com.github.ajalt.mordant.terminal.Terminal
+import com.github.ajalt.mordant.terminal.success
 import kf.D
 import kf.ForthEOF
 import kf.ForthMissingToken
@@ -12,6 +13,7 @@ import kf.ForthQuitNonInteractive
 import kf.ForthVM
 import kf.TerminalFileInterface
 import kf.TerminalStringInterface
+import kf.VERSION_STRING
 import kf.Word
 import kf.WordClass
 
@@ -211,6 +213,6 @@ object WInterp: WordClass {
     /** `banner` `( -- : print welcome banner )` */
 
     fun w_banner(vm: ForthVM) {
-        vm.banner()
+        vm.io.success("\nWelcome to ${VERSION_STRING}\n")
     }
 }
