@@ -23,6 +23,7 @@ import kf.primitives.WMachine
 import kf.primitives.WMathLogic
 import kf.primitives.WMemory
 import kf.primitives.WMisc
+import kf.primitives.WRegisters
 import kf.primitives.WStackOps
 import kf.primitives.WStrings
 import kf.primitives.WTools

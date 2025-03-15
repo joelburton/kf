@@ -1,6 +1,8 @@
-package kf
+package kf.primitives
 
-
+import kf.ForthVM
+import kf.Word
+import kf.WordClass
 
 object WRegisters : WordClass {
     override val name = "Registers"
@@ -15,37 +17,37 @@ object WRegisters : WordClass {
     )
 
     fun w_cstart(vm: ForthVM) {
-        vm.dstk.push(vm.mem[ForthVM.REG_CSTART])
+        vm.dstk.push(vm.mem[ForthVM.Companion.REG_CSTART])
     }
 
     fun w_cend(vm: ForthVM) {
-        vm.dstk.push(vm.mem[ForthVM.REG_CEND])
+        vm.dstk.push(vm.mem[ForthVM.Companion.REG_CEND])
     }
 
     fun w_dstart(vm: ForthVM) {
-        vm.dstk.push(vm.mem[ForthVM.REG_DSTART])
+        vm.dstk.push(vm.mem[ForthVM.Companion.REG_DSTART])
     }
 
     fun w_dend(vm: ForthVM) {
-        vm.dstk.push(vm.mem[ForthVM.REG_DEND])
+        vm.dstk.push(vm.mem[ForthVM.Companion.REG_DEND])
     }
 
     fun w_base(vm: ForthVM) {
-        vm.dstk.push(vm.mem[ForthVM.REG_BASE])
+        vm.dstk.push(vm.mem[ForthVM.Companion.REG_BASE])
     }
 
     fun w_verbosity(vm: ForthVM) {
-        vm.dstk.push(vm.mem[ForthVM.REG_VERBOSITY])
+        vm.dstk.push(vm.mem[ForthVM.Companion.REG_VERBOSITY])
     }
 
     fun w_interpState(vm: ForthVM) {
-        vm.dstk.push(vm.mem[ForthVM.REG_INTERP_STATE])
+        vm.dstk.push(vm.mem[ForthVM.Companion.REG_INTERP_STATE])
     }
 
 
 //    private fun makeRegWord(name: String, addr: Int) {
 //        return Word("r:$name") { _ -> register(name, addr) }
-//        
+//
 //    }
 //    private fun register(name: String, addr: Int) {
 //        if (D) vm.dbg(3, "w_reg-${name}")
