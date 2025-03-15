@@ -112,7 +112,7 @@ object WInterp: WordClass {
      * the interp). When reading a file, it stops reading that file, and
      * moves to the next (exiting if there are no more). */
     private fun w_eof(vm: ForthVM) {
-//        throw ForthEOF()
+        throw ForthEOF()
     }
 
 
@@ -149,7 +149,7 @@ object WInterp: WordClass {
      * real one --- if something is wrong with the new one, a `reset` will
      * state running back at code state, running the original interpreter. */
     private fun w_interpReloadCode(vm: ForthVM) {
-        vm.addInterpreterCode(vm.cend)
+        vm.addInterpreterCode()
     }
 
     /** `parse-name` `( "name" -- addr u : get token from input )` */

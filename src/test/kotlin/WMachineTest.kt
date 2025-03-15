@@ -78,7 +78,6 @@ class WMachineTest : ForthTestCase() {
     fun w_0relBranchIntegration() {
         vm.cend = 0x100
         eval(": test 3 dup . 1- dup 0= 0rel-branch [ -6 ,, ] ;")
-        see("test")
         eval("test")
         assertPrinted("3 2 1 ")
     }

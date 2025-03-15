@@ -16,6 +16,7 @@ class Word(
     var compO: Boolean = false,
     var interpO: Boolean = false,
     var recursive: Boolean = false,
+    var deferToWn: Int? = null,
     var wn: Int = 0,
 ) {
     companion object {
@@ -59,4 +60,9 @@ class Word(
             if (dpos != NO_ADDR) dpos.addr else ""
         )
     }
+
+    fun isSameExec(other: Word): Boolean =
+        this.fn == other.fn
+                && this.cpos == other.cpos
+                && this.dpos == other.dpos
 }

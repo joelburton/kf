@@ -124,7 +124,7 @@ object WStackOps: WordClass {
     /**  `rot` ( a b c -- b c a : rotates top 3 items left )
      */
     fun w_rot(vm: ForthVM) {
-        vm.dstk.push(vm.dstk.getFrom(2))
+        vm.dstk.push(vm.dstk.popFrom(2))
     }
 
     /**  `clearstack` ( ? ? -- : clear entire data stack )
@@ -204,7 +204,7 @@ object WStackOps: WordClass {
      */
     fun w_spStore(vm: ForthVM) {
         val sp: Int = vm.dstk.pop()
-        if (sp < -1 || sp >= vm.dstk.size) {
+        if (sp < -1 || sp >= vm.dstk.endAt) {
             throw ForthError("Invalid sp")
         }
         vm.dstk.sp = sp
@@ -220,7 +220,7 @@ object WStackOps: WordClass {
      */
     fun w_rpStore(vm: ForthVM) {
         val sp: Int = vm.dstk.pop()
-        if (sp < -1 || sp >= vm.rstk.size) {
+        if (sp < -1 || sp >= vm.rstk.endAt) {
             throw ForthError("Invalid sp")
         }
         vm.rstk.sp = sp
@@ -236,7 +236,7 @@ object WStackOps: WordClass {
      */
     fun w_lpStore(vm: ForthVM) {
         val sp: Int = vm.dstk.pop()
-        if (sp < -1 || sp >= vm.lstk.size) {
+        if (sp < -1 || sp >= vm.lstk.endAt) {
             throw ForthError("Invalid sp")
         }
         vm.lstk.sp = sp

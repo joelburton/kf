@@ -26,7 +26,10 @@ object WTools : WordClass {
 
     fun _see(vm: ForthVM, w: Word, simple: Boolean) {
         vm.io.print(w.getHeaderStr())
-
+        w.deferToWn?.let {
+            val src: Word = vm.dict[it]
+            vm.io.println(" (deferrable word pointing to $src (${src.wn}))")
+        }
         if (w.cpos == Word.Companion.NO_ADDR) {
             vm.io.println(" (built-in, cannot show code)")
         } else if (w.dpos != Word.Companion.NO_ADDR) {
@@ -74,7 +77,6 @@ object WTools : WordClass {
             _dump(vm, k, false)
         }
     }
-
 
     /** Dumps data area; this powers the ".data" word. */
     fun w_dumpData(vm: ForthVM) {

@@ -49,6 +49,24 @@ open class ForthTestCase {
         assertContentEquals(items, vm.dstk.asArray())
     }
 
+    fun assertRStack(vararg items: Int) {
+        assertContentEquals(items, vm.rstk.asArray())
+        vm.dstk.reset()
+    }
+
+    fun assertRStackKeep(vararg items: Int) {
+        assertContentEquals(items, vm.rstk.asArray())
+    }
+
+    fun assertLStack(vararg items: Int) {
+        assertContentEquals(items, vm.lstk.asArray())
+        vm.dstk.reset()
+    }
+
+    fun assertLStackKeep(vararg items: Int) {
+        assertContentEquals(items, vm.lstk.asArray())
+    }
+
     fun assertPrinted(s: String) {
         assertEquals(s, getOutput())
     }

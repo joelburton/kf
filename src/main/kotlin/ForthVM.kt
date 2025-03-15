@@ -18,6 +18,7 @@ import kf.primitives.WInclude
 import kf.primitives.WInputOutput
 import kf.primitives.WInternals
 import kf.primitives.WInterp
+import kf.primitives.WInterp.w_banner
 import kf.primitives.WLoops
 import kf.primitives.WMachine
 import kf.primitives.WMathLogic
@@ -307,7 +308,7 @@ class ForthVM(
                 // For ForthErrors, just show the user a message, reset
                 // the machine (empty stacks, etc.), and let them continue.
                 io.danger("ERROR: " + e.message)
-                if (verbosity >= 2)
+                if (verbosity >= 3)
                     e.printStackTrace()
                 reset()
             } catch (e: ForthBrk) {
@@ -353,8 +354,9 @@ class ForthVM(
         interpScanner.reset()
 
         // Put interpreter code in mem; the VM will start executing here
-        addInterpreterCode(cstart)
+        addInterpreterCode()
         resetInterpreter()
+        w_banner(this)
     }
 
     /**  Handle a VM reset at the interpreter layer.
@@ -461,19 +463,18 @@ class ForthVM(
      * that loop being locked up in non-word code: that would require exposing
      * more of the actual dictionary access to Forth for people to be able
      * to write more interpreter internals in Forth. */
-    fun addInterpreterCode(startAddr: Int) {
-        if (D) dbg(3, "vm.addInterpreterCode: $startAddr")
+    fun addInterpreterCode() {
+        if (D) dbg(3, "vm.addInterpreterCode")
 
-        appendWord("banner")
         appendWord("interp-prompt")
         appendWord("interp-refill")
-        appendJump("0rel-branch", 7)
+        appendJump("0rel-branch", 7) // eof, -> eof
         appendWord("interp-read")
-        appendJump("0rel-branch", -5)
+        appendJump("0rel-branch", -6) // no more token, -> refill
         appendWord("interp-process")
-        appendJump("rel-branch", -5)
+        appendJump("rel-branch", -5) // go back to read
         appendWord("eof")
-        appendJump("rel-branch", -12)
+        appendJump("rel-branch", -12) // jump back to start
     }
 
     fun dbg(lvl: Int, s: String) {
