@@ -9,7 +9,7 @@ import kf.WordClass
 
 object WWords : WordClass {
     override val name = "Words"
-    override val primitives: Array<Word> = arrayOf(
+    override val primitives get() = arrayOf(
         Word("words", ::w_words ) ,
         Word("synonym", ::w_synonym ) ,
         Word("forget", ::w_forget ) ,
@@ -48,7 +48,7 @@ object WWords : WordClass {
      */
     fun w_words(vm: ForthVM) {
         vm.io.println(
-            vm.dict.words.joinToString(" ") { it.name },
+            vm.dict.words.filter { !it.hidden }.joinToString(" ") { it.name },
             whitespace = Whitespace.NORMAL,
             overflowWrap = OverflowWrap.BREAK_WORD
         )

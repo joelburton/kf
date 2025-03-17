@@ -11,7 +11,7 @@ import kotlinx.datetime.toLocalDateTime
 
 object WMisc : WordClass {
     override val name = "Misc"
-    override val primitives: Array<Word> = arrayOf(
+    override val primitives get() = arrayOf(
         Word("millis", ::w_millis),
         Word("ms", ::w_ms),
         Word("time&date", ::w_timeAmpDate),

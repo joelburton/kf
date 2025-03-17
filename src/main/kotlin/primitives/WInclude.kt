@@ -5,7 +5,7 @@ import kf.*
 
 object WInclude : WordClass {
     override val name = "Include"
-    override val primitives = arrayOf(
+    override val primitives get() = arrayOf(
         // including new primitives and forth files
         Word("include", ::w_include),
         Word("include-primitives", ::w_includeBinary),

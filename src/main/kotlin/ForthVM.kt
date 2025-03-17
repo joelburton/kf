@@ -186,6 +186,7 @@ class ForthVM(
         rstk.reset()
         lstk.reset()
         ip = cstart
+        if (D) dbg_indent = 0
 
         resetInterpreter()
     }
@@ -290,7 +291,8 @@ class ForthVM(
         while (true) {
             try {
                 val wn = mem[ip++]
-                dict[wn](this)
+                val w = dict[wn]
+                w(this)
             } catch (e: ForthQuit) {
                 // For non-interactive (like a file), needs to stop reading all
                 // files --- so rethrow error
@@ -477,11 +479,12 @@ class ForthVM(
         appendJump("rel-branch", -12) // jump back to start
     }
 
+    var dbg_indent = 0
     fun dbg(lvl: Int, s: String) {
         if (verbosity < lvl) return
         when (lvl) {
-            0, 1, 2 -> io.info(s)
-            else -> io.println(gray(s))
+            0, 1, 2 -> io.info(" ".repeat(dbg_indent) + s)
+            else -> io.println(gray(" ".repeat(dbg_indent)+ s))
         }
     }
 

@@ -4,7 +4,7 @@ package kf
 
 import kotlin.text.HexFormat
 
-const val D = false
+const val D = true
 const val VERSION_STRING = "KPupForth 0.1.0"
 
 

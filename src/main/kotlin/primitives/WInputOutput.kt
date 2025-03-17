@@ -15,7 +15,7 @@ import kf.numToStr
 
 object WInputOutput : WordClass {
     override val name = "InputOutput"
-    override val primitives: Array<Word> = arrayOf(
+    override val primitives get() = arrayOf(
         Word("cr",::w_cr),
         Word("emit",::w_emit),
         Word("space",::w_space),
@@ -25,6 +25,7 @@ object WInputOutput : WordClass {
         Word("bl",::w_bl),
 
         Word("key",::w_key),  // numbers?
+        Word("key?", ::w_keyQuestion),
 
         Word(".",::w_dot),
         Word("base",::w_base),
@@ -39,6 +40,7 @@ object WInputOutput : WordClass {
         Word("[char]",::w_bracketChar, imm = true, compO = true),
         Word("toupper",::w_toUpper),
         Word("tolower",::w_toLower),
+        Word(".r", ::w_dotR),
 
         // TODO:
         // word : get a word, store "somewhere", return addr to
@@ -218,5 +220,15 @@ object WInputOutput : WordClass {
     fun w_toLower(vm: ForthVM) {
         val c: Int = vm.dstk.pop()
         vm.dstk.push(c.toChar().lowercaseChar().code)
+    }
+
+    fun w_dotR(vm: ForthVM) {
+        val width: Int = vm.dstk.pop()
+        val v: Int = vm.dstk.pop()
+        vm.io.print("${v.toString().padStart(width)} ")
+    }
+
+    fun w_keyQuestion(vm: ForthVM) {
+        vm.dstk.push(0) // fixme
     }
 }

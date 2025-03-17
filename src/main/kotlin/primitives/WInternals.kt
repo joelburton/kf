@@ -6,7 +6,7 @@ import kf.WordClass
 
 object WInternals : WordClass {
     override val name = "Internals"
-    override val primitives: Array<Word> = arrayOf(
+    override val primitives get() = arrayOf(
         Word(".ip@", ::w_ipLoad),
         Word(".ip!", ::w_ipStore),
     )

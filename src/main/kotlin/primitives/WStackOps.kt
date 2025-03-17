@@ -4,10 +4,11 @@ import kf.ForthError
 import kf.ForthVM
 import kf.Word
 import kf.WordClass
+import kf.primitives.WMachine.w_nop
 
 object WStackOps: WordClass {
     override val name = "Stack Operations"
-    override val primitives: Array<Word> = arrayOf(
+    override val primitives get() = arrayOf(
         Word("dup", ::w_dup ) ,
         Word("drop", ::w_drop ) ,
         Word("swap", ::w_swap ) ,
@@ -43,6 +44,8 @@ object WStackOps: WordClass {
         Word("lp!", ::w_lpStore ) ,
         Word(">L", ::w_toL ) ,
         Word("L>", ::w_lFrom ) ,  // L@
+
+        Word("?stack", ::w_nop)
         // should these all be C for control stack?
         // clearstacks : clears data & fp, not other things!
 

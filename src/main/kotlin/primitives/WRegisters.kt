@@ -6,7 +6,7 @@ import kf.WordClass
 
 object WRegisters : WordClass {
     override val name = "Registers"
-    override val primitives: Array<Word> = arrayOf(
+    override val primitives get() = arrayOf(
         Word("r:cstart", ::w_cstart),
         Word("r:cend", ::w_cend),
         Word("r:dstart", ::w_dstart),
@@ -17,31 +17,31 @@ object WRegisters : WordClass {
     )
 
     fun w_cstart(vm: ForthVM) {
-        vm.dstk.push(vm.mem[ForthVM.Companion.REG_CSTART])
+        vm.dstk.push(ForthVM.REG_CSTART)
     }
 
     fun w_cend(vm: ForthVM) {
-        vm.dstk.push(vm.mem[ForthVM.Companion.REG_CEND])
+        vm.dstk.push(ForthVM.REG_CEND)
     }
 
     fun w_dstart(vm: ForthVM) {
-        vm.dstk.push(vm.mem[ForthVM.Companion.REG_DSTART])
+        vm.dstk.push(ForthVM.REG_DSTART)
     }
 
     fun w_dend(vm: ForthVM) {
-        vm.dstk.push(vm.mem[ForthVM.Companion.REG_DEND])
+        vm.dstk.push(ForthVM.REG_DEND)
     }
 
     fun w_base(vm: ForthVM) {
-        vm.dstk.push(vm.mem[ForthVM.Companion.REG_BASE])
+        vm.dstk.push(ForthVM.REG_BASE)
     }
 
     fun w_verbosity(vm: ForthVM) {
-        vm.dstk.push(vm.mem[ForthVM.Companion.REG_VERBOSITY])
+        vm.dstk.push(ForthVM.REG_VERBOSITY)
     }
 
     fun w_interpState(vm: ForthVM) {
-        vm.dstk.push(vm.mem[ForthVM.Companion.REG_INTERP_STATE])
+        vm.dstk.push(ForthVM.REG_INTERP_STATE)
     }
 
 

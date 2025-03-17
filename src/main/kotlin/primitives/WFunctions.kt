@@ -1,5 +1,6 @@
 package kf.primitives
 
+import kf.D
 import kf.ForthVM
 import kf.Word
 import kf.WordClass
@@ -7,7 +8,7 @@ import kf.WordClass
 object WFunctions : WordClass {
     override val name = "Functions"
 
-    override val primitives: Array<Word> = arrayOf(
+    override val primitives get() = arrayOf(
         Word("call", ::w_call),
         Word("call-by-addr", ::w_callByAddr),
         Word("execute", ::w_execute),

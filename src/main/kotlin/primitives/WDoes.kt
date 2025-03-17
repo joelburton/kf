@@ -3,18 +3,24 @@ package kf.primitives
 import kf.ForthVM
 import kf.Word
 import kf.WordClass
+import kf.primitives.WFunctions.w_call
 
 object WDoes : WordClass {
     override val name = "Does"
 
-    override val primitives: Array<Word> = arrayOf(
+    override val primitives get() = arrayOf(
         Word("does>", ::w_doesAngle, imm = true, compO = true),
         Word("does", ::w_does),
         Word("addr", ::w_addr),
         Word("addrcall", ::w_addrCall, compO = true),
         Word("create", ::w_create),
+        Word("variable", ::w_variable),
     )
 
+    fun w_variable(vm: ForthVM) {
+        w_create(vm)
+        vm.dend += 1
+    }
     /**  does> : inside of compilation, adds "does" + "ret"
      *
      * Example:
@@ -56,13 +62,8 @@ object WDoes : WordClass {
      * */
 
     fun w_addrCall(vm: ForthVM) {
-        // push addr
-        val addr: Int = vm.currentWord.dpos
-        vm.dstk.push(addr)
-
-        // call
-        vm.rstk.push(vm.ip)
-        vm.ip = vm.currentWord.cpos
+        w_addr(vm)
+        w_call(vm)
     }
 
     /**  create: add an empty, new word, and sets the DPOS to current CEND.
@@ -78,4 +79,5 @@ object WDoes : WordClass {
             fn = ::w_addr)
         vm.dict.add(w)
     }
+
 }

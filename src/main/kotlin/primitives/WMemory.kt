@@ -9,16 +9,17 @@ import kf.hex8
 
 object WMemory : WordClass {
     override val name = "Memory"
-    override val primitives: Array<Word> = arrayOf(
+    override val primitives get() = arrayOf(
         Word("@", ::w_fetch ) ,
         Word("!", ::w_store ) ,
+        Word("+!", ::w_plusStore),
         Word("here", ::w_here ) ,
         Word("allot", ::w_allot ) ,
         Word(",", ::w_comma ) ,
         Word(",,", ::w_commaComma ) ,
         Word("?", ::w_question ) ,
         Word("dump", ::w_dump ) ,
-        Word("!+", ::w_plusBang ) ,
+        Word("!+", ::w_plusStore ) ,
         Word("cell", ::w_cell ) ,
         Word("cells", ::w_cells ) ,
         Word("unused", ::w_unused ) ,
@@ -26,6 +27,7 @@ object WMemory : WordClass {
         Word("off", ::w_off ) ,
         Word("erase", ::w_erase ) ,
         Word("fill", ::w_fill ) ,
+        Word("cells+", ::w_cellsPlus),
     )
 
     private fun w_cell(vm: ForthVM) {
@@ -37,10 +39,10 @@ object WMemory : WordClass {
         vm.dstk.push(size)
     }
 
-    private fun w_plusBang(vm: ForthVM) {
-        val addr: Int = vm.dstk.pop()
-        vm.mem[addr]++
-    }
+//    private fun w_plusBang(vm: ForthVM) {
+//        val addr: Int = vm.dstk.pop()
+//        vm.mem[addr]++
+//    }
 
     private fun w_unused(vm: ForthVM) {
         vm.dstk.push(vm.memConfig.dataEnd - vm.dend + 1)
@@ -89,6 +91,13 @@ object WMemory : WordClass {
         vm.mem[addr] = num
     }
 
+    fun w_plusStore(vm: ForthVM) {
+        val addr : Int = vm.dstk.pop()
+        val incr = vm.dstk.pop()
+        vm.mem[addr] = vm.mem[addr] + incr
+
+    }
+
     /**  ( -- n ) Push value of here (section of DATA where will be written) */
     fun w_here(vm: ForthVM) {
         vm.dstk.push(vm.dend)
@@ -134,5 +143,11 @@ object WMemory : WordClass {
     fun w_question(vm: ForthVM) {
         val v: Int = vm.mem[vm.dstk.pop()]
         vm.io.print(v.toString(vm.base.coerceIn(2, 36)) + " ")
+    }
+
+    fun w_cellsPlus(vm: ForthVM) {
+        val addr = vm.dstk.pop()
+        val num: Int = vm.dstk.pop()
+        vm.dstk.push(addr + num)
     }
 }

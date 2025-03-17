@@ -23,30 +23,31 @@ import kf.WordClass
  * These are the primitives required for the interpreter, as well as some
  * things about some words (like `include` for reading Forth files in) that
  * are strongly related to the interpreter. */
-object WInterp: WordClass {
+object WInterp : WordClass {
     override val name = "Interp"
 
-    override val primitives: Array<Word> = arrayOf(
-        // the interpreter loop (plus stuff in Machine)
-        Word("interp-prompt", ::w_interpPrompt ) ,
-        Word("interp-refill", ::w_interpRefill ) ,
-        Word("interp-read", ::w_interpRead ) ,
-        Word("interp-process", ::w_interpProcess ) ,
+    override val primitives
+        get() = arrayOf(
+            // the interpreter loop (plus stuff in Machine)
+            Word("interp-prompt", ::w_interpPrompt),
+            Word("interp-refill", ::w_interpRefill),
+            Word("interp-read", ::w_interpRead),
+            Word("interp-process", ::w_interpProcess),
 
-        // exiting the interpreter
-        Word("\\\\\\", ::w_tripleBackSlash ) ,
-        Word("eof", ::w_eof ) ,
+            // exiting the interpreter
+            Word("\\\\\\", ::w_tripleBackSlash),
+            Word("eof", ::w_eof),
 
-        // useful words for working with interpreter
-        Word("interp-reload-code", ::w_interpReloadCode ) ,
-        Word("[", ::w_goImmediate , imm = true, compO = true) ,
-        Word("]", ::w_goCompiled , imm = true) ,
+            // useful words for working with interpreter
+            Word("interp-reload-code", ::w_interpReloadCode),
+            Word("[", ::w_goImmediate, imm = true, compO = true),
+            Word("]", ::w_goCompiled, imm = true),
 
-        Word("parse-name", ::w_parseName ) ,
-        Word("find", ::w_find ) ,
-        Word("eval", ::w_eval ) ,
-        Word("banner", ::w_banner ) ,
-    )
+            Word("parse-name", ::w_parseName),
+            Word("find", ::w_find),
+            Word("eval", ::w_eval),
+            Word("banner", ::w_banner),
+        )
 
     // ********************************************** words for interpreter loop
 
@@ -116,7 +117,6 @@ object WInterp: WordClass {
     }
 
 
-
     // ************************************************************ useful tools
 
     /**  `[` ( -- : enter immediate mode immediately )
@@ -125,7 +125,7 @@ object WInterp: WordClass {
      * behavior during the compilation. It's also handy when hacking around
      * with interpreter state and need to return to immediate mode. */
     fun w_goImmediate(vm: ForthVM) {
-        vm.interpState = ForthVM.Companion.INTERP_STATE_INTERPRETING
+        vm.interpState = ForthVM.INTERP_STATE_INTERPRETING
     }
 
     /** ']' ( -- : enter compile mode )
@@ -139,7 +139,7 @@ object WInterp: WordClass {
      * This creates a function that, when run, will put 10 and 20 on the stack,
      * but when *first compiled*, will print 'A'. */
     fun w_goCompiled(vm: ForthVM) {
-        vm.interpState = ForthVM.Companion.INTERP_STATE_COMPILING
+        vm.interpState = ForthVM.INTERP_STATE_COMPILING
     }
 
     /**  'interp-reload-code` ( -- : reloads orig interp code at cend )

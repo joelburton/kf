@@ -15,7 +15,7 @@ import kf.addr
 
 object WMachine : WordClass {
     override val name = "Machine"
-    override val primitives: Array<Word> = arrayOf(
+    override val primitives get() = arrayOf(
         // Keep on top -- this when, if the VM somehow starts running from
         // initialized memory (0), it will try to run word# 0, which will be
         // this, and we'll break.
@@ -52,7 +52,7 @@ object WMachine : WordClass {
      * `brk` if the VM starts executing in uninitialized memory.
      */
     fun w_brk(vm: ForthVM) {
-        throw ForthBrk("brk at " + vm.ip)
+        throw ForthBrk("brk at ${vm.ip.addr} (${vm.ip})")
     }
 
     /** `nop` ( -- : Does nothing )

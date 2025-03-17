@@ -78,7 +78,7 @@ class ForthCLI : CliktCommand("PupForth") {
             return
         }
 
-        val vm = ForthVM()
+        val vm = ForthVM(memConfig = size)
         vm.verbosity = verbosity
         vm.reboot()
 

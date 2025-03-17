@@ -53,7 +53,7 @@ import kf.WordClass
 object WComments : WordClass {
     override val name = "Comments"
 
-    override val primitives = arrayOf(
+    override val primitives get() = arrayOf(
         Word("\\", imm = true, fn = ::w_backslashComment),
         Word("(", imm = true, fn = ::w_parenComment),
     )

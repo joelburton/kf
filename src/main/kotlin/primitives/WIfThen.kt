@@ -8,7 +8,7 @@ import kf.WordClass
 object WIfThen : WordClass {
     override val name = "IfThen"
 
-    override val primitives: Array<Word> = arrayOf(
+    override val primitives get() = arrayOf(
         Word("if", ::w_if, imm = true, compO = true),
         Word("else", ::w_else, imm = true, compO = true),
         Word("then", ::w_then, imm = true, compO = true),

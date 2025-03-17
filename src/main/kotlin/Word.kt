@@ -35,14 +35,19 @@ class Word(
 
     override fun toString() = name
     operator fun invoke(vm: ForthVM) {
-        if (D) vm.dbg(2, "word.exec $name -->")
         vm.currentWord = this
-        var s = fn.toString()
-            .removeSuffix("(kf.ForthVM): kotlin.Unit")
-            .removePrefix("fun ")
-        if (D) vm.dbg(3, "word.exec $name $s")
+        if (D) {
+            var s = gray(fn.toString()
+                .removeSuffix("(kf.ForthVM): kotlin.Unit")
+                .removePrefix("fun "))
+            vm.dbg(2, "x@ ${(vm.ip-1).addr} -> $name $s")
+            vm.dbg_indent += 1
+        }
         fn(vm)
-        if (D) vm.dbg(2, "word.exec $name <--")
+        if (D) {
+            vm.dbg_indent -= 1
+            vm.dbg(3, "x@ ${vm.ip.addr} <- $name")
+        }
     }
 
     /**  Useful for debugging and to support `w_see` and `w_simple-see`. */

@@ -6,7 +6,7 @@ import kf.WordClass
 
 object WDoubleNum  : WordClass {
     override val name = "DoubleNum"
-    override val primitives: Array<Word> = arrayOf(
+    override val primitives get() = arrayOf(
         Word("d.", ::w_dDot),
     )
 

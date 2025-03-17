@@ -9,7 +9,7 @@ import kf.pad10
 
 object WTools : WordClass {
     override val name = "Tools"
-    override val primitives: Array<Word> = arrayOf(
+    override val primitives get() = arrayOf(
         Word(".dstk", ::w_dumpDataStack),
         Word(".rstk", ::w_dumpReturnStack),
         Word(".code", ::w_dumpCode),

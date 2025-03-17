@@ -10,7 +10,7 @@ import kotlin.math.sqrt
 
 object WMathLogic : WordClass {
     override val name = "MathLogic"
-    override val primitives: Array<Word> = arrayOf(
+    override val primitives get() = arrayOf(
         Word("and", ::w_and ) ,
         Word("or", ::w_or ) ,
         Word("not", ::w_not ) ,

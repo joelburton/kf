@@ -10,7 +10,7 @@ import kf.WordClass
 object WCompiling : WordClass {
     override val name = "Compiling"
 
-    override val primitives: Array<Word> = arrayOf(
+    override val primitives get() = arrayOf(
         Word(":", ::w_colon, interpO = true),
         Word(";", ::w_semicolon, imm = true, compO = true),
         Word("[literal]", ::w_bracketLiteral, compO = true),
@@ -27,6 +27,7 @@ object WCompiling : WordClass {
         Word("defer!", ::w_deferStore),
         Word("defer@", ::w_deferFetch),
         Word("is", ::w_is),
+        Word("recurse", ::w_recurse, imm = true),
     )
 
     /**  `:` X ( in:"name" -- : create word 'name' and start compiling mode )
@@ -54,6 +55,7 @@ object WCompiling : WordClass {
         vm.dict.add(w)
         vm.interpState = ForthVM.Companion.INTERP_STATE_COMPILING
         vm.dict.currentlyDefining = w
+        vm.lstk.push(0)  // for counting loop nesting for i/j/k
     }
 
     /** `;` IC ( -- : complete word definition and exit compiling mode )`
@@ -64,6 +66,7 @@ object WCompiling : WordClass {
         w.cposEnd = vm.cend
         vm.dict.currentlyDefining = null
         vm.interpState = ForthVM.Companion.INTERP_STATE_INTERPRETING
+        vm.lstk.pop()  // remove loop nesting
     }
 
     //    ///  ( -- ) really lit ? is it ok to just use lit for this?
@@ -229,26 +232,31 @@ This is almost certainly not what you want to do.""",
 
     /** `is` ( wn "word" -- : associates wn-word to "word" word ) */
 
-    fun w_is(vm: ForthVM) {
-        val sourceWord  = vm.dict[vm.dstk.pop()]
-        val deferredWord = vm.dict[vm.getToken()]
+    fun changeDeferPointer(vm: ForthVM, deferredWord: Word, sourceWord: Word ) {
         deferredWord.cpos = sourceWord.cpos
         deferredWord.dpos = sourceWord.dpos
         deferredWord.fn = sourceWord.fn
         deferredWord.deferToWn = sourceWord.wn
+    }
+
+    fun w_is(vm: ForthVM) {
+        val sourceWord  = vm.dict[vm.dstk.pop()]
+        val deferredWord = vm.dict[vm.getToken()]
+        changeDeferPointer(vm, deferredWord, sourceWord)
     }
 
     fun w_deferStore(vm: ForthVM) {
         val deferredWord = vm.dict[vm.dstk.pop()]
         val sourceWord  = vm.dict[vm.dstk.pop()]
-        deferredWord.cpos = sourceWord.cpos
-        deferredWord.dpos = sourceWord.dpos
-        deferredWord.fn = sourceWord.fn
-        deferredWord.deferToWn = sourceWord.wn
+        changeDeferPointer(vm, deferredWord, sourceWord)
     }
 
     fun w_deferFetch(vm: ForthVM) {
         val deferredWord = vm.dict[vm.dstk.pop()]
         vm.dstk.push(deferredWord.deferToWn ?: deferredWord.wn)
+    }
+
+    fun w_recurse(vm: ForthVM) {
+        vm.appendWord(vm.dict.last.name)
     }
 }
