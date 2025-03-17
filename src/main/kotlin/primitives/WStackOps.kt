@@ -60,7 +60,7 @@ object WStackOps: WordClass {
 
     /**  `2dup` ( n1 n2 -- n1 n2 n1 n2 : duplicates top two items )
      */
-    private fun w_2dup(vm: ForthVM) {
+    fun w_2dup(vm: ForthVM) {
         val b: Int = vm.dstk.pop()
         val a: Int = vm.dstk.pop()
         vm.dstk.push(a, b, a, b)

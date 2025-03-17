@@ -51,9 +51,9 @@ class WFunctionsTest: ForthTestCase() {
     }
 
     @Test
-    fun w_return() {
+    fun w_exit() {
         vm.rstk.push(0xffff)
-        mod.w_return(vm)
+        mod.w_exit(vm)
         assertEquals(0xffff, vm.ip)
         assertEquals(0, vm.rstk.size)
     }

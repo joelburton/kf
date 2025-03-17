@@ -1,5 +1,6 @@
 package kf.primitives
 
+import kf.CellMeta
 import kf.ForthVM
 import kf.Word
 import kf.WordClass
@@ -25,6 +26,7 @@ object WTools : WordClass {
     )
 
     fun _see(vm: ForthVM, w: Word, simple: Boolean) {
+        val semiS = vm.dict[";s"]
         vm.io.print(w.getHeaderStr())
         w.deferToWn?.let {
             val src: Word = vm.dict[it]
@@ -38,7 +40,8 @@ object WTools : WordClass {
 //                val ret_n: Int = vm.dict.getNum("return")
             for (k in w.cpos..<vm.cend) {
                 _dump(vm, k, simple)
-                if (w.cposEnd == k) break
+                if (vm.mem[k] == semiS.wn
+                    && vm.cellMeta[k] == CellMeta.WordNum) break
             }
         }
     }

@@ -9,7 +9,6 @@ class Word(
     val name: String,
     var fn: StaticFunc,
     var cpos: Int = NO_ADDR,
-    var cposEnd: Int = NO_ADDR,
     var dpos: Int = NO_ADDR,
     var hidden: Boolean = false,
     var imm: Boolean = false,

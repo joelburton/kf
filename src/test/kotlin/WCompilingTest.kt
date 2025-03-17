@@ -126,7 +126,7 @@ class WCompilingTest : ForthTestCase() {
         assertEquals(vm.dict.getNum("lit"), vm.mem[vm.cend - 4])
         assertEquals(123, vm.mem[vm.cend - 3])
         assertEquals(vm.dict.getNum("[literal]"), vm.mem[vm.cend - 2])
-        assertEquals(vm.dict.getNum("return"), vm.mem[vm.cend - 1])
+        assertEquals(vm.dict.getNum(";s"), vm.mem[vm.cend - 1])
 
         initCend = vm.cend
         eval(": test2 test ;")
@@ -139,7 +139,7 @@ class WCompilingTest : ForthTestCase() {
         assertEquals(vm.dict.getNum("lit"), vm.mem[vm.cend - 4])
         assertEquals(123, vm.mem[vm.cend - 3])
         assertEquals(vm.dict.getNum("[literal]"), vm.mem[vm.cend - 2])
-        assertEquals(vm.dict.getNum("return"), vm.mem[vm.cend - 1])
+        assertEquals(vm.dict.getNum(";s"), vm.mem[vm.cend - 1])
 
         initCend = vm.cend
         eval(": test2 test ;")

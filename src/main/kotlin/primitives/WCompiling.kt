@@ -62,8 +62,7 @@ object WCompiling : WordClass {
      */
     fun w_semicolon(vm: ForthVM) {
         val w: Word = vm.dict.last
-        vm.appendWord("return")
-        w.cposEnd = vm.cend
+        vm.appendWord(";s")
         vm.dict.currentlyDefining = null
         vm.interpState = ForthVM.Companion.INTERP_STATE_INTERPRETING
         vm.lstk.pop()  // remove loop nesting

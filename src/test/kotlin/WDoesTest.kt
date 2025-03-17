@@ -10,7 +10,7 @@ class WDoesTest : ForthTestCase() {
     fun w_doesAngle() {
         mod.w_doesAngle(vm)
         assertEquals(vm.dict["does"].wn, vm.mem[vm.cend - 2])
-        assertEquals(vm.dict["return"].wn, vm.mem[vm.cend - 1])
+        assertEquals(vm.dict[";s"].wn, vm.mem[vm.cend - 1])
     }
 
     @Test
@@ -37,7 +37,7 @@ class WDoesTest : ForthTestCase() {
     @Test
     fun w_addrCall() {
         vm.mem[0x150] = vm.dict["@"].wn
-        vm.mem[0x151] = vm.dict["return"].wn
+        vm.mem[0x151] = vm.dict[";s"].wn
         vm.mem[0x200] = 42
         val w = Word(
             "foo",

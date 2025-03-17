@@ -144,13 +144,12 @@ object WWords : WordClass {
             newName,
             fn = wCall.fn,
             cpos = vm.cend,
-            cposEnd = vm.cend + 4,
             dpos = Word.Companion.NO_ADDR
         )
         vm.dict.add(w)
         vm.appendLit(w.wn)
         vm.appendWord("wn-forget")
-        vm.appendWord("return")
+        vm.appendWord(";s")
     }
 
     /**  `'` ( in:"name" -- wn : get wn for name and push to stack )

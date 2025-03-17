@@ -1,6 +1,5 @@
 package kf.primitives
 
-import kf.D
 import kf.ForthVM
 import kf.Word
 import kf.WordClass
@@ -12,8 +11,13 @@ object WFunctions : WordClass {
         Word("call", ::w_call),
         Word("call-by-addr", ::w_callByAddr),
         Word("execute", ::w_execute),
-        Word("return", ::w_return ),
+        Word("exit", ::w_exit ),
 
+        // This is the same def as exit -- but this is what's added at the
+        // end a colon def, whereas exit is what a user might use in a function.
+        // This allows the system to better decompile a word, knowing it ends
+        // at the ;s, not at some random exit
+        Word(";s", ::w_exit ),
         )
 
     /** `call` ( -- : call word in current_word )
@@ -43,9 +47,9 @@ object WFunctions : WordClass {
         vm.dict[wn](vm)
     }
 
-    /**  `return` ( r:n -- : return from current word )
+    /**  `exit` ( r:n -- : return from current word )
      */
-    fun w_return(vm: ForthVM) {
+    fun w_exit(vm: ForthVM) {
         val retAddr = vm.rstk.pop()
         vm.ip = retAddr
     }

@@ -36,7 +36,11 @@ object WDoes : WordClass {
 
     fun w_doesAngle(vm: ForthVM) {
         vm.appendWord("does")
-        vm.appendWord("return")
+
+        // don't append a ;s -- it's the same thing -- but the decompiler
+        // stops printing a word def at that, and it's helpful to see the
+        // "does part" for a word.
+        vm.appendWord("exit")
     }
 
     /**  does: change most recent word from data to call-fn-with-data-num */
