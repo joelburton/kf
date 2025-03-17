@@ -109,4 +109,8 @@ class Dict(val vm: ForthVM, val capacity: Int = 1024)  {
         if (D) vm.dbg(3, "dict.removeLast")
         _words.removeLast()
     }
+
+//    fun replaceWord(newWord: Word, wn: Int) {
+//        _words[wn] = newWord
+//    }
 }
