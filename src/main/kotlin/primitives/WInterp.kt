@@ -4,20 +4,13 @@ package kf.primitives
 
 import com.github.ajalt.mordant.rendering.TextColors.green
 import com.github.ajalt.mordant.rendering.TextStyles.bold
-import com.github.ajalt.mordant.terminal.Terminal
-import com.github.ajalt.mordant.terminal.success
-import kf.D
 import kf.ForthEOF
 import kf.ForthMissingToken
 import kf.ForthQuitNonInteractive
 import kf.ForthVM
 import kf.IWordClass
 import kf.TerminalFileInterface
-import kf.TerminalStringInterface
-import kf.VERSION_STRING
 import kf.Word
-import kf.WordClass
-import kf.words.wInterp
 
 //import kf.words.wMachineCustom.addInterpreterCode
 
@@ -45,8 +38,8 @@ object WInterp : IWordClass {
             Word("interp-reload-code", ::w_interpReloadCode),
 
 //            Word("parse-name", ::w_parseName),
-            Word("eval", ::w_eval),
-            Word("banner", ::w_banner),
+//            Word("eval", ::w_eval),
+//            Word("banner", ::w_banner),
         )
 
     // ********************************************** words for interpreter loop
@@ -55,7 +48,7 @@ object WInterp : IWordClass {
     fun w_interpPrompt(vm: ForthVM) {
         if (vm.verbosity >= -1) {
             val stkLen: Int = vm.dstk.size
-            if (vm.isInterpretingState) {
+            if (vm.interp.isInterpreting) {
                 vm.io.print(bold(green("($stkLen) >>> ")))
             } else {
                 vm.io.print(bold(green("($stkLen) ... ")))
@@ -67,7 +60,7 @@ object WInterp : IWordClass {
     /**  `interp-read` ( in:"word" -- len : read next token ) */
     fun w_interpRead(vm: ForthVM) {
         try {
-            val s = vm.getToken()
+            val s = vm.interp.getToken()
             vm.dstk.push(s.length)
         } catch (`_`: ForthMissingToken) {
             vm.dstk.push(0)
@@ -142,38 +135,33 @@ object WInterp : IWordClass {
 
     /**`eval` ( addr u -- : evaluate string of Forth ) */
 
-    private fun w_eval(vm: ForthVM) {
-        // TODO: this might not be the best approach; we'd want
-        // everything the same: ANSI, raw-term-ability, etc
-        // better perhaps: being able to "stuff" input into
-        // the normal input?
-        // or, even better: a different string buffer loc
+//    private fun w_eval(vm: ForthVM) {
+//        // TODO: this might not be the best approach; we'd want
+//        // everything the same: ANSI, raw-term-ability, etc
+//        // better perhaps: being able to "stuff" input into
+//        // the normal input?
+//        // or, even better: a different string buffer loc
+//
+//        val len = vm.dstk.pop()
+//        val addr = vm.dstk.pop()
+//        val s = vm.interp.interpScanner.getAsString(addr, len)
+//
+//        val prevIO = vm.io
+//        val prevVerbosity = vm.verbosity
+//
+//        vm.io = Terminal(terminalInterface = TerminalStringInterface(s))
+//        vm.verbosity = -2
+//
+//        try {
+//            vm.runVM()
+//        } catch (_: ForthQuitNonInteractive) {
+//
+//        } catch (_: ForthEOF) {
+//
+//        } finally {
+//            vm.io = prevIO
+//            vm.verbosity = prevVerbosity
+//        }
+//    }
 
-        val len = vm.dstk.pop()
-        val addr = vm.dstk.pop()
-        val s = vm.interpScanner.getAsString(addr, len)
-
-        val prevIO = vm.io
-        val prevVerbosity = vm.verbosity
-
-        vm.io = Terminal(terminalInterface = TerminalStringInterface(s))
-        vm.verbosity = -2
-
-        try {
-            vm.runVM()
-        } catch (_: ForthQuitNonInteractive) {
-
-        } catch (_: ForthEOF) {
-
-        } finally {
-            vm.io = prevIO
-            vm.verbosity = prevVerbosity
-        }
-    }
-
-    /** `banner` `( -- : print welcome banner )` */
-
-    fun w_banner(vm: ForthVM) {
-        if (vm.verbosity > 0) vm.io.success("\nWelcome to ${VERSION_STRING}\n")
-    }
 }

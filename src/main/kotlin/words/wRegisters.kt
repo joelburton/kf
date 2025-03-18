@@ -42,7 +42,7 @@ object wRegisters : IWordClass {
     }
 
     fun w_interpState(vm: ForthVM) {
-        vm.dstk.push(ForthVM.Companion.REG_INTERP_STATE)
+        vm.dstk.push(ForthVM.Companion.REG_STATE)
     }
 
 

@@ -32,7 +32,7 @@ object wVariables: IWordClass {
 
     fun w_constant(vm: ForthVM) {
         val data = vm.dstk.pop()
-        val name = vm.getToken()
+        val name = vm.interp.getToken()
         val w = Word(
             name,
             cpos = Word.NO_ADDR,

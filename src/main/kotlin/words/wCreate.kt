@@ -29,7 +29,7 @@ object wCreate: IWordClass {
      */
 
     fun w_create(vm: ForthVM) {
-        val name: String = vm.getToken()
+        val name: String = vm.interp.getToken()
         val w = Word(
             name,
             cpos = Word.NO_ADDR,

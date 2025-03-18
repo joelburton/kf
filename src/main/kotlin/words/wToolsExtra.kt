@@ -94,7 +94,7 @@ object wToolsExtra : IWordClass {
     }
 
     fun w_seeSimple(vm: ForthVM) {
-        val w: Word = vm.dict[vm.getToken()]
+        val w: Word = vm.dict[vm.interp.getToken()]
         _see(vm, w, true)
     }
 }

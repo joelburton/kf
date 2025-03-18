@@ -8,6 +8,11 @@ import com.github.ajalt.clikt.parameters.options.*
 import com.github.ajalt.clikt.parameters.types.int
 import com.github.ajalt.mordant.rendering.AnsiLevel
 import com.github.ajalt.mordant.terminal.Terminal
+import kf.interps.IInterp
+import kf.interps.InterpBase
+import kf.interps.InterpEval
+import kf.interps.InterpFast
+import kf.interps.InterpForth
 
 class ForthCLI : CliktCommand("PupForth") {
 
@@ -49,6 +54,16 @@ class ForthCLI : CliktCommand("PupForth") {
         .flag(default = false)
         .help("show version")
 
+    val interp: String by option()
+        .switch(
+            "--base" to "base",
+            "--eval" to "eval",
+            "--fast" to "fast",
+            "--forth" to "forth",
+        )
+        .default("fast")
+        .help("interpreter to use")
+
     fun runFiles(vm: ForthVM) {
         for (path in paths) {
             print("Running $path ... ")
@@ -79,6 +94,15 @@ class ForthCLI : CliktCommand("PupForth") {
         }
 
         val vm = ForthVM(memConfig = size)
+        val theInterp = when (interp) {
+            "base" -> InterpBase(vm)
+            "eval" -> InterpEval(vm)
+            "fast" -> InterpFast(vm)
+            "forth" -> InterpForth(vm)
+            else -> throw RuntimeException("Unknown interpreter: $interp")
+        }
+        vm.interp = theInterp
+
         vm.verbosity = verbosity
         vm.reboot()
 

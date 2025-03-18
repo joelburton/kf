@@ -62,6 +62,6 @@ object WComments : WordClass {
     /**  ( -- : handles backslash comments )
      */
     fun w_backslashComment(vm: ForthVM) {
-        vm.interpScanner.nextLine()
+        vm.interp.scanner.nextLine()
     }
 }

@@ -38,7 +38,7 @@ object WInclude : WordClass {
     /**  `include` `( in:"file" -- : read Forth file in )` */
 
     fun w_include(vm: ForthVM) {
-        val path = vm.getToken()
+        val path = vm.interp.getToken()
 
         val prevIO: Terminal = vm.io
         val prevVerbosity: Int = vm.verbosity
@@ -63,7 +63,7 @@ object WInclude : WordClass {
      * */
 
     fun w_includeBinary(vm: ForthVM) {
-        val path = vm.getToken()
+        val path = vm.interp.getToken()
         readPrimitiveClass(vm, path)
     }
 }

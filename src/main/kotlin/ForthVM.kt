@@ -3,6 +3,7 @@ package kf
 
 import com.github.ajalt.mordant.rendering.TextColors.gray
 import com.github.ajalt.mordant.terminal.*
+import kf.interps.IInterp
 import kf.primitives.WInterp
 import kf.words.*
 import kotlin.reflect.KProperty
@@ -34,6 +35,7 @@ class ForthVM(
     val mem: IntArray = IntArray(memConfig.upperBound + 1),
 ) {
 
+    lateinit var interp: IInterp
 
     // *************************************************************** registers
     /** Convenience for creating registers, which have getters/setters that
@@ -111,7 +113,6 @@ class ForthVM(
      */
     val timeMarkCreated = TimeSource.Monotonic.markNow()
 
-    val interp = InterpForth(this)
 
     init {
         // THere needs to be a verbosity set, so setting it to mildly-chatty.
@@ -318,18 +319,6 @@ class ForthVM(
     // Everything from this point downward is the things that are needed for
     // the interpreter, but not needed for the VM itself.
 
-    /** A register for interpreter use: state of interpreting/compiling. */
-    var interpState: Int by RegisterDelegate(REG_INTERP_STATE)
-
-    val isInterpretingState
-        get() = mem[REG_INTERP_STATE] == INTERP_STATE_INTERPRETING
-    val isCompilingState
-        get() = mem[REG_INTERP_STATE] == INTERP_STATE_COMPILING
-
-    /**  Scanner for reading and tokenizing input line. */
-    var interpScanner: FScanner = FScanner(
-        this, memConfig.interpBufferStart, memConfig.interpBufferEnd)
-
 
 
     var dbg_indent = 0 // fixme : needs removing
@@ -341,11 +330,6 @@ class ForthVM(
         }
     }
 
-    fun getToken(): String {
-        if (D) dbg(3, "getToken")
-        val (addr, len) = interpScanner.parseName()
-        return interpScanner.getAsString(addr, len)
-    }
 
     companion object {
         const val REG_BASE = 0
@@ -354,10 +338,8 @@ class ForthVM(
         const val REG_CEND = 3
         const val REG_DSTART = 4
         const val REG_DEND = 5
-        const val REG_INTERP_STATE = 7
+        const val REG_STATE = 7
 
-        const val INTERP_STATE_INTERPRETING: Int = 0
-        const val INTERP_STATE_COMPILING: Int = -1
 
         const val MAX_INT: Int = 0x7fffffff
         const val TRUE: Int = -1

@@ -69,7 +69,7 @@ object WCompiling : WordClass {
      */
 
     fun w_postpone(vm: ForthVM) {
-        val token: String = vm.getToken()
+        val token: String = vm.interp.getToken()
         val w = vm.dict[token]
         val cw = vm.dict.last
 
@@ -97,7 +97,7 @@ This is almost certainly not what you want to do.""",
     fun compile(vm: ForthVM, wn: Int) {
         val w = vm.dict[wn]
 
-        if (vm.isInterpretingState) {
+        if (vm.interp.isInterpreting) {
             vm.io.warning("Interpreting a postponed non-immediate word: '$w'."
                     + " This is probably not what you want to do."
                     + " (Use 'immediate' to mark the word as immediate-mode.)",
@@ -131,7 +131,7 @@ This is almost certainly not what you want to do.""",
     /** `defer` ( "word" -- : create word pointing to uninitialized fn ) */
 
     fun w_defer(vm: ForthVM) {
-        val name: String = vm.getToken()
+        val name: String = vm.interp.getToken()
         val w = Word(
             name,
             cpos = Word.NO_ADDR,
@@ -153,7 +153,7 @@ This is almost certainly not what you want to do.""",
 
     fun w_is(vm: ForthVM) {
         val sourceWord  = vm.dict[vm.dstk.pop()]
-        val deferredWord = vm.dict[vm.getToken()]
+        val deferredWord = vm.dict[vm.interp.getToken()]
         changeDeferPointer(vm, deferredWord, sourceWord)
     }
 

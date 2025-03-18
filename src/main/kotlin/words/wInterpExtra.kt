@@ -25,9 +25,9 @@ object wInterpExtra: IWordClass {
      * only white space, the resulting string has length zero.
      */
 
-    private fun w_parseName(vm: ForthVM) {
-        if (D) vm.dbg(2, "w_parseName")
-        val (addr, len) = vm.interpScanner.parseName()
+    fun w_parseName(vm: ForthVM) {
+        val (addr, len) = vm.interp.scanner.parseNameToPAir()
+        if (D) vm.dbg(2, "w_parseName: addr=$addr len=$len")
         vm.dstk.push(addr, len)
     }
 
@@ -55,7 +55,7 @@ object wInterpExtra: IWordClass {
         if (input == null) {
             vm.dstk.push(0)
         } else {
-            vm.interpScanner.fill(input)
+            vm.interp.scanner.fill(input)
             vm.dstk.push(1)
         }
     }

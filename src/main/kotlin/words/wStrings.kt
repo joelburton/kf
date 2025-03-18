@@ -49,12 +49,11 @@ object wStrings: IWordClass {
      */
 
     private fun w_dotQuote(vm: ForthVM) {
-        if (vm.isInterpretingState) {
-            val (addr, len) = vm.interpScanner.parse('"')
-            val s = vm.interpScanner.getAsString(addr, len)
+        if (vm.interp.isInterpreting) {
+            val s = vm.interp.scanner.parseToStr('"')
             vm.io.print(s)
         } else {
-            val (addr, len) = vm.interpScanner.parse('"')
+            val (addr, len) = vm.interp.scanner.parseToPair('"')
             vm.appendWord("lit-string")
             vm.appendCode(len, CellMeta.StringLen)
             for (i in 0 until len) {
@@ -81,14 +80,14 @@ object wStrings: IWordClass {
      */
 
     fun w_sQuote(vm: ForthVM) {
-        if (vm.isInterpretingState) {
-            val (addr, len) = vm.interpScanner.parse('"')
-            val s = vm.interpScanner.getAsString(addr, len)
+        if (vm.interp.isInterpreting) {
+            val (addr, len) = vm.interp.scanner.parseToPair('"')
+            val s = vm.interp.scanner.getAsString(addr, len)
             val strAddr: Int = vm.appendStrToData(s)
             vm.dstk.push(strAddr)
             vm.dstk.push(s.length)
         } else {
-            val (addr, len) = vm.interpScanner.parse('"')
+            val (addr, len) = vm.interp.scanner.parseToPair('"')
             vm.appendWord("lit-string")
             vm.appendCode(len, CellMeta.StringLen)
             for (i in 0 until len) {

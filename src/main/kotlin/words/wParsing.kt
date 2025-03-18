@@ -36,7 +36,7 @@ object wParsing: IWordClass {
 
     fun w_word(vm: ForthVM) {
         if (D) vm.dbg(2, "w_parseName")
-        val (addr, len) = vm.interpScanner.parseName()
+        val (addr, len) = vm.interp.scanner.parseNameToPAir()
         // fixme: this is ungodly cheating and will break things, but for now:
         // since "WORD" gives back a (yuck) counted string
         vm.mem[addr-1] = len
@@ -53,8 +53,8 @@ object wParsing: IWordClass {
      */
 
     fun w_source(vm: ForthVM) {
-        vm.dstk.push(vm.interpScanner.bufStartAddr)
-        vm.dstk.push(vm.interpScanner.bufLen)
+        vm.dstk.push(vm.interp.scanner.bufStartAddr)
+        vm.dstk.push(vm.interp.scanner.bufLen)
     }
 
     /**
@@ -88,7 +88,7 @@ object wParsing: IWordClass {
         val addr = vm.dstk.pop()
         val ud1b = vm.dstk.pop()  // we don't actually use these
         val ud1a = vm.dstk.pop()
-        val s = vm.interpScanner.getAsString(addr, len)
+        val s = vm.interp.scanner.getAsString(addr, len)
         if (D) vm.dbg(2, "w_toNumber: s=\"$s\"")
         val i = s.toForthInt(vm.base)   // just assume it works for now
         vm.dstk.push(i, 0, /* addr */0, /* # unconverted */ 0)

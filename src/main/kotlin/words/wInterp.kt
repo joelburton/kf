@@ -7,6 +7,7 @@ import kf.ForthVM
 import kf.IWordClass
 import kf.TerminalStringInterface
 import kf.Word
+import kf.interps.InterpBase
 
 object wInterp : IWordClass {
     override val name = "Interpreter"
@@ -66,8 +67,7 @@ object wInterp : IWordClass {
 
     private fun w_abortQuote(vm: ForthVM) {
         // fixme: needs to be fixed for compilation
-        val (addr, len) = vm.interpScanner.parse('"')
-        val s = vm.interpScanner.getAsString(addr, len)
+        val s = vm.interp.scanner.parseToStr('"')
         val flag: Int = vm.dstk.pop()
         if (flag != 0) {
             vm.io.danger("ABORT: $s")
@@ -96,7 +96,7 @@ object wInterp : IWordClass {
         while (true) {
             val input = vm.io.readLineOrNull(false)
             if (input == null) throw RuntimeException("EOF")
-            vm.interpScanner.fill(input)
+            vm.interp.scanner.fill(input)
 //            interpretLoop(vm) fixme
             println(yellow("   ok"))
         }
@@ -125,7 +125,7 @@ object wInterp : IWordClass {
 
         val len = vm.dstk.pop()
         val addr = vm.dstk.pop()
-        val s = vm.interpScanner.getAsString(addr, len)
+        val s = vm.interp.scanner.getAsString(addr, len)
 
         val prevIO = vm.io
 //        val prevVerbosity = vm.verbosity
@@ -156,7 +156,7 @@ object wInterp : IWordClass {
      */
 
     fun w_state(vm: ForthVM) {
-        vm.dstk.push(ForthVM.REG_INTERP_STATE)
+        vm.dstk.push(ForthVM.REG_STATE)
     }
 
     /** [    left-bracket    CORE
@@ -173,7 +173,7 @@ object wInterp : IWordClass {
      */
 
     fun w_leftBracket(vm: ForthVM) {
-        vm.interpState = ForthVM.INTERP_STATE_INTERPRETING
+        vm.interp.state = InterpBase.STATE_INTERPRETING
     }
 
     /** ]    right-bracket    CORE
@@ -190,7 +190,7 @@ object wInterp : IWordClass {
      */
 
     fun w_rightBracket(vm: ForthVM) {
-        vm.interpState = ForthVM.INTERP_STATE_COMPILING
+        vm.interp.state = InterpBase.STATE_COMPILING
     }
 }
 

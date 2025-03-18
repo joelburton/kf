@@ -104,7 +104,7 @@ object wChars: IWordClass {
      */
 
     private fun w_bracketChar(vm: ForthVM) {
-        val token: String = vm.getToken()
+        val token: String = vm.interp.getToken()
         if (token.length != 1)
             throw ParseError("Char literal must be one character")
         vm.appendLit(token[0].code)
@@ -119,7 +119,7 @@ object wChars: IWordClass {
      */
 
     private fun w_char(vm: ForthVM) {
-        val token = vm.getToken()
+        val token = vm.interp.getToken()
         if (token.length != 1)
             throw ParseError("Char literal must be one character")
         vm.dstk.push(token[0].code)

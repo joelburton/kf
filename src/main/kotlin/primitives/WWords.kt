@@ -29,7 +29,7 @@ object WWords : WordClass {
     /**  `\[defined\]` I ( in:"name" -- f : is this word defined? )
      */
     private fun w_bracketDefined(vm: ForthVM) {
-        val token: String = vm.getToken()
+        val token: String = vm.interp.getToken()
         val def = vm.dict.getSafe(token) != null
         vm.dstk.push(if (def) ForthVM.Companion.TRUE else ForthVM.Companion.FALSE)
     }
@@ -37,7 +37,7 @@ object WWords : WordClass {
     /**  `\[undefined\]` I ( in:"name" -- f : is this word undefined? )
      */
     private fun w_bracketUndefined(vm: ForthVM) {
-        val token: String = vm.getToken()
+        val token: String = vm.interp.getToken()
         val def = vm.dict.getSafe(token) != null
         vm.dstk.push(if (def) ForthVM.Companion.FALSE else ForthVM.Companion.TRUE)
     }
@@ -56,7 +56,7 @@ object WWords : WordClass {
     /**  `hide` ( in:"name" -- : hides word )
      */
     fun w_hideWord(vm: ForthVM) {
-        val name: String = vm.getToken()
+        val name: String = vm.interp.getToken()
         val w: Word = vm.dict[name]
         w.hidden = true
     }
@@ -65,7 +65,7 @@ object WWords : WordClass {
     /**  `unhide` ( in:"name" -- : un-hides word )
      */
     fun w_unhideWord(vm: ForthVM) {
-        val name: String = vm.getToken()
+        val name: String = vm.interp.getToken()
         val w: Word = vm.dict[name]
         w.hidden = false
     }
@@ -82,8 +82,8 @@ object WWords : WordClass {
     /** `synonym` ( in:"new" in:"old" -- : makes new word as alias of old )
      */
     fun w_synonym(vm: ForthVM) {
-        val newName: String = vm.getToken()
-        val oldName: String = vm.getToken()
+        val newName: String = vm.interp.getToken()
+        val oldName: String = vm.interp.getToken()
         val curWord: Word = vm.dict[oldName]
         val nw = Word(
             newName,
@@ -100,7 +100,7 @@ object WWords : WordClass {
     /**  `forget` ( in:"name" -- : delete word and all following words )
      */
     fun w_forget(vm: ForthVM) {
-        val newName: String = vm.getToken()
+        val newName: String = vm.interp.getToken()
         val w: Word = vm.dict[newName]
         vm.dict.truncateAt(w.wn)
         if (w.cpos != Word.Companion.NO_ADDR) vm.cend = w.cpos
@@ -128,7 +128,7 @@ object WWords : WordClass {
      */
     fun w_marker(vm: ForthVM) {
         val wCall = vm.dict["call"]
-        val newName: String = vm.getToken()
+        val newName: String = vm.interp.getToken()
         val w = Word(
             newName,
             fn = wCall.fn,
@@ -153,7 +153,7 @@ object WWords : WordClass {
     /** `callable.` ( "word" -- : print callable addr ) */
 
     fun w_callableDot(vm: ForthVM) {
-        val token: String = vm.getToken()
+        val token: String = vm.interp.getToken()
         val w: Word = vm.dict[token]
         vm.io.println(w.fn.toString())
     }

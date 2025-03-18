@@ -38,7 +38,7 @@ object wWords : IWordClass {
      */
 
     fun w_bracketTick(vm: ForthVM) {
-        val token: String = vm.getToken()
+        val token: String = vm.interp.getToken()
         if (D) vm.dbg(3, "w_bracketTick: token='$token'")
         val wn: Int = vm.dict.getNum(token)
         vm.appendLit(wn)
@@ -55,7 +55,7 @@ object wWords : IWordClass {
      */
 
     fun w_tick(vm: ForthVM) {
-        val token: String = vm.getToken()
+        val token: String = vm.interp.getToken()
         val wn = vm.dict.getNum(token)
         vm.dstk.push(wn)
     }
@@ -75,7 +75,7 @@ object wWords : IWordClass {
 
     private fun w_find(vm: ForthVM) {
         val addr: Int = vm.dstk.pop()
-        val token = vm.interpScanner.getAsCString(addr)
+        val token = vm.interp.scanner.getAsCString(addr)
         if (D) vm.dbg(3, "w_find: token='$token'")
         val w = vm.dict.getSafe(token)
         if (w == null) {

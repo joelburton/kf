@@ -6,6 +6,7 @@ import com.github.ajalt.mordant.terminal.warning
 import kf.ForthVM
 import kf.IWordClass
 import kf.Word
+import kf.interps.InterpBase
 import kf.words.wFunctions.w_call
 import kf.words.wFunctions.w_exit
 
@@ -43,7 +44,7 @@ object wCompiling: IWordClass {
      */
 
     fun w_colon(vm: ForthVM) {
-        val name: String = vm.getToken()
+        val name: String = vm.interp.getToken()
 
         // Words start off not-recursive hidden, so they can't call themselves
         // while still being compiled. This allows:
@@ -62,7 +63,7 @@ object wCompiling: IWordClass {
             fn = ::w_call
         )
         vm.dict.add(w)
-        vm.interpState = ForthVM.INTERP_STATE_COMPILING
+        vm.interp.state = InterpBase.STATE_COMPILING
         vm.dict.currentlyDefining = w
     }
 
@@ -84,7 +85,7 @@ object wCompiling: IWordClass {
         val w = vm.dict.last
         vm.appendWord(";s")
         vm.dict.currentlyDefining = null
-        vm.interpState = ForthVM.INTERP_STATE_INTERPRETING
+        vm.interp.state = InterpBase.STATE_INTERPRETING
     }
 
     /** IMMEDIATE    CORE
@@ -167,7 +168,7 @@ object wCompiling: IWordClass {
      */
 
     fun w_postpone(vm: ForthVM) {
-        val token: String = vm.getToken()
+        val token: String = vm.interp.getToken()
         val w = vm.dict[token]
         val cw = vm.dict.last
 

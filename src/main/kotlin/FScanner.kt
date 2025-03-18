@@ -1,8 +1,10 @@
 package kf
 
 class FScanner(val vm: ForthVM, val bufStartAddr: Int, val bufEndAddr: Int) {
-    var bufPtr = 0
-    var bufLen = 0
+    var bufPtr = 0  // buffer pointer
+    var bufLen = 0  // length of entire buffer
+    var tokStart = 0
+    var tokLen = 0
 
     companion object {
         const val SPACE = 0x20
@@ -13,14 +15,22 @@ class FScanner(val vm: ForthVM, val bufStartAddr: Int, val bufEndAddr: Int) {
     fun reset() {
         bufPtr = bufStartAddr
         bufLen = 0
+        tokStart = bufStartAddr
+        tokLen = 0
     }
 
     /** Set string to the input buffer. */
 
     fun fill(s: String) {
-        bufLen = 0
+        reset()
         for (c in s) vm.mem[bufStartAddr + bufLen++] = c.code
         bufPtr = bufStartAddr
+    }
+
+    // Perhaps just for debugging
+    override fun toString(): String {
+        val chars = CharArray(bufLen) { i -> vm.mem[bufStartAddr + i].toChar() }
+        return chars.concatToString()
     }
 
     /** Get range of buffer as normal K string. */
@@ -40,42 +50,61 @@ class FScanner(val vm: ForthVM, val bufStartAddr: Int, val bufEndAddr: Int) {
 
     /** Get space-separated word. Returns (addr, len). */
 
-    fun parseName(): Pair<Int, Int> {
+    fun parseName() {
         val max = bufStartAddr + bufLen
-        var at = 0
-        var len = 0
 
         while (bufPtr < max && vm.mem[bufPtr] == SPACE) bufPtr += 1
-        at = bufPtr
+        tokStart = bufPtr
         while (bufPtr < max && vm.mem[bufPtr] != SPACE) bufPtr += 1
-        len = bufPtr - at
+        tokLen = bufPtr - tokStart
         if (bufPtr < max && vm.mem[bufPtr++] != SPACE)
             throw Exception("WOULD NEVER HAPPEN?")
-        return Pair(at, len)
+    }
+
+    fun parseNameToStr(): String {
+        parseName()
+        val chars = CharArray(tokLen) { i -> vm.mem[tokStart + i].toChar() }
+        return chars.concatToString()
+    }
+
+    fun parseNameToPAir(): Pair<Int, Int> {
+        parseName()
+        return Pair(tokStart, tokLen)
+    }
+
+    fun parseToStr(term: Char): String {
+        parse(term)
+        val chars = CharArray(tokLen) { i -> vm.mem[tokStart + i].toChar() }
+        return chars.concatToString()
+    }
+
+    fun parseToPair(term: Char): Pair<Int, Int> {
+        parse(term)
+        return Pair(tokStart, tokLen)
     }
 
     /** General parse for an ending character. Returns (addr, len) */
 
-    fun parse(term: Char): Pair<Int, Int> {
+    fun parse(term: Char) {
         val max = bufStartAddr + bufLen
         var at = bufPtr
         var phraseLen = 0
 
+        tokStart = bufPtr
         while (bufPtr < max && vm.mem[bufPtr] != term.code) bufPtr += 1
         if (bufPtr == max) throw ParseError("Expected terminator")
-        phraseLen = bufPtr - at
+        tokLen = bufPtr - tokStart
         bufPtr += 1  // advance past closing term
         if (bufPtr < max) if (vm.mem[bufPtr++] != SPACE)
             throw ParseError("Unexpected character")
-        return Pair(at, phraseLen)
     }
 
     /** Get rest of line. */
 
     fun nextLine() {
         bufPtr = bufEndAddr
-        bufLen = bufEndAddr - bufStartAddr
+//        bufLen = bufEndAddr - bufStartAddr
     }
 
-    val atEnd get() = bufPtr == bufStartAddr + bufLen
+//    val atEnd get() = bufPtr == bufStartAddr + bufLen
 }
