@@ -111,6 +111,8 @@ class ForthVM(
      */
     val timeMarkCreated = TimeSource.Monotonic.markNow()
 
+    val interp = InterpForth(this)
+
     init {
         // THere needs to be a verbosity set, so setting it to mildly-chatty.
         // Most callers will directly set this on their vm instance before
@@ -147,7 +149,7 @@ class ForthVM(
 //        dict.addModule(WInterp)
         if (includePrimitives) addCoreWords()
 
-        wInterp.rebootInterpreter(this)
+        interp.rebootInterpreter()
         reset()
     }
 
@@ -160,7 +162,7 @@ class ForthVM(
         ip = cstart
         if (D) dbg_indent = 0
 
-        wInterp.resetInterpreter(this)
+        interp.resetInterpreter()
     }
 
 
@@ -324,10 +326,6 @@ class ForthVM(
     val isCompilingState
         get() = mem[REG_INTERP_STATE] == INTERP_STATE_COMPILING
 
-
-    /**  Buffer holding the most recently read token. */
-    var interpToken: String = ""
-
     /**  Scanner for reading and tokenizing input line. */
     var interpScanner: FScanner = FScanner(
         this, memConfig.interpBufferStart, memConfig.interpBufferEnd)
@@ -346,8 +344,7 @@ class ForthVM(
     fun getToken(): String {
         if (D) dbg(3, "getToken")
         val (addr, len) = interpScanner.parseName()
-        interpToken = interpScanner.getAsString(addr, len)
-        return interpToken
+        return interpScanner.getAsString(addr, len)
     }
 
     companion object {

@@ -11,7 +11,6 @@ open class InterpBase(val vm: ForthVM) {
      */
     fun rebootInterpreter() {
         if (D) vm.dbg(3, "vm.rebootInterpreter")
-        vm.interpToken = ""
         vm.interpScanner.reset()
 
         // Put interpreter code in mem; the VM will start executing here
