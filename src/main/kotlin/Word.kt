@@ -5,6 +5,10 @@ import com.github.ajalt.mordant.terminal.warning
 
 typealias StaticFunc = (ForthVM) -> Unit
 
+fun w_notImpl(vm: ForthVM) {
+    TODO("Not implemented")
+}
+
 class Word(
     val name: String,
     var fn: StaticFunc,

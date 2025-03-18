@@ -10,16 +10,7 @@ import kf.hex8
 object WMemory : WordClass {
     override val name = "Memory"
     override val primitives get() = arrayOf(
-        Word("@", ::w_fetch ) ,
-        Word("!", ::w_store ) ,
-        Word("+!", ::w_plusStore),
-        Word("here", ::w_here ) ,
         Word("allot", ::w_allot ) ,
-        Word(",", ::w_comma ) ,
-        Word(",,", ::w_commaComma ) ,
-        Word("?", ::w_question ) ,
-        Word("dump", ::w_dump ) ,
-        Word("!+", ::w_plusStore ) ,
         Word("cell", ::w_cell ) ,
         Word("cells", ::w_cells ) ,
         Word("unused", ::w_unused ) ,
@@ -28,6 +19,7 @@ object WMemory : WordClass {
         Word("erase", ::w_erase ) ,
         Word("fill", ::w_fill ) ,
         Word("cells+", ::w_cellsPlus),
+        Word(".memconfig", ::w_dotMemConfig),
     )
 
     private fun w_cell(vm: ForthVM) {
@@ -77,31 +69,12 @@ object WMemory : WordClass {
         }
     }
 
-    /**  ( addr -- n ) Get data from addr. */
-    fun w_fetch(vm: ForthVM) {
-        val addr: Int = vm.dstk.pop()
-        val num: Int = vm.mem[addr]
-        vm.dstk.push(num)
-    }
 
-    /**  ( n addr -- ) ! Store data at addr. */
-    fun w_store(vm: ForthVM) {
-        val addr: Int = vm.dstk.pop()
-        val num: Int = vm.dstk.pop()
-        vm.mem[addr] = num
-    }
 
-    fun w_plusStore(vm: ForthVM) {
-        val addr : Int = vm.dstk.pop()
-        val incr = vm.dstk.pop()
-        vm.mem[addr] = vm.mem[addr] + incr
 
-    }
 
-    /**  ( -- n ) Push value of here (section of DATA where will be written) */
-    fun w_here(vm: ForthVM) {
-        vm.dstk.push(vm.dend)
-    }
+
+
 
     /**  ( n -- ) Get n spaces in data section. */
     fun w_allot(vm: ForthVM) {
@@ -109,45 +82,18 @@ object WMemory : WordClass {
         vm.dend += d
     }
 
-    fun w_dump(vm: ForthVM) {
-        val len: Int = vm.dstk.pop()
-        val start: Int = vm.dstk.pop()
-        val end = start + len - 1
-        var i = start - (start % 4)
-        while (i < start + len) {
-            val a = if (i >= start && i <= end) vm.mem[i].hex8
-            else "        "
 
-            val b = if (i + 1 >= start && i + 1 <= end) vm.mem[i+1].hex8
-            else "        "
 
-            val c = if (i + 2 >= start && i + 2 <= end) vm.mem[i+2].hex8
-            else "        "
 
-            val d = if (i + 3 >= start && i + 3 <= end) vm.mem[i+3].hex8
-            else "        "
 
-            vm.io.println("${i.addr} = $a $b $c $d")
-            i += 4
-        }
-    }
-
-    fun w_comma(vm: ForthVM) {
-        vm.mem[vm.dend++] = vm.dstk.pop()
-    }
-
-    fun w_commaComma(vm: ForthVM) {
-        vm.mem[vm.cend++] = vm.dstk.pop()
-    }
-
-    fun w_question(vm: ForthVM) {
-        val v: Int = vm.mem[vm.dstk.pop()]
-        vm.io.print(v.toString(vm.base.coerceIn(2, 36)) + " ")
-    }
 
     fun w_cellsPlus(vm: ForthVM) {
         val addr = vm.dstk.pop()
-        val num: Int = vm.dstk.pop()
+        val num = vm.dstk.pop()
         vm.dstk.push(addr + num)
+    }
+
+    fun w_dotMemConfig(vm: ForthVM) {
+        vm.memConfig.show()
     }
 }

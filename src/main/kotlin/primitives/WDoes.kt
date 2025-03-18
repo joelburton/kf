@@ -3,7 +3,8 @@ package kf.primitives
 import kf.ForthVM
 import kf.Word
 import kf.WordClass
-import kf.primitives.WFunctions.w_call
+import kf.words.wCreate.w_create
+import kf.words.wFunctions.w_call
 
 object WDoes : WordClass {
     override val name = "Does"
@@ -13,14 +14,8 @@ object WDoes : WordClass {
         Word("does", ::w_does),
         Word("addr", ::w_addr),
         Word("addrcall", ::w_addrCall, compO = true),
-        Word("create", ::w_create),
-        Word("variable", ::w_variable),
     )
 
-    fun w_variable(vm: ForthVM) {
-        w_create(vm)
-        vm.dend += 1
-    }
     /**  does> : inside of compilation, adds "does" + "ret"
      *
      * Example:
@@ -70,18 +65,5 @@ object WDoes : WordClass {
         w_call(vm)
     }
 
-    /**  create: add an empty, new word, and sets the DPOS to current CEND.
-     *
-     * */
-
-    fun w_create(vm: ForthVM) {
-        val name: String = vm.getToken()
-        val w = Word(
-            name,
-            cpos = Word.Companion.NO_ADDR,
-            dpos = vm.dend,
-            fn = ::w_addr)
-        vm.dict.add(w)
-    }
 
 }

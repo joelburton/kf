@@ -1,37 +1,12 @@
 package kf
 
 
-import com.github.ajalt.mordant.terminal.StandardTerminalInterface
-import com.github.ajalt.mordant.terminal.Terminal
-import com.github.ajalt.mordant.terminal.danger
-import com.github.ajalt.mordant.terminal.info
 import com.github.ajalt.mordant.rendering.TextColors.gray
-import com.github.ajalt.mordant.terminal.success
-import com.github.ajalt.mordant.terminal.warning
-import kf.primitives.WComments
-import kf.primitives.WCompiling
-import kf.primitives.WDoes
-import kf.primitives.WDoubleNum
-import kf.primitives.WFunctions
-import kf.primitives.WIfThen
-import kf.primitives.WInclude
-import kf.primitives.WInputOutput
-import kf.primitives.WInternals
+import com.github.ajalt.mordant.terminal.*
 import kf.primitives.WInterp
-import kf.primitives.WInterp.w_banner
-import kf.primitives.WLoops
-import kf.primitives.WMachine
-import kf.primitives.WMathLogic
-import kf.primitives.WMemory
-import kf.primitives.WMisc
-import kf.primitives.WRegisters
-import kf.primitives.WStackOps
-import kf.primitives.WStrings
-import kf.primitives.WTools
-import kf.primitives.WWords
-import kotlin.time.TimeSource
-
+import kf.words.*
 import kotlin.reflect.KProperty
+import kotlin.time.TimeSource
 
 // *****************************************************************************
 // Some orientation:
@@ -121,9 +96,6 @@ class ForthVM(
     /** Return stack (for calling/returning from fn calls */
     val rstk = FStack(this, "rstk", memConfig.rstackStart, memConfig.rstackEnd)
 
-    /** Loop stack (keeps track of i/j/k variables and loop nest depth */
-    val lstk = FStack(this, "lstk", memConfig.lstackStart, memConfig.lstackEnd)
-
     /** Current word being executed by the VM. */
     lateinit var currentWord: Word  // TODO: this should be removed
 
@@ -131,7 +103,7 @@ class ForthVM(
     var ip = memConfig.codeStart
 
     /** List of {name: class} for all primitive modules loaded. */
-    val modulesLoaded: HashMap<String, WordClass> = HashMap()
+    val modulesLoaded: HashMap<String, IWordClass> = HashMap()
 
     /** Time mark for when VM started (the `millis` word reports # of millis
      * since server start, since it's not possible to return millis before the
@@ -170,11 +142,12 @@ class ForthVM(
         currentWord = Word.noWord
 
         dict.reset()
-        dict.addModule(WMachine)
-        dict.addModule(WInterp)
-        if (includePrimitives) addCorePrimitives()
+        dict.addModule(wLowLevel)
+//        dict.addModule(WMachine)
+//        dict.addModule(WInterp)
+        if (includePrimitives) addCoreWords()
 
-        rebootInterpreter()
+        wInterp.rebootInterpreter(this)
         reset()
     }
 
@@ -184,11 +157,10 @@ class ForthVM(
         if (D) dbg(1, "vm.reset")
         dstk.reset()
         rstk.reset()
-        lstk.reset()
         ip = cstart
         if (D) dbg_indent = 0
 
-        resetInterpreter()
+        wInterp.resetInterpreter(this)
     }
 
 
@@ -197,31 +169,44 @@ class ForthVM(
     /**  Add a list of primitives at once, potentially printing new items as
      * added.
      */
-    fun addCorePrimitives() {
-        if (D) dbg(3, "vm.addCorePrimitives")
+    fun addCoreWords() {
+        if (D) dbg(3, "vm.addCoreWords")
 
         for (mod in arrayOf(
-            // Machine    // nt
-            // Interp     // nt
-            WInclude, // nt
-            WRegisters, // nt
-            WTools, // nt
-            WComments,
-            WInputOutput,
-            WStackOps, // nt
-            WMathLogic,
-            WMemory, // nt
-            WFunctions,
-            WCompiling,
-            WIfThen,
-            WLoops, // nt
-            WDoes, // nt
-            WMisc, // nt
-            WInternals,
-            WWords, // nt
-            WStrings, // nt
-            WDoubleNum, // nt
-        )) dict.addModule(mod)
+            wChars,
+            wComments,
+            wCompiling,
+            wCreate,
+            wDoubleCell,
+            wFormatting,
+            wFunctions,
+            wIO,
+            wIfThenCase,
+            wInterp,
+            wInterpExtra,
+            wLogic,
+            wLoops,
+            wLowLevelDebug,
+            wMath,
+            wMemory,
+            wMemoryExtra,
+            wParsing,
+            wRegisters,
+            wStackOps,
+            wStrings,
+            wSystem,
+            wUnsigned,
+            wValues,
+            wVariables,
+            wWords,
+
+            WInterp,
+
+            wTools,
+            wToolsExtra,
+        )) {
+            dict.addModule(mod)
+        }
     }
 
     // ***************************************************** Adding to VM memory
@@ -252,7 +237,7 @@ class ForthVM(
     fun appendStrToData(s: String): Int {
         if (D) dbg(3, "vm.appendStrToData: $s")
         val startAddr: Int = dend
-        cellMeta[startAddr] = CellMeta.StringLit
+        cellMeta[startAddr] = CellMeta.StringLen
         mem[dend++] = s.length
 
         for (c in s) mem[dend++] = c.code
@@ -316,6 +301,7 @@ class ForthVM(
             } catch (e: ForthBrk) {
                 io.danger("BRK: " + e.message)
                 e.printStackTrace()
+                throw RuntimeException("BRK: " + e.message)
             }
         }
     }
@@ -346,145 +332,14 @@ class ForthVM(
     var interpScanner: FScanner = FScanner(
         this, memConfig.interpBufferStart, memConfig.interpBufferEnd)
 
-    // ************************************************ Reboot/reset interpreter
-
-    /**  Handle a VM reboot at the interpreter layer.
-     */
-    private fun rebootInterpreter() {
-        if (D) dbg(3, "vm.rebootInterpreter")
-        interpToken = ""
-        interpScanner.reset()
-
-        // Put interpreter code in mem; the VM will start executing here
-        addInterpreterCode()
-        resetInterpreter()
-        w_banner(this)
-    }
-
-    /**  Handle a VM reset at the interpreter layer.
-     */
-    private fun resetInterpreter() {
-        if (D) dbg(3, "vm.resetInterpreter")
-
-        // If error happens while defining word, roll back this word.
-        dict.currentlyDefining?.let { w ->
-            cend = w.cpos
-            dict.removeLast()
-            dict.currentlyDefining = null
-        }
-        interpState = INTERP_STATE_INTERPRETING
-    }
 
 
-    // ******************************************************* Interpreter modes
-
-    /** Called by w_processToken when InterpretedMode is "compiling":
-     *
-     * Most parts in the definition and just added directly.
-     * However, words that are "immediate-mode" will execute.
-     */
-    fun interpCompile(token: String) {
-        if (D) dbg(3, "vm.interpCompile: $token")
-        val w: Word? = dict.getSafeChkRecursion(token, io)
-
-        if (w != null) {
-            if (w.interpO)
-                throw InvalidState("Can't use in compile mode: ${w.name}")
-            else if (w.imm) {
-                w(this)
-            } else {
-                appendCode(w.wn, CellMeta.WordNum)
-            }
-        } else if (token.isCharLit) {
-            appendLit(token[1].code)
-        } else {
-            val n: Int = token.toForthInt(base)
-            appendWord("lit")
-            appendCode(n, CellMeta.NumLit)
-        }
-    }
-
-    /**  Called by w_processToken when Interpreter mode is "interpreting":
-     *
-     * Execute current token: if a word, run it; else, try as number.
-     */
-
-    fun interpInterpret(token: String) {
-        if (D) dbg(3, "vm.interpInterpret: $token")
-        val w: Word? = dict.getSafe(token)
-        if (w != null) {
-            if (w.compO) throw InvalidState("Compile-only: " + w.name)
-            w(this)
-        } else if (token.isCharLit) {
-            dstk.push(token[1].code)
-        } else {
-            dstk.push(token.toForthInt(base))
-        }
-    }
-
-
-    // *************************************************** the Forth interpreter
-
-    /** Instructions for the VM for the Forth interpreter
-     *
-     * This is poked into memory during the reboot process; this is the
-     * interpreter loop:
-     *
-     * - show prompt
-     *
-     * - read line of input (from terminal/file/wherever io tells us)
-     * - if null, jump to EOF-point, below
-     *
-     * - read next token from input
-     * - if null, jump back to show-prompt
-     *
-     * - call w_processToken
-     *
-     * - go back to read-next-token
-     *
-     * - EOF: we get here when no more input from io system
-     * - execute w_eof, which throws an EOF error
-     *
-     * That's normally going to stop the interpreter. However, if the
-     * interpreter is getting code from files, it might just move onto
-     * the next file. Or, if a terminal-user uses "include ..." to read
-     * from a file, after an EOF in that file, it will cede control back
-     * to the console.
-     *
-     * However, in the general case, this ends the
-     * session with the VM and the program ultimately stops.
-     *
-     * - In cases where the IO subsystem gets more input (another file
-     * or returning from file-reading to the console user), the EOF
-     * won't be fatal, so jump back the show-prompt top and continue.
-     *
-     * The w_processToken word right now is just a switch between calling
-     * the Java code for interpExecute and interpCompile, but maybe one day
-     * more of this will be done at the Forth level, allowing users to
-     * customize their own interpreters more without less reliance on part of
-     * that loop being locked up in non-word code: that would require exposing
-     * more of the actual dictionary access to Forth for people to be able
-     * to write more interpreter internals in Forth. */
-    fun addInterpreterCode() {
-        if (D) dbg(3, "vm.addInterpreterCode")
-
-        appendWord("interp-prompt")
-        appendWord("interp-refill")
-        appendJump("0rel-branch", 7) // eof, -> eof
-        appendWord("interp-read")
-        appendJump("0rel-branch", -6) // no more token, -> refill
-        appendWord("interp-process")
-        appendJump("rel-branch", -5) // go back to read
-        appendWord("eof")
-        appendJump("rel-branch", -12) // jump back to start
-    }
-
-    var dbg_indent = 0
+    var dbg_indent = 0 // fixme : needs removing
     fun dbg(lvl: Int, s: String) {
         if (verbosity < lvl) return
         when (lvl) {
-            0, 1, 2 -> io.info(" ".repeat(dbg_indent) + s)
-            else -> io.println(gray(" ".repeat(dbg_indent)+ s))
+            0, 1, 2 -> io.info(s)
+            else -> io.println(gray(s))
         }
     }
 

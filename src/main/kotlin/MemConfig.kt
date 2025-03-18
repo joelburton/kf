@@ -14,8 +14,6 @@ interface IMemConfig {
     val dstackEnd: Int
     val rstackStart: Int
     val rstackEnd: Int
-    val lstackStart: Int
-    val lstackEnd: Int
     val upperBound: Int
 
     fun show() {
@@ -25,7 +23,6 @@ interface IMemConfig {
         println("Interp buffer: ${dstackStart.addr}-${dstackEnd.addr}")
         println("Dstack:        ${dstackStart.addr}-${dstackEnd.addr}")
         println("Rstack:        ${rstackStart.addr}-${rstackEnd.addr}")
-        println("Lstack:        ${lstackStart.addr}-${lstackEnd.addr}")
         println("Upper bound:   ${upperBound.addr}")
     }
 }
@@ -43,9 +40,7 @@ object SmallMemConfig : IMemConfig {
     override val dstackStart: Int = 0x0300
     override val dstackEnd: Int = 0x03df
     override val rstackStart: Int = 0x03e0
-    override val rstackEnd: Int = 0x03ef
-    override val lstackStart: Int = 0x03f0
-    override val lstackEnd: Int = 0x03ff
+    override val rstackEnd: Int = 0x03ff
     override val upperBound: Int = 0x03ff
 }
 
@@ -62,9 +57,7 @@ object MedMemConfig: IMemConfig {
     override val dstackStart: Int = 0x2000
     override val dstackEnd: Int = 0x2dff
     override val rstackStart: Int = 0x2e00
-    override val rstackEnd: Int = 0x2eff
-    override val lstackStart: Int = 0x2f00
-    override val lstackEnd: Int = 0x2fff
+    override val rstackEnd: Int = 0x2fff
     override val upperBound: Int = 0x2fff
 }
 
@@ -81,9 +74,7 @@ object LargeMemConfig: IMemConfig {
     override val dstackStart: Int = 0xb000
     override val dstackEnd: Int = 0xefff
     override val rstackStart: Int = 0xf000
-    override val rstackEnd: Int = 0xf7ff
-    override val lstackStart: Int = 0xf800
-    override val lstackEnd: Int = 0xffff
+    override val rstackEnd: Int = 0xffff
     override val upperBound: Int = 0xffff
 }
 

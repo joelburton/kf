@@ -55,17 +55,8 @@ object WComments : WordClass {
 
     override val primitives get() = arrayOf(
         Word("\\", imm = true, fn = ::w_backslashComment),
-        Word("(", imm = true, fn = ::w_parenComment),
     )
 
-    /**  ( -- : handles parentheses comments )
-     *
-     * These can only be on one line; if a comment isn't closed by EOL,
-     * the scanner will throw an error.
-     */
-    fun w_parenComment(vm: ForthVM) {
-        vm.interpScanner.parse(')')
-    }
 
 
     /**  ( -- : handles backslash comments )

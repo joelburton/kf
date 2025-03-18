@@ -11,6 +11,12 @@ interface WordClass {
     val primitives: Array<Word>
 }
 
+interface IWordClass {
+    val name: String
+    val description: String
+    val words: Array<Word>
+}
+
 class Dict(val vm: ForthVM, val capacity: Int = 1024)  {
     private val _words = arrayListOf<Word>()
     val words: List<Word> = _words
@@ -85,11 +91,23 @@ class Dict(val vm: ForthVM, val capacity: Int = 1024)  {
         word.wn = _words.size - 1
     }
 
-    fun addModule(mod: WordClass) {
+    fun addModule(mod: IWordClass) {
         if (D) vm.dbg(3, "dict.addModule: ${mod.name}")
-        for (w in mod.primitives) add(w)
+        if (vm.verbosity >= 1) vm.io.print("${mod.name}: ")
+        for (w in mod.words) {
+            add(w)
+            if (vm.verbosity >= 1) vm.io.print("${w.name} ")
+        }
+        if (vm.verbosity >= 1) vm.io.println()
+
         vm.modulesLoaded.put(mod.name, mod)
     }
+
+//    fun addModule(mod: WordClass) {
+//        if (D) vm.dbg(3, "dict.addModule: ${mod.name}")
+//        for (w in mod.primitives) add(w)
+//        vm.modulesLoaded.put(mod.name, mod)
+//    }
 
     // ******************************************************* manipulating dict
 

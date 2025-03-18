@@ -24,13 +24,10 @@ object WLoops : WordClass {
             Word("k", ::w_k, compO = true),
 
             Word("(loop)", ::w_parenLoop, compO = true, hidden = true),
-            Word("(+loop)", ::w_parenPlusLoop, compO = true, hidden = true),
-            Word("+loop", ::w_plusLoop, imm = true, compO = true),
 
             Word("leave", ::w_leave, imm = true, compO = true),
             Word("unloop", ::w_leave, imm = true, compO = true),
 
-            Word(".lstk", ::w_lstk),  // ?do - enter loop if true
             // -do down-counting
         )
 
@@ -126,8 +123,8 @@ object WLoops : WordClass {
     /** This is the runtime part --- move the limit/start vars to the Lstack */
 
     fun w_parenDo(vm: ForthVM) {
-        vm.lstk.push(vm.dstk.pop())
-        vm.lstk.push(vm.dstk.pop())
+        vm.rstk.push(vm.dstk.pop())
+        vm.rstk.push(vm.dstk.pop())
     }
 
     /** LEAVE leaves a DO loop (there's no flag or such, but you can put it in
@@ -159,16 +156,6 @@ object WLoops : WordClass {
         repeat(numExits) { vm.mem[vm.rstk.pop()] = vm.cend }
     }
 
-    /** The +LOOP part has both immediate and runtime parts.
-     *
-     * 100% the same, but writes out (+loop) into the code.
-     */
-
-    fun w_plusLoop(vm: ForthVM) {
-        val numExits = vm.rstk.pop()
-        vm.appendJump("(+loop)", vm.rstk.popFrom(numExits))
-        repeat(numExits) { vm.mem[vm.rstk.pop()] = vm.cend }
-    }
 
     /** (LOOP): the runtime part */
 
@@ -176,11 +163,7 @@ object WLoops : WordClass {
         runtimeLoop(vm, 1)
     }
 
-    /** (+LOOP): the runtime part */
 
-    fun w_parenPlusLoop(vm: ForthVM) {  // dstk is index limit incby
-        runtimeLoop(vm, vm.dstk.pop())
-    }
 
     // Both of those use this internal func; it runs at runtime:
     //
@@ -188,14 +171,14 @@ object WLoops : WordClass {
     // - done looping: skip past the jump-address for start of loop
     // - more looping: put the index/limit back on stack and loop
     fun runtimeLoop(vm: ForthVM, incrementBy: Int) {
-        val limit = vm.lstk.pop()
-        val index = vm.lstk.pop() + incrementBy
+        val limit = vm.rstk.pop()
+        val index = vm.rstk.pop() + incrementBy
         if (index >= limit) {
             if (D) vm.dbg(3, "w_loopImpl: done")
             vm.ip += 1  // skip the jump-addr after (loop)
         } else {
             if (D) vm.dbg(3, "w_loopImpl: looping")
-            vm.lstk.push(index, limit)  // push limit/index back on
+            vm.rstk.push(index, limit)  // push limit/index back on
             vm.ip = vm.mem[vm.ip]  // jump to start of loop
         }
     }
@@ -238,24 +221,21 @@ object WLoops : WordClass {
      */
 
     private fun w_i(vm: ForthVM) {
-        vm.dstk.push(vm.lstk.getFrom(1))
+        vm.dstk.push(vm.rstk.getFrom(1))
     }
 
     private fun w_j(vm: ForthVM) {
-        vm.dstk.push(vm.lstk.getFrom(3))
+        vm.dstk.push(vm.rstk.getFrom(3))
     }
 
     private fun w_k(vm: ForthVM) {
-        vm.dstk.push(vm.lstk.getFrom(5))
+        vm.dstk.push(vm.rstk.getFrom(5))
     }
 
     // We could have more (l, m, etc), but in Forth, very small words are
     // discouraged, so it's already a bit of a code smell to have "j", let
     // alone "k".
 
-    private fun w_lstk(vm: ForthVM) {
-        vm.lstk.dump()
-    }
 
     /** Remove one level of DO loop vars. This is needed if you exit a function
      * directly while in a loop:
@@ -269,8 +249,8 @@ object WLoops : WordClass {
      */
 
     private fun w_unloop(vm: ForthVM) {
-        vm.lstk.pop()
-        vm.lstk.pop()
+        vm.rstk.pop()
+        vm.rstk.pop()
     }
 
 } // : *begin .cend @ . .cend @ immediate ;

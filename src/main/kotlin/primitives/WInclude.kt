@@ -21,7 +21,7 @@ object WInclude : WordClass {
             // always called INSTANCE on the class with the object
             val mod = Class.forName(name)
                 .getDeclaredField("INSTANCE")
-                .get(null) as WordClass
+                .get(null) as IWordClass
             vm.dict.addModule(mod)
         } catch (e: ClassNotFoundException) {
             throw ForthError("Can't find: $name")

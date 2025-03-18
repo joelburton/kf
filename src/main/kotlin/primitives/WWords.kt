@@ -10,12 +10,10 @@ import kf.WordClass
 object WWords : WordClass {
     override val name = "Words"
     override val primitives get() = arrayOf(
-        Word("words", ::w_words ) ,
         Word("synonym", ::w_synonym ) ,
         Word("forget", ::w_forget ) ,
         Word("wn-forget", ::w_wnForget ) ,
         Word("marker", ::w_marker ) ,
-        Word("'", ::w_tick ) ,
 
         Word(".dict", ::w_dotDict ) ,
         Word(".wn-hide", ::w_hideWord ) ,
@@ -44,15 +42,6 @@ object WWords : WordClass {
         vm.dstk.push(if (def) ForthVM.Companion.FALSE else ForthVM.Companion.TRUE)
     }
 
-    /**  `words` ( -- :dump words )
-     */
-    fun w_words(vm: ForthVM) {
-        vm.io.println(
-            vm.dict.words.filter { !it.hidden }.joinToString(" ") { it.name },
-            whitespace = Whitespace.NORMAL,
-            overflowWrap = OverflowWrap.BREAK_WORD
-        )
-    }
 
     /**  `.dict` ( -- : list all words with internal info )
      */
@@ -152,15 +141,6 @@ object WWords : WordClass {
         vm.appendWord(";s")
     }
 
-    /**  `'` ( in:"name" -- wn : get wn for name and push to stack )
-     *
-     * Example: ' dup => pushes wn-of-dup to dstk
-     */
-    fun w_tick(vm: ForthVM) {
-        val token: String = vm.getToken()
-        val wn: Int = vm.dict.getNum(token)
-        vm.dstk.push(wn)
-    }
 
     /**  `id.` ( wn -- : print name of word )
      */

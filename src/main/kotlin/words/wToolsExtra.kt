@@ -1,25 +1,19 @@
-package kf.primitives
+package kf.words
 
-import kf.CellMeta
-import kf.ForthVM
-import kf.Word
-import kf.WordClass
-import kf.addr
-import kf.hex8
-import kf.pad10
+import kf.*
 
-object WTools : WordClass {
+object wToolsExtra : IWordClass {
     override val name = "Tools"
-    override val primitives get() = arrayOf(
-        Word(".dstk", ::w_dumpDataStack),
-        Word(".rstk", ::w_dumpReturnStack),
-        Word(".code", ::w_dumpCode),
-        Word(".data", ::w_dumpData),
-        Word(".regs", ::w_dumpRegs),
-        Word("xt-see", ::w_xtSee),
-        Word("see", ::w_see),
-        Word("xt-simple-see", ::w_xtSeeSimple),
-        Word("simple-see", ::w_seeSimple),
+    override val description = "Tools specific to KF"
+    override val words get() = arrayOf(
+        Word(".DSTK", ::w_dumpDataStack),
+        Word(".RSTK", ::w_dumpReturnStack),
+        Word(".CODE", ::w_dumpCode),
+        Word(".DATA", ::w_dumpData),
+        Word(".REGS", ::w_dumpRegs),
+        Word("XT-SEE", ::w_xtSee),
+        Word("XT-SIMPLE-SEE", ::w_xtSeeSimple),
+        Word("SIMPLE-SEE", ::w_seeSimple),
 
         // ~~  *terminal*:lineno:char:<2> 20 10
 
@@ -93,10 +87,6 @@ object WTools : WordClass {
         _see(vm, w, false)
     }
 
-    fun w_see(vm: ForthVM) {
-        val w: Word = vm.dict[vm.getToken()]
-        _see(vm, w, false)
-    }
 
     fun w_xtSeeSimple(vm: ForthVM) {
         val w: Word = vm.dict[vm.dstk.pop()]

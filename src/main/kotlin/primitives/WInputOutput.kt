@@ -16,28 +16,18 @@ import kf.numToStr
 object WInputOutput : WordClass {
     override val name = "InputOutput"
     override val primitives get() = arrayOf(
-        Word("cr",::w_cr),
-        Word("emit",::w_emit),
-        Word("space",::w_space),
         Word("page",::w_page),
 
         Word("nl",::w_nl),
-        Word("bl",::w_bl),
 
-        Word("key",::w_key),  // numbers?
         Word("key?", ::w_keyQuestion),
 
-        Word(".",::w_dot),
-        Word("base",::w_base),
         Word("hex",::w_hex),
-        Word("decimal",::w_decimal),
         Word("octal",::w_octal),
         Word("binary",::w_binary),
         Word("dec.",::w_decDot),
         Word("hex.",::w_hexDot),
 
-        Word("char",::w_char),
-        Word("[char]",::w_bracketChar, imm = true, compO = true),
         Word("toupper",::w_toUpper),
         Word("tolower",::w_toLower),
         Word(".r", ::w_dotR),
@@ -48,24 +38,13 @@ object WInputOutput : WordClass {
 
     )
 
-    /** `cr` `( -- out:"\n": print newline )` */
 
-    fun w_cr(vm: ForthVM) {
-        vm.io.println()
-    }
 
-    /** `emit` `( n -- out:"char-of-n" )` */
 
-    fun w_emit(vm: ForthVM) {
-        val c = vm.dstk.pop()
-        vm.io.print(c.toChar().toString())
-    }
 
-    /** `space` `( -- out:" " : print space )` */
 
-    fun w_space(vm: ForthVM) {
-        vm.io.print(" ")
-    }
+
+
 
     /** `page` `( -- : clear screen )` */
 
@@ -86,11 +65,7 @@ object WInputOutput : WordClass {
         vm.dstk.push(0x0a)
     }
 
-    /** `bl` ( -- blChar : return space char )` */
 
-    fun w_bl(vm: ForthVM) {
-        vm.dstk.push(0x20)
-    }
 
 
     // *************************************************************************
@@ -102,29 +77,6 @@ object WInputOutput : WordClass {
      *
      * */
 
-    fun w_key(vm: ForthVM) {
-        val ti = vm.io.terminalInterface
-        if (ti is TerminalFileInterface || ti is TerminalTestInterface)
-            throw RuntimeException("Cannot use `key` from file input")
-
-        val rawMode = vm.io.enterRawModeOrNull()
-        if (rawMode == null) {
-            var s = vm.io.prompt(yellow("Enter 1 character"))
-            while (s == null || s.length != 1) {
-                s = vm.io.prompt(yellow("Try again, enter 1 character"))
-            }
-            vm.dstk.push(s[0].code)
-        } else {
-            rawMode.use {
-                var k: Char = rawMode.run {
-                    var keyEv: KeyboardEvent? = null
-                    while (keyEv == null) keyEv = rawMode.readKeyOrNull()
-                    keyEv.key[0].toChar()
-                }
-                vm.dstk.push(k.code)
-            }
-        }
-    }
 
 
     // *************************************************************************
@@ -132,20 +84,8 @@ object WInputOutput : WordClass {
 
     /** `.`  `( x -- out:"" : pop & print top of stack )` */
 
-    fun w_dot(vm: ForthVM) {
-        vm.io.print("${vm.dstk.pop().numToStr(vm.base)} ")
-    }
 
-    /** `base` `( -- addr : get address of register base )`
-     *
-     *  There is a kf-specific alias for this in the Registers words, but `base`
-     *  is a standard part of Forth, so putting this here, too.
-     *
-     * */
 
-    fun w_base(vm: ForthVM) {
-        vm.dstk.push(ForthVM.Companion.REG_BASE)
-    }
 
     /** `hex` `( -- : set base to 16 )` */
 
@@ -153,11 +93,7 @@ object WInputOutput : WordClass {
         vm.base = 16
     }
 
-    /** `decimal` `( -- : set base to 10 )` */
 
-    fun w_decimal(vm: ForthVM) {
-        vm.base = 10
-    }
 
     /** `binary` `( -- : set base to 2 )` */
 
@@ -187,26 +123,9 @@ object WInputOutput : WordClass {
     // *************************************************************************
 
 
-    /** `char` `( in:char -- char : get literal value of char )` */
 
-    private fun w_char(vm: ForthVM) {
-        val token: String = vm.getToken()
-        if (token.length != 1)
-            throw ParseError("Char literal must be one character")
-        vm.dstk.push(token[0].code)
-    }
 
-    /** ```[char]``` `( in:char -- char : get literal value of char )`
-     *
-     * This is the same as `char`, but is imm mode.
-     * */
 
-    private fun w_bracketChar(vm: ForthVM) {
-        val token: String = vm.getToken()
-        if (token.length != 1)
-            throw ParseError("Char literal must be one character")
-        vm.appendLit(token[0].code)
-    }
 
     /** `toupper` `( n : n1 : convert n to uppercase if lowercase char )` */
 

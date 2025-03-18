@@ -30,6 +30,14 @@ class FScanner(val vm: ForthVM, val bufStartAddr: Int, val bufEndAddr: Int) {
         return chars.concatToString()
     }
 
+    /** Get range of buffer as normal K string. */
+
+    fun getAsCString(addr: Int): String {
+        val len = vm.mem[addr]
+        val chars = CharArray(len) { i -> vm.mem[addr + i +1].toChar() }
+        return chars.concatToString()
+    }
+
     /** Get space-separated word. Returns (addr, len). */
 
     fun parseName(): Pair<Int, Int> {

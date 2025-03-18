@@ -11,11 +11,15 @@ import kf.ForthEOF
 import kf.ForthMissingToken
 import kf.ForthQuitNonInteractive
 import kf.ForthVM
+import kf.IWordClass
 import kf.TerminalFileInterface
 import kf.TerminalStringInterface
 import kf.VERSION_STRING
 import kf.Word
 import kf.WordClass
+import kf.words.wInterp
+
+//import kf.words.wMachineCustom.addInterpreterCode
 
 
 /** The interpreter primitives.
@@ -23,16 +27,15 @@ import kf.WordClass
  * These are the primitives required for the interpreter, as well as some
  * things about some words (like `include` for reading Forth files in) that
  * are strongly related to the interpreter. */
-object WInterp : WordClass {
+object WInterp : IWordClass {
     override val name = "Interp"
-
-    override val primitives
+    override val description = "Old interpreter primitives"
+    override val words
         get() = arrayOf(
             // the interpreter loop (plus stuff in Machine)
             Word("interp-prompt", ::w_interpPrompt),
-            Word("interp-refill", ::w_interpRefill),
             Word("interp-read", ::w_interpRead),
-            Word("interp-process", ::w_interpProcess),
+//            Word("interp-process", ::w_interpProcess),
 
             // exiting the interpreter
             Word("\\\\\\", ::w_tripleBackSlash),
@@ -40,11 +43,8 @@ object WInterp : WordClass {
 
             // useful words for working with interpreter
             Word("interp-reload-code", ::w_interpReloadCode),
-            Word("[", ::w_goImmediate, imm = true, compO = true),
-            Word("]", ::w_goCompiled, imm = true),
 
-            Word("parse-name", ::w_parseName),
-            Word("find", ::w_find),
+//            Word("parse-name", ::w_parseName),
             Word("eval", ::w_eval),
             Word("banner", ::w_banner),
         )
@@ -63,18 +63,6 @@ object WInterp : WordClass {
         }
     }
 
-    /**  `interp-refill` ( -- : read line from io and set up scanner )
-     *
-     * This pushes 0 for eof-detected, and 1 otherwise */
-    fun w_interpRefill(vm: ForthVM) {
-        val input = vm.io.readLineOrNull(false)
-        if (input == null) {
-            vm.dstk.push(0)
-        } else {
-            vm.interpScanner.fill(input)
-            vm.dstk.push(1)
-        }
-    }
 
     /**  `interp-read` ( in:"word" -- len : read next token ) */
     fun w_interpRead(vm: ForthVM) {
@@ -86,12 +74,12 @@ object WInterp : WordClass {
         }
     }
 
-    /**  `interp-process` ( -- : process token: compile/exec, dep on state ) */
-    fun w_interpProcess(vm: ForthVM) {
-        val token: String = vm.interpToken
-        if (vm.isCompilingState) vm.interpCompile(token)
-        else vm.interpInterpret(token)
-    }
+//    /**  `interp-process` ( -- : process token: compile/exec, dep on state ) */
+//    fun w_interpProcess(vm: ForthVM) {
+//        val token: String = vm.interpToken
+//        if (vm.isCompilingState) wInterp.compile(vm, token)
+//        else wInterp.interpret(vm, token)
+//    }
 
 
     // ************************************************************* exit interp
@@ -124,9 +112,7 @@ object WInterp : WordClass {
      * This is useful when writing a definition and want some immediate
      * behavior during the compilation. It's also handy when hacking around
      * with interpreter state and need to return to immediate mode. */
-    fun w_goImmediate(vm: ForthVM) {
-        vm.interpState = ForthVM.INTERP_STATE_INTERPRETING
-    }
+
 
     /** ']' ( -- : enter compile mode )
      *
@@ -138,9 +124,7 @@ object WInterp : WordClass {
      *
      * This creates a function that, when run, will put 10 and 20 on the stack,
      * but when *first compiled*, will print 'A'. */
-    fun w_goCompiled(vm: ForthVM) {
-        vm.interpState = ForthVM.INTERP_STATE_COMPILING
-    }
+
 
     /**  'interp-reload-code` ( -- : reloads orig interp code at cend )
      *
@@ -149,35 +133,12 @@ object WInterp : WordClass {
      * real one --- if something is wrong with the new one, a `reset` will
      * state running back at code state, running the original interpreter. */
     private fun w_interpReloadCode(vm: ForthVM) {
-        vm.addInterpreterCode()
+//        addInterpreterCode(vm)   FIXME
     }
 
-    /** `parse-name` `( "name" -- addr u : get token from input )` */
 
-    private fun w_parseName(vm: ForthVM) {
-        if (D) vm.dbg(2, "w_parseName")
-        val (addr, len) = vm.interpScanner.parseName()
-        vm.dstk.push(addr, len)
-    }
 
-    /** `find` `( addr u -- addr 0 | xt 1 | xt -1 : find word: 1=imm, -1=not-imm )` */
 
-    private fun w_find(vm: ForthVM) {
-        if (D) vm.dbg(2, "w_find")
-        val len: Int = vm.dstk.pop()
-        val addr: Int = vm.dstk.pop()
-        val w = vm.dict.getSafe(vm.interpScanner.getAsString(addr, len))
-        if (w == null) {
-            if (D) vm.dbg(3, "w_find: not found")
-            vm.dstk.push(addr, 0)
-        } else if (w.imm) {
-            if (D) vm.dbg(3, "w_find: immediate")
-            vm.dstk.push(w.wn, 1)
-        } else {
-            if (D) vm.dbg(3, "w_find: not immediate")
-            vm.dstk.push(w.wn, -1)
-        }
-    }
 
     /**`eval` ( addr u -- : evaluate string of Forth ) */
 

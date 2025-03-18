@@ -5,12 +5,13 @@ enum class CellMeta {
     Unknown,
     WordNum,
     JumpLoc,
+    CharLit,
 
     //    reg_base,
 //    reg_verbosity,
 //    reg_cend,
 //    reg_dend,
-    StringLit,
+    StringLen,
     NumLit;
 
     fun getExplanation(vm: ForthVM, v: Int): String {
@@ -18,7 +19,8 @@ enum class CellMeta {
             WordNum -> vm.dict[v].name
             JumpLoc -> "  --> ${v.addr}"
             Unknown, NumLit -> "$v ${v.hex} ${v.charRepr}"
-            StringLit -> "$v (string length)"
+            StringLen -> "$v (string length)"
+            CharLit -> v.charRepr
 //        CellMeta.reg_base -> generalFormat+" (reg: base)"
 //        CellMeta.reg_verbosity -> generalFormat+" (reg: verbosity)"
 //        CellMeta.reg_cend -> generalFormat+" (reg: cend)"
