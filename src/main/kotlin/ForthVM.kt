@@ -3,6 +3,7 @@ package kf
 
 import com.github.ajalt.mordant.rendering.TextColors.gray
 import com.github.ajalt.mordant.terminal.*
+import kf.ForthError
 import kf.interps.IInterp
 import kf.words.core.ext.mCoreExt
 import kf.words.core.mCore
@@ -35,11 +36,18 @@ class ForthVM(
     var io: Terminal = Terminal(),
 
     /** Memory layout of this VM. */
-    val memConfig: IMemConfig = SmallMemConfig,
+    val memConfig: IMemConfig = SmallMemConfig(),
 
     /** RAM for the VM */
     val mem: IntArray = IntArray(memConfig.upperBound + 1),
 ) {
+
+    /** Which interpreter is active?
+     *
+     * The VM needs to point to the interp, and the interp needs to point to the
+     * VM, so this is a lateinit -- the creator of the VM will patch the interp
+     * on here after making it.
+     */
 
     lateinit var interp: IInterp
 
@@ -165,7 +173,6 @@ class ForthVM(
         dstk.reset()
         rstk.reset()
         ip = cstart
-        if (D) dbg_indent = 0
 
         interp.reset()
     }
@@ -261,30 +268,24 @@ class ForthVM(
                 val wn = mem[ip++]
                 val w = dict[wn]
                 w(this)
-            } catch (e: ForthQuit) {
-                // For non-interactive (like a file), needs to stop reading all
-                // files --- so rethrow error
-                if (io.terminalInterface !is StandardTerminalInterface) throw e
-                // otherwise, it just resets call stack
-                rstk.reset()
-            } catch (e: ForthWarning) {
-                io.warning("WARNING: " + e.message)
             } catch (e: ForthError) {
-                // Any normal error will be ForthError (or a subclass of it);
-                // other errors will continue upward. These will be
-                // ForthBye (which is handled by the caller of this)
-                // or any other unexpected programming errors.
-                //
-                // For ForthErrors, just show the user a message, reset
-                // the machine (empty stacks, etc.), and let them continue.
-                io.danger("ERROR: " + e.message)
-                if (verbosity >= 3)
-                    e.printStackTrace()
-                reset()
-            } catch (e: ForthBrk) {
-                io.danger("BRK: " + e.message)
-                e.printStackTrace()
-                throw RuntimeException("BRK: " + e.message)
+                when (e) {
+                    is ForthWarning -> io.warning("WARNING: " + e.message)
+                    else -> {
+                        io.danger("ERROR: " + e.message)
+                        if (verbosity >= 3) e.printStackTrace()
+                        reset()
+                    }
+                }
+            } catch (e: Interrupt) {
+                when (e) {
+                    is IntQuit -> {
+                        if (io.terminalInterface !is StandardTerminalInterface)
+                            throw e
+                        rstk.reset()
+                    }
+                    else -> throw e
+                }
             }
         }
     }
@@ -301,7 +302,6 @@ class ForthVM(
 
 
 
-    var dbg_indent = 0 // fixme : needs removing
     fun dbg(lvl: Int, s: String) {
         if (verbosity < lvl) return
         when (lvl) {
@@ -319,7 +319,6 @@ class ForthVM(
         const val REG_DSTART = 4
         const val REG_DEND = 5
         const val REG_STATE = 7
-
 
         const val MAX_INT: Int = 0x7fffffff
         const val TRUE: Int = -1

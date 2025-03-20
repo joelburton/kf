@@ -1,10 +1,9 @@
 import com.github.ajalt.mordant.rendering.AnsiLevel
 import com.github.ajalt.mordant.terminal.Terminal
-import kf.ForthEOF
+import kf.IntEOF
 import kf.ForthVM
 import kf.TerminalTestInterface
 import kf.interps.InterpBase
-import kf.interps.InterpFast
 import kf.words.custom.wToolsCustom._see
 import kf.recorder
 import kotlin.test.assertContentEquals
@@ -32,7 +31,7 @@ open class ForthTestCase {
                     val wn = mem[ip++]
                     dict[wn](this)
                 }
-            } catch (_: ForthEOF) {
+            } catch (_: IntEOF) {
                 return recorder.output()
             }
         }

@@ -8,7 +8,6 @@ import com.github.ajalt.clikt.parameters.options.*
 import com.github.ajalt.clikt.parameters.types.int
 import com.github.ajalt.mordant.rendering.AnsiLevel
 import com.github.ajalt.mordant.terminal.Terminal
-import kf.interps.IInterp
 import kf.interps.InterpBase
 import kf.interps.InterpEval
 import kf.interps.InterpFast
@@ -32,11 +31,11 @@ class ForthCLI : CliktCommand("PupForth") {
 
     val size: IMemConfig by option()
         .switch(
-            "--large" to LargeMemConfig,
-            "--medium" to MedMemConfig,
-            "--small" to SmallMemConfig,
+            "--large" to LargeMemConfig(),
+            "--medium" to MedMemConfig(),
+            "--small" to SmallMemConfig(),
         )
-        .default(MedMemConfig)
+        .default(MedMemConfig())
         .help("VM memory size (default: medium)")
 
     val gateway: String? by option()
@@ -71,10 +70,12 @@ class ForthCLI : CliktCommand("PupForth") {
             vm.verbosity = -2
             try {
                 vm.runVM()
-            } catch (_: ForthEOF) {
-            } catch (_: ForthQuit) {
-                // continues on to interactive mode
-                break
+            } catch (e: Interrupt) {
+                when (e) {
+                    is IntEOF -> continue  // next file
+                    is IntQuit -> break  // move to interactive
+                    else -> throw e
+                }
             }
         }
     }
@@ -127,10 +128,10 @@ class ForthCLI : CliktCommand("PupForth") {
     override fun run() {
         try {
             wrappedRun()
-        } catch (_: ForthEOF) {
+        } catch (_: IntEOF) {
             // just quit quietly
-        } catch (_: ForthBye) {
-            println("Bye")
+        } catch (e: IntBye) {
+            println(e.message)
         }
     }
 }

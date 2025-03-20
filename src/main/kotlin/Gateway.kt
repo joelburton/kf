@@ -35,20 +35,16 @@ abstract class ForthGateway(val vm: ForthVM) {
         termInterface.addInputs(*cmds)
         try {
             vm.runVM()
-        } catch (e: Exception) {
+        } catch (e: Interrupt) {
             return when (e) {
-                is ForthEOF,
-                is ForthBye,
-                is ForthQuit -> recorder.output()
-
-                is ForthColdStop -> {
+                is IntServerShutDown -> {
                     stop()
                     throw e
                 }
-
+                is IntEOF -> recorder.output()
                 else -> {
-                    println(red("UNHANDLED ERROR: $e"))
-                    throw e
+                    println("Interrupt: $e")
+                    recorder.output()
                 }
             }
         } finally {

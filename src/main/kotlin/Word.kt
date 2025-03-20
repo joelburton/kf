@@ -42,13 +42,9 @@ class Word(
         if (D) {
             var s = getFnName()
             vm.dbg(2, "x@ ${(vm.ip-1).addr} -> $name $s")
-            vm.dbg_indent += 1
         }
         fn(vm)
-        if (D) {
-            vm.dbg_indent -= 1
-            vm.dbg(3, "x@ ${vm.ip.addr} <- $name")
-        }
+        if (D) vm.dbg(3, "x@ ${vm.ip.addr} <- $name")
     }
 
     fun getFnName(): String {

@@ -3,17 +3,11 @@ package kf
 import com.github.ajalt.mordant.rendering.TextColors.yellow
 import com.github.ajalt.mordant.rendering.TextStyles.bold
 import com.github.ajalt.mordant.rendering.Whitespace
-import com.github.ajalt.mordant.terminal.Terminal
 import com.github.ajalt.mordant.terminal.muted
 import com.github.ajalt.mordant.widgets.Text
 
 class WordNotFoundException(msg: String) : ForthError(msg)
 class DictFullError() : Exception("Dictionary full")
-
-interface WordClass {
-    val name: String
-    val primitives: Array<Word>
-}
 
 interface IWordClass {
     val name: String
@@ -108,12 +102,6 @@ class Dict(val vm: ForthVM, val capacity: Int = 1024)  {
 
         vm.modulesLoaded.put(mod.name, mod)
     }
-
-//    fun addModule(mod: WordClass) {
-//        if (D) vm.dbg(3, "dict.addModule: ${mod.name}")
-//        for (w in mod.primitives) add(w)
-//        vm.modulesLoaded.put(mod.name, mod)
-//    }
 
     // ******************************************************* manipulating dict
 

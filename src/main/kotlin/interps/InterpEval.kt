@@ -106,11 +106,12 @@ open class InterpEval(vm: ForthVM) : InterpBase(vm) {
     override fun eval(line: String) {
         scanner.fill(line)
         try {
-            // todo: think about the exceptions here --- do we need to do
-            //  anything with quit, bye, etc?
             vm.runVM()
-        } catch (e: ForthEOF) {
-            //
+        } catch (e: Interrupt) {
+            when (e) {
+                is IntEOF -> {}
+                else -> throw e
+            }
         }
     }
 
@@ -124,7 +125,7 @@ open class InterpEval(vm: ForthVM) : InterpBase(vm) {
 
      fun bootstrapEval(line: String) {
         // the "mini-interpreter" is located in scratch space here
-        vm.ip = vm.memConfig.codeEnd - 0x10
+        vm.ip = vm.memConfig.scratchStart
         eval(line)
         vm.ip = vm.memConfig.codeStart
     }
@@ -133,8 +134,7 @@ open class InterpEval(vm: ForthVM) : InterpBase(vm) {
 
     fun setUpBootstrapEval() {
         // Poke in the mini-interpreter at the very top of code mem
-        // fixme: this should move to PAD or such
-        vm.cend = vm.memConfig.codeEnd - 0x10
+        vm.cend = vm.memConfig.scratchStart
 
         vm.appendWord("PARSE-NAME")
         vm.appendWord("DUP")

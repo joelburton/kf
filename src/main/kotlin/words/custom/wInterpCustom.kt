@@ -2,8 +2,8 @@ package kf.words.custom
 
 import com.github.ajalt.mordant.rendering.TextColors
 import com.github.ajalt.mordant.rendering.TextStyles
-import kf.ForthEOF
-import kf.ForthQuitNonInteractive
+import kf.IntEOF
+import kf.IntQuitNonInteractive
 import kf.ForthVM
 import kf.IWordClass
 import kf.TerminalFileInterface
@@ -51,7 +51,7 @@ object wInterpCustom : IWordClass {
      * does push 0 to stack, because that's what GForth does :) ). */
     private fun w_tripleBackSlash(vm: ForthVM) {
         if (vm.io.terminalInterface is TerminalFileInterface) {
-            throw ForthQuitNonInteractive()
+            throw IntQuitNonInteractive()
         } else {
             vm.dstk.push(0)
         }
@@ -63,7 +63,7 @@ object wInterpCustom : IWordClass {
      * the interp). When reading a file, it stops reading that file, and
      * moves to the next (exiting if there are no more). */
     private fun w_eof(vm: ForthVM) {
-        throw ForthEOF()
+        throw IntEOF()
     }
 
 

@@ -36,7 +36,7 @@ open class InterpBase(val vm: ForthVM) : IInterp {
     /**  Scanner for reading and tokenizing input line. */
 
     override var scanner: FScanner = FScanner(
-        vm, vm.memConfig.interpBufferStart, vm.memConfig.interpBufferEnd
+        vm, vm.memConfig.interBufStart, vm.memConfig.interpBufEnd
     )
 
     /** A register for interpreter use: state of interpreting/compiling. */

@@ -1,12 +1,11 @@
 package kf.words.machine
 
 import kf.D
-import kf.ForthBrk
+import kf.IntBrk
 import kf.ForthVM
 import kf.IWordClass
 import kf.Word
 import kf.addr
-import kf.words.custom.wToolsCustom.w_dotCode
 
 
 object wMachine : IWordClass {
@@ -47,7 +46,7 @@ object wMachine : IWordClass {
      * `brk` if the VM starts executing in uninitialized memory.
      */
     fun w_brk(vm: ForthVM) {
-        throw ForthBrk("brk at ${vm.ip.addr} (${vm.ip})")
+        throw IntBrk("brk at ${vm.ip.addr} (${vm.ip})")
     }
 
     /** `nop` ( -- : Does nothing )

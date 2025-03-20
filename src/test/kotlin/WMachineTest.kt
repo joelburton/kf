@@ -1,7 +1,6 @@
-import kf.ForthBrk
-import kf.ForthBye
-import kf.ForthColdStop
-import kf.ForthQuit
+import kf.IntBrk
+import kf.IntBye
+import kf.IntQuit
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
 import kotlin.test.assertFailsWith
@@ -12,7 +11,7 @@ class WMachineTest : ForthTestCase() {
     @Test
     fun w_brk() {
         vm.dstk.push(1)
-        assertFailsWith<ForthBrk> { mod.w_brk(vm) }
+        assertFailsWith<IntBrk> { mod.w_brk(vm) }
         // doesn't clear stack or reset -- just throws error
         assertDStack(1)
     }
@@ -137,7 +136,7 @@ class WMachineTest : ForthTestCase() {
     @Test
     fun w_bye() {
         vm.dstk.push(1)
-        assertFailsWith<ForthBye> { kf.words.tools.wToolsExt.w_bye(vm)  }
+        assertFailsWith<IntBye> { kf.words.tools.wToolsExt.w_bye(vm)  }
         // doesn't reset -- exits interpreter
         assertDStack(1)
     }
@@ -145,7 +144,7 @@ class WMachineTest : ForthTestCase() {
     @Test
     fun w_quit() {
         vm.dstk.push(1)
-        assertFailsWith<ForthQuit> { kf.words.core.wInterp.w_quit(vm)  }
+        assertFailsWith<IntQuit> { kf.words.core.wInterp.w_quit(vm)  }
         // unless interactive, quit doesn't reset -- it throws error
         assertDStack(1)
     }

@@ -1,6 +1,6 @@
 package kf.words.tools
 
-import kf.ForthBye
+import kf.IntBye
 import kf.ForthVM
 import kf.IWordClass
 import kf.Word
@@ -95,7 +95,7 @@ object wToolsExt: IWordClass {
      */
 
     fun w_bye(vm: ForthVM) {
-        throw ForthBye("Bye!")
+        throw IntBye("Bye!")
     }
 
 }

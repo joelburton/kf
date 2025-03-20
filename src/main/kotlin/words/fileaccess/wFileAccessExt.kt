@@ -1,10 +1,11 @@
 package kf.words.fileaccess
 
 import com.github.ajalt.mordant.terminal.Terminal
-import kf.ForthEOF
-import kf.ForthQuitNonInteractive
+import kf.IntEOF
+import kf.IntQuitNonInteractive
 import kf.ForthVM
 import kf.IWordClass
+import kf.Interrupt
 import kf.TerminalFileInterface
 import kf.Word
 import kf.strFromAddrLen
@@ -37,11 +38,12 @@ object wFileAccessExt: IWordClass {
         vm.verbosity = -2
         try {
             vm.runVM()
-        } catch (_: ForthQuitNonInteractive) {
-            // Caused by the EOF or \\\ commands --- stop reading this file, but
-            // not an error --- will proceed to next file or to console
-        } catch (_: ForthEOF) {
-            vm.ip = vm.memConfig.codeStart   // fixme: needed to add this for forthinterp
+        } catch (e: Interrupt) {
+            when (e) {
+                is IntQuitNonInteractive -> vm.ip = vm.memConfig.codeStart
+                is IntEOF -> vm.ip = vm.memConfig.codeStart
+                else -> throw e  // let outer interpreter handle
+            }
         } finally {
             vm.io = prevIO
             vm.verbosity = prevVerbosity

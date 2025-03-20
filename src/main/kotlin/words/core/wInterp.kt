@@ -6,6 +6,7 @@ import com.github.ajalt.mordant.terminal.danger
 import kf.FScanner
 import kf.ForthVM
 import kf.IWordClass
+import kf.IntQuit
 import kf.TerminalStringInterface
 import kf.Word
 import kf.strFromAddrLen
@@ -90,9 +91,7 @@ object wInterp : IWordClass {
      */
 
     fun w_quit(vm: ForthVM) {
-        vm.rstk.reset()
-        // rest of line is ignored (same in gforth)
-        vm.ip = vm.memConfig.codeStart
+        throw IntQuit()
     }
 
 

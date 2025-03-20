@@ -6,7 +6,6 @@ import com.github.ajalt.mordant.terminal.warning
 import kf.ForthVM
 import kf.IWordClass
 import kf.Word
-import kf.WordClass
 import kf.strFromAddrLen
 
 object wCompilingCustom : IWordClass {
