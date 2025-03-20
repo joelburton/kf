@@ -1,6 +1,7 @@
 package kf.words.custom
 
 import com.github.ajalt.mordant.rendering.TextColors.gray
+import com.github.ajalt.mordant.terminal.warning
 import kf.*
 
 
@@ -21,6 +22,7 @@ object wToolsCustom : IWordClass {
             Word(".IP!", ::w_dotIPStore),
             Word(".MEMCONFIG", ::w_dotMemConfig),
             Word(".DICT", ::w_dotDict),
+            Word(".STACK-TRACE", ::w_dotStackTrace),
 
 
             // ~~  *terminal*:lineno:char:<2> 20 10
@@ -119,6 +121,13 @@ object wToolsCustom : IWordClass {
         vm.memConfig.show()
     }
 
+    fun w_dotStackTrace(vm: ForthVM) {
+        val stackTraceElements = Thread.currentThread().stackTrace
+        vm.io.warning("Stack trace:")
+        stackTraceElements.forEach {
+            vm.io.println("    $it")
+        }
+    }
 
     /**  `.dict` ( -- : list all words with internal info )
      */

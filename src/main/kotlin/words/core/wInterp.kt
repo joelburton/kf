@@ -91,13 +91,8 @@ object wInterp : IWordClass {
 
     fun w_quit(vm: ForthVM) {
         vm.rstk.reset()
-        while (true) {
-            val input = vm.io.readLineOrNull(false)
-            if (input == null) throw RuntimeException("EOF")
-            vm.interp.scanner.fill(input)
-//            interpretLoop(vm) fixme
-            println(yellow("   ok"))
-        }
+        // rest of line is ignored (same in gforth)
+        vm.ip = vm.memConfig.codeStart
     }
 
 
