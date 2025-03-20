@@ -70,7 +70,7 @@ class ForthCLI : CliktCommand("PupForth") {
             vm.verbosity = -2
             try {
                 vm.runVM()
-            } catch (e: Interrupt) {
+            } catch (e: ForthInterrupt) {
                 when (e) {
                     is IntEOF -> continue  // next file
                     is IntQuit -> break  // move to interactive

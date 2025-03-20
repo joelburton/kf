@@ -35,7 +35,7 @@ abstract class ForthGateway(val vm: ForthVM) {
         termInterface.addInputs(*cmds)
         try {
             vm.runVM()
-        } catch (e: Interrupt) {
+        } catch (e: ForthInterrupt) {
             return when (e) {
                 is IntServerShutDown -> {
                     stop()

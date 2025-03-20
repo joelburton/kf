@@ -1,6 +1,6 @@
 package kf.words.core
 
-import kf.ForthError
+import kf.DivisionByZero
 import kf.ForthVM
 import kf.IWordClass
 import kf.Word
@@ -58,7 +58,7 @@ object wMath : IWordClass {
 
     fun w_starSlash(vm: ForthVM) {
         val divBy = vm.dstk.pop()
-        if (divBy == 0) throw ForthError("Division by zero")
+        if (divBy == 0) throw DivisionByZero()
         val b = vm.dstk.pop().toLong()
         val a = vm.dstk.pop().toLong()
         val inter = ((a + b) / divBy).toInt()
@@ -80,7 +80,7 @@ object wMath : IWordClass {
 
     fun w_starSlashMod(vm: ForthVM) {
         val divBy = vm.dstk.pop()
-        if (divBy == 0) throw ForthError("Division by zero")
+        if (divBy == 0) throw DivisionByZero()
         val n2 = vm.dstk.pop().toLong()
         val n1 = vm.dstk.pop().toLong()
         val sum = n1 + n2
@@ -114,7 +114,7 @@ object wMath : IWordClass {
     fun w_slash(vm: ForthVM) {
         val d = vm.dstk.pop()
         val n = vm.dstk.pop()
-        if (d == 0) throw ForthError("Division by zero")
+        if (d == 0) throw DivisionByZero()
         vm.dstk.push(n / d)
     }
 
@@ -131,7 +131,7 @@ object wMath : IWordClass {
 
     fun w_slashMod(vm: ForthVM) {
         val n2 = vm.dstk.pop()
-        if (n2 == 0) throw ForthError("Division by zero")
+        if (n2 == 0) throw DivisionByZero()
         val n1 = vm.dstk.pop()
         vm.dstk.push((n1 % n2), (n1 / n2))
     }
@@ -232,7 +232,7 @@ object wMath : IWordClass {
 
     fun w_mod(vm: ForthVM) {
         val n2 = vm.dstk.pop()
-        if (n2 == 0) throw ForthError("Division by zero")
+        if (n2 == 0) throw DivisionByZero()
         val n1 = vm.dstk.pop()
         vm.dstk.push(n1 % n2)
     }
@@ -275,7 +275,7 @@ object wMath : IWordClass {
 
     fun w_fmSlashMod(vm: ForthVM) {
         val n1 = vm.dstk.pop()
-        if (n1 == 0) throw ForthError("Division by zero")
+        if (n1 == 0) throw DivisionByZero()
         val d1 = vm.dstk.pop()
         vm.dstk.push(d1 % n1, d1 / n1)
     }
@@ -292,7 +292,7 @@ object wMath : IWordClass {
 
     fun w_smSlashRem(vm: ForthVM) {
         val n1 = vm.dstk.pop()
-        if (n1 == 0) throw ForthError("Division by zero")
+        if (n1 == 0) throw DivisionByZero()
         val d1 = vm.dstk.pop()
         vm.dstk.push(d1 % n1, d1 / n1)
     }

@@ -107,7 +107,7 @@ open class InterpEval(vm: ForthVM) : InterpBase(vm) {
         scanner.fill(line)
         try {
             vm.runVM()
-        } catch (e: Interrupt) {
+        } catch (e: ForthInterrupt) {
             when (e) {
                 is IntEOF -> {}
                 else -> throw e

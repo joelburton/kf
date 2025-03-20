@@ -5,7 +5,7 @@ import kf.IntEOF
 import kf.IntQuitNonInteractive
 import kf.ForthVM
 import kf.IWordClass
-import kf.Interrupt
+import kf.ForthInterrupt
 import kf.TerminalFileInterface
 import kf.Word
 import kf.strFromAddrLen
@@ -38,7 +38,7 @@ object wFileAccessExt: IWordClass {
         vm.verbosity = -2
         try {
             vm.runVM()
-        } catch (e: Interrupt) {
+        } catch (e: ForthInterrupt) {
             when (e) {
                 is IntQuitNonInteractive -> vm.ip = vm.memConfig.codeStart
                 is IntEOF -> vm.ip = vm.memConfig.codeStart

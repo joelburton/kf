@@ -6,8 +6,8 @@ import com.github.ajalt.mordant.rendering.Whitespace
 import com.github.ajalt.mordant.terminal.muted
 import com.github.ajalt.mordant.widgets.Text
 
-class WordNotFoundException(msg: String) : ForthError(msg)
-class DictFullError() : Exception("Dictionary full")
+class WordNotFoundError(m: String) : ForthError("Word not found: $m")
+class DictFullError() : ForthError("Dictionary full")
 
 interface IWordClass {
     val name: String
@@ -30,7 +30,7 @@ class Dict(val vm: ForthVM, val capacity: Int = 1024)  {
     val last: Word get() = _words.last()
 
     operator fun get(wn: Int): Word {
-        if (wn < 0 || wn >= _words.size) throw WordNotFoundException("$wn")
+        if (wn < 0 || wn >= _words.size) throw WordNotFoundError("$wn")
         return _words[wn]
     }
 
@@ -38,7 +38,7 @@ class Dict(val vm: ForthVM, val capacity: Int = 1024)  {
         for (w in _words.asReversed()) {
             if (w.name.equals(name, ignoreCase = true)) return w
         }
-        throw WordNotFoundException(name)
+        throw WordNotFoundError(name)
     }
 
     fun getSafe(name: String): Word? =
@@ -79,7 +79,7 @@ class Dict(val vm: ForthVM, val capacity: Int = 1024)  {
         for (i in _words.indices.reversed()) {
             if (_words[i].name.equals(name, ignoreCase = true)) return i
         }
-        throw WordNotFoundException(name)
+        throw WordNotFoundError(name)
     }
 
     fun add(word: Word) {

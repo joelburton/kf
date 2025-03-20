@@ -1,8 +1,8 @@
 package kf.words.custom
 
-import kf.ForthError
 import kf.ForthVM
 import kf.IWordClass
+import kf.StackPtrInvalidError
 import kf.Word
 import kf.words.machine.wMachine.w_nop
 
@@ -56,7 +56,7 @@ object wStacksCustom: IWordClass {
     fun w_spStore(vm: ForthVM) {
         val sp: Int = vm.dstk.pop()
         if (sp < -1 || sp >= vm.dstk.endAt) {
-            throw ForthError("Invalid sp")
+            throw StackPtrInvalidError(vm.dstk.name, sp)
         }
         vm.dstk.sp = sp
     }
@@ -72,7 +72,7 @@ object wStacksCustom: IWordClass {
     fun w_rpStore(vm: ForthVM) {
         val sp: Int = vm.dstk.pop()
         if (sp < -1 || sp >= vm.rstk.endAt) {
-            throw ForthError("Invalid sp")
+            throw StackPtrInvalidError(vm.rstk.name, sp)
         }
         vm.rstk.sp = sp
     }

@@ -3,7 +3,6 @@ package kf
 
 import com.github.ajalt.mordant.rendering.TextColors.gray
 import com.github.ajalt.mordant.terminal.*
-import kf.ForthError
 import kf.interps.IInterp
 import kf.words.core.ext.mCoreExt
 import kf.words.core.mCore
@@ -215,7 +214,7 @@ class ForthVM(
      */
     fun appendCode(v: Int, cellMetaVal: CellMeta) {
         if (D) dbg(3, "vm.appendText: $v $cellMetaVal")
-        if (cend > memConfig.codeEnd) throw ForthError("Code buffer overflow")
+        if (cend > memConfig.codeEnd) throw MemError("Code buffer overflow")
 
         mem[cend] = v
         cellMeta[cend] = cellMetaVal
@@ -269,15 +268,10 @@ class ForthVM(
                 val w = dict[wn]
                 w(this)
             } catch (e: ForthError) {
-                when (e) {
-                    is ForthWarning -> io.warning("WARNING: " + e.message)
-                    else -> {
-                        io.danger("ERROR: " + e.message)
-                        if (verbosity >= 3) e.printStackTrace()
-                        reset()
-                    }
-                }
-            } catch (e: Interrupt) {
+                io.danger("ERROR: " + e.message)
+                if (verbosity >= 3) e.printStackTrace()
+                reset()
+            } catch (e: ForthInterrupt) {
                 when (e) {
                     is IntQuit -> {
                         if (io.terminalInterface !is StandardTerminalInterface)
@@ -299,7 +293,6 @@ class ForthVM(
     //
     // Everything from this point downward is the things that are needed for
     // the interpreter, but not needed for the VM itself.
-
 
 
     fun dbg(lvl: Int, s: String) {

@@ -46,7 +46,9 @@ object wMachine : IWordClass {
      * `brk` if the VM starts executing in uninitialized memory.
      */
     fun w_brk(vm: ForthVM) {
-        throw IntBrk("brk at ${vm.ip.addr} (${vm.ip})")
+        val ipOfBrk = vm.ip - 1
+        val callerOfBrk = vm.dict[vm.mem[ipOfBrk]].name
+        throw IntBrk("$callerOfBrk at ${ipOfBrk.addr} ($ipOfBrk)")
     }
 
     /** `nop` ( -- : Does nothing )

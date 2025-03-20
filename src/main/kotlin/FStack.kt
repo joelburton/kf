@@ -1,12 +1,12 @@
 package kf
 
-class StackOverflow(name: String) :
+class StackOverflowError(name: String) :
     ForthError("${name}: Stack overflow")
 
-class StackUnderflow(name: String) :
+class StackUnderflowError(name: String) :
     ForthError("${name}: Stack underflow")
 
-class StackInvalid(name: String, n: Int) :
+class StackPtrInvalidError(name: String, n: Int) :
     ForthError("${name}: Stack ptr invalid: ${n}")
 
 /** Stack in a memory location. This stack "grows downward" (ie, if sp=100,
@@ -31,19 +31,19 @@ class FStack(
 
     /** Retrieves value from stack at a index relative to the stack origin. */
     fun getAt(n: Int): Int {
-        if (n < 0 || n > endAt - sp) throw StackInvalid(name, n)
+        if (n < 0 || n > endAt - sp) throw StackPtrInvalidError(name, n)
         return vm.mem[endAt - n]
     }
 
     /** Retrieves value from stack at a index relative to the stack pointer. */
     fun getFrom(n: Int): Int {
-        if (n < 0 || n > endAt - sp) throw StackInvalid(name, n)
+        if (n < 0 || n > endAt - sp) throw StackPtrInvalidError(name, n)
         return vm.mem[sp + n]
     }
 
     /** Add item. */
     fun push(n: Int) {
-        if (sp <= startAt) throw StackOverflow(name)
+        if (sp <= startAt) throw StackOverflowError(name)
         vm.mem[--sp] = n
     }
 
@@ -51,20 +51,20 @@ class FStack(
      *  with two items, we don't force a variadic call.
      */
     fun push(a: Int, b: Int) {
-        if (sp - 1 <= startAt) throw StackOverflow(name)
+        if (sp - 1 <= startAt) throw StackOverflowError(name)
         vm.mem[--sp] = a
         vm.mem[--sp] = b
     }
 
     /** Add any number of items. */
     fun push(vararg vs: Int) {
-        if (sp - vs.size <= startAt) throw StackOverflow(name)
+        if (sp - vs.size <= startAt) throw StackOverflowError(name)
         for (v in vs) vm.mem[--sp] = v
     }
 
     /** Remove & return top item. */
     fun pop(): Int {
-        if (sp > endAt) throw StackUnderflow(name)
+        if (sp > endAt) throw StackUnderflowError(name)
         return vm.mem[sp++]
     }
 
@@ -101,7 +101,7 @@ class FStack(
 
     fun popFrom(n: Int): Int {
         if (D) vm.dbg(3, "$name: popFrom $n")
-        if (n < 0 || n >= size) throw StackInvalid(name, n)
+        if (n < 0 || n >= size) throw StackPtrInvalidError(name, n)
         val v = vm.mem[sp + n]
         for (i in n downTo 1) {
             vm.mem[sp + i] = vm.mem[sp + i - 1]

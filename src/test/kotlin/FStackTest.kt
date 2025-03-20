@@ -37,15 +37,15 @@ class FStackTest : ForthTestCase() {
         assertEquals(5, stk.pop())
         stk.push(10, 20)
         stk.push(10, 20)
-        assertFailsWith<StackOverflow> { stk.push(10, 20) }
-        assertFailsWith<StackOverflow> { stk.push(8, 9, 10, 11, 12) }
+        assertFailsWith<StackOverflowError> { stk.push(10, 20) }
+        assertFailsWith<StackOverflowError> { stk.push(8, 9, 10, 11, 12) }
     }
 
     @Test
     fun underflow() {
         stk.push(1)
         assertEquals(1, stk.pop())
-        assertFailsWith<StackUnderflow> { stk.pop() }
+        assertFailsWith<StackUnderflowError> { stk.pop() }
     }
 
     @Test
@@ -54,7 +54,7 @@ class FStackTest : ForthTestCase() {
         stk.push(1)
         stk.push(1)
         stk.push(1)
-        assertFailsWith<StackOverflow> { stk.push(0) }
+        assertFailsWith<StackOverflowError> { stk.push(0) }
     }
 
     @Test
@@ -63,8 +63,8 @@ class FStackTest : ForthTestCase() {
         stk.push(20)
         assertEquals(10, stk.getAt(0))
         assertEquals(20, stk.getAt(1))
-        assertFailsWith<StackInvalid> { stk.getAt(2) }
-        assertFailsWith<StackInvalid> { stk.getAt(-1) }
+        assertFailsWith<StackPtrInvalidError> { stk.getAt(2) }
+        assertFailsWith<StackPtrInvalidError> { stk.getAt(-1) }
     }
 
     @Test
@@ -73,8 +73,8 @@ class FStackTest : ForthTestCase() {
         stk.push(20)
         assertEquals(20, stk.getFrom(0))
         assertEquals(10, stk.getFrom(1))
-        assertFailsWith<StackInvalid> { stk.getFrom(2) }
-        assertFailsWith<StackInvalid> { stk.getFrom(-1) }
+        assertFailsWith<StackPtrInvalidError> { stk.getFrom(2) }
+        assertFailsWith<StackPtrInvalidError> { stk.getFrom(-1) }
     }
 
     @Test
@@ -146,7 +146,7 @@ myStack[3] = $00000002 (         2)   <- top
 
         stk.reset()
         stk.push(1, 2, 3)
-        assertFailsWith<StackInvalid> { stk.popFrom(-1) }
-        assertFailsWith<StackInvalid> { stk.popFrom(3) }
+        assertFailsWith<StackPtrInvalidError> { stk.popFrom(-1) }
+        assertFailsWith<StackPtrInvalidError> { stk.popFrom(3) }
     }
 }

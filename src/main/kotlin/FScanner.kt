@@ -1,5 +1,7 @@
 package kf
 
+import kf.ForthError
+
 /** Scanner for parsing buffers.
  *
  * There are 3 different algos here:
@@ -62,7 +64,7 @@ class FScanner(val vm: ForthVM, val bufStart: Int, val bufEnd: Int) {
     fun fill(str: String) {
         reset()
         for (char in str) {
-            if (bufLen > bufEnd - bufStart) throw ForthError("Buffer overflow")
+            if (bufLen > bufEnd - bufStart) throw MemError("Buffer overflow")
             vm.mem[bufStart + bufLen++] = char.code
         }
     }

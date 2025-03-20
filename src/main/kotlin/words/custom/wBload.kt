@@ -24,11 +24,11 @@ object wBload : IWordClass {
                 .get(null) as IWordClass
             vm.dict.addModule(mod)
         } catch (e: ClassNotFoundException) {
-            throw ForthError("Can't find: $name")
+            throw BloadError("Can't find: $name")
         } catch (e: NoSuchFieldException) {
-            throw ForthError("Not an object")
+            throw BloadError("Not an object")
         } catch (e: ClassCastException) {
-            throw ForthError("Wrong interface: needs `name`, `primitives`")
+            throw BloadError("Wrong interface: needs `name`, `primitives`")
         }
     }
 
