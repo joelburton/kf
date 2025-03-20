@@ -76,7 +76,7 @@ object wLoops: IWordClass {
      * */
 
     fun w_begin(vm: ForthVM) {
-        vm.dstk.push(vm.cend)
+        vm.rstk.push(vm.cend)
     }
 
 
@@ -88,7 +88,7 @@ object wLoops: IWordClass {
      * */
 
     fun w_until(vm: ForthVM) {
-        val bwref = vm.dstk.pop()
+        val bwref = vm.rstk.pop()
         vm.appendJump("0branch-abs", bwref)
     }
 
@@ -102,7 +102,7 @@ object wLoops: IWordClass {
 
     private fun w_while(vm: ForthVM) {
         vm.appendJump("0branch-abs", 0xffff)
-        vm.dstk.push(vm.cend) // location of while
+        vm.rstk.push(vm.cend) // location of while
     }
 
     /** BEGIN .a. WHILE .b. REPEAT
@@ -113,9 +113,9 @@ object wLoops: IWordClass {
      *
      */
     private fun w_repeat(vm: ForthVM) {
-        val whileRef = vm.dstk.pop()
+        val whileRef = vm.rstk.pop()
         vm.mem[whileRef - 1] = vm.cend + 2 // failing while goes past me
-        val bwref = vm.dstk.pop()
+        val bwref = vm.rstk.pop()
         vm.appendJump("branch-abs", bwref)
     }
 

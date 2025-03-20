@@ -3,6 +3,7 @@ package kf.words.core
 import kf.ForthVM
 import kf.IWordClass
 import kf.Word
+import kf.strFromAddrLen
 import kf.words.custom.wCreateCustom.w_addr
 
 object wCreate: IWordClass {
@@ -29,7 +30,7 @@ object wCreate: IWordClass {
      */
 
     fun w_create(vm: ForthVM) {
-        val name: String = vm.interp.getToken()
+        val name =  vm.interp.scanner.parseName().strFromAddrLen(vm)
         val w = Word(
             name,
             cpos = Word.NO_ADDR,

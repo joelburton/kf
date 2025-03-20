@@ -4,6 +4,7 @@ import kf.CellMeta
 import kf.ForthVM
 import kf.IWordClass
 import kf.Word
+import kf.strFromAddrLen
 
 object wVariables: IWordClass {
     override val name = "Variables"
@@ -31,7 +32,7 @@ object wVariables: IWordClass {
 
     fun w_constant(vm: ForthVM) {
         val data = vm.dstk.pop()
-        val name = vm.interp.getToken()
+        val name =  vm.interp.scanner.parseName().strFromAddrLen(vm)
         val w = Word(
             name,
             cpos = Word.NO_ADDR,

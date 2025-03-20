@@ -30,9 +30,9 @@ object wCompileExt: IWordClass {
                     + " (Use 'immediate' to mark the word as immediate-mode.)",
                 whitespace = Whitespace.NORMAL,
                 overflowWrap = OverflowWrap.NORMAL)
-            vm.interp._interpret(vm.dict[wn].name)
+            vm.interp.interpret(vm.dict[wn].name)
         }
-        vm.interp._compile(w.name)
+        vm.interp.compile(w.name)
     }
 
     /** ```[bracket]``` ( "name" -- compile this word ) */

@@ -63,7 +63,6 @@ object wInterpCustom : IWordClass {
      * the interp). When reading a file, it stops reading that file, and
      * moves to the next (exiting if there are no more). */
     private fun w_eof(vm: ForthVM) {
-        print(TextColors.red("EOF"))
         throw ForthEOF()
     }
 

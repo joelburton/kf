@@ -68,11 +68,11 @@ class Dict(val vm: ForthVM, val capacity: Int = 1024)  {
 
     /**  Get Word by name (null for not found)
      */
-    fun getSafeChkRecursion(name: String?, io: Terminal): Word? {
+    fun getSafeChkRecursion(name: String?): Word? {
         for (w in _words.asReversed()) {
             if (w.name.equals(name, ignoreCase = true)) {
                 if (currentlyDefining !== w || w.recursive) return w
-                else io.muted(
+                else vm.io.muted(
                     "Skipping currently-defining word because it isn't"
                             + " recursive"
                 )

@@ -4,6 +4,7 @@ import kf.D
 import kf.ForthVM
 import kf.IWordClass
 import kf.Word
+import kf.strFromAddrLen
 import kf.strFromCSAddr
 
 object wWords : IWordClass {
@@ -39,7 +40,7 @@ object wWords : IWordClass {
      */
 
     fun w_bracketTick(vm: ForthVM) {
-        val token: String = vm.interp.getToken()
+        val token =  vm.interp.scanner.parseName().strFromAddrLen(vm)
         if (D) vm.dbg(3, "w_bracketTick: token='$token'")
         val wn: Int = vm.dict.getNum(token)
         vm.appendLit(wn)
@@ -56,7 +57,7 @@ object wWords : IWordClass {
      */
 
     fun w_tick(vm: ForthVM) {
-        val token: String = vm.interp.getToken()
+        val token =  vm.interp.scanner.parseName().strFromAddrLen(vm)
         val wn = vm.dict.getNum(token)
         vm.dstk.push(wn)
     }

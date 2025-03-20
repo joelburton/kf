@@ -7,6 +7,7 @@ import kf.ForthVM
 import kf.IWordClass
 import kf.TerminalFileInterface
 import kf.Word
+import kf.strFromAddrLen
 import kf.w_notImpl
 
 object wFileAccessExt: IWordClass {
@@ -27,7 +28,7 @@ object wFileAccessExt: IWordClass {
     /**  `include` `( in:"file" -- : read Forth file in )` */
 
     fun w_include(vm: ForthVM) {
-        val path = vm.interp.getToken()
+        val path =  vm.interp.scanner.parseName().strFromAddrLen(vm)
 
         val prevIO: Terminal = vm.io
         val prevVerbosity: Int = vm.verbosity

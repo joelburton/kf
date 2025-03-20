@@ -4,7 +4,7 @@ package kf
 
 import kotlin.text.HexFormat
 
-const val D = false
+const val D = true
 const val VERSION_STRING = "KPupForth 0.1.0"
 
 
@@ -28,6 +28,15 @@ const val VERSION_STRING = "KPupForth 0.1.0"
  * This will throw a ForthError. */
 fun String.toForthInt(radix: Int): Int {
     var s = this
+
+    // anywhere a number is parsed, you could also provide a char literal,
+    // like `'a'` or `'a`. This isn't standard Forth, but GForth does this,
+    // and it's a very nice convenience.
+
+    if (s.isCharLit) {
+        return s[1].code
+    }
+
     var _radix = radix
     if (startsWith("0d")) {
         s = substring(2)

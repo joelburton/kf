@@ -7,6 +7,7 @@ import kf.ForthVM
 import kf.IWordClass
 import kf.Word
 import kf.WordClass
+import kf.strFromAddrLen
 
 object wCompilingCustom : IWordClass {
     override val name = "Compiling"
@@ -62,7 +63,7 @@ object wCompilingCustom : IWordClass {
      */
 
     fun w_postpone(vm: ForthVM) {
-        val token: String = vm.interp.getToken()
+        val token: String =  vm.interp.scanner.parseName().strFromAddrLen(vm)
         val w = vm.dict[token]
         val cw = vm.dict.last
 

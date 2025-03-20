@@ -4,21 +4,22 @@ import com.github.ajalt.mordant.terminal.warning
 import kf.ForthVM
 import kf.IWordClass
 import kf.Word
+import kf.strFromAddrLen
 import kf.w_notImpl
 
 object wDeferExt : IWordClass {
     override val name = "core.ext.deferExt"
     override val description = "Deferred words"
 
-    override val words get() = arrayOf(
-        Word("DEFER", ::w_defer),
+    override val words
+        get() = arrayOf(
+            Word("DEFER", ::w_defer),
 //        Word("deferred-word", ::deferred),
-        Word("DEFER!", ::w_deferStore),
-        Word("DEFER@", ::w_deferFetch),
-        Word("IS", ::w_is),
-        Word("ACTION-OF", ::w_notImpl)
-    )
-
+            Word("DEFER!", ::w_deferStore),
+            Word("DEFER@", ::w_deferFetch),
+            Word("IS", ::w_is),
+            Word("ACTION-OF", ::w_notImpl)
+        )
 
 
     fun deferred(vm: ForthVM) {
@@ -28,7 +29,7 @@ object wDeferExt : IWordClass {
     /** `defer` ( "word" -- : create word pointing to uninitialized fn ) */
 
     fun w_defer(vm: ForthVM) {
-        val name: String = vm.interp.getToken()
+        val name = vm.interp.scanner.parseName().strFromAddrLen(vm)
         val w = Word(
             name,
             cpos = Word.NO_ADDR,
@@ -41,7 +42,7 @@ object wDeferExt : IWordClass {
 
     /** `is` ( wn "word" -- : associates wn-word to "word" word ) */
 
-    fun changeDeferPointer(vm: ForthVM, deferredWord: Word, sourceWord: Word ) {
+    fun changeDeferPointer(vm: ForthVM, deferredWord: Word, sourceWord: Word) {
         deferredWord.cpos = sourceWord.cpos
         deferredWord.dpos = sourceWord.dpos
         deferredWord.fn = sourceWord.fn
@@ -49,14 +50,16 @@ object wDeferExt : IWordClass {
     }
 
     fun w_is(vm: ForthVM) {
-        val sourceWord  = vm.dict[vm.dstk.pop()]
-        val deferredWord = vm.dict[vm.interp.getToken()]
+        val sourceWord = vm.dict[vm.dstk.pop()]
+        val token = vm.interp.scanner.parseName().strFromAddrLen(vm)
+        val deferredWord =
+            vm.dict[token]
         changeDeferPointer(vm, deferredWord, sourceWord)
     }
 
     fun w_deferStore(vm: ForthVM) {
         val deferredWord = vm.dict[vm.dstk.pop()]
-        val sourceWord  = vm.dict[vm.dstk.pop()]
+        val sourceWord = vm.dict[vm.dstk.pop()]
         changeDeferPointer(vm, deferredWord, sourceWord)
     }
 

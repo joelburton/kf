@@ -7,6 +7,7 @@ import kf.ForthVM
 import kf.IWordClass
 import kf.Word
 import kf.interps.InterpBase
+import kf.strFromAddrLen
 
 object wCompiling: IWordClass {
     override val name = "Compiling"
@@ -42,7 +43,7 @@ object wCompiling: IWordClass {
      */
 
     fun w_colon(vm: ForthVM) {
-        val name: String = vm.interp.getToken()
+        val name: String =  vm.interp.scanner.parseName().strFromAddrLen(vm)
 
         // Words start off not-recursive hidden, so they can't call themselves
         // while still being compiled. This allows:
@@ -166,7 +167,7 @@ object wCompiling: IWordClass {
      */
 
     fun w_postpone(vm: ForthVM) {
-        val token: String = vm.interp.getToken()
+        val token: String =  vm.interp.scanner.parseName().strFromAddrLen(vm)
         val w = vm.dict[token]
         val cw = vm.dict.last
 

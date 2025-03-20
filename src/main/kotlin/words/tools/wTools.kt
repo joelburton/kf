@@ -7,6 +7,7 @@ import kf.IWordClass
 import kf.Word
 import kf.addr
 import kf.hex8
+import kf.strFromAddrLen
 import kf.words.custom.wToolsCustom
 
 object wTools: IWordClass {
@@ -115,7 +116,7 @@ object wTools: IWordClass {
      */
 
     fun w_see(vm: ForthVM) {
-        val w: Word = vm.dict[vm.interp.getToken()]
+        val w: Word = vm.dict[ vm.interp.scanner.parseName().strFromAddrLen(vm)]
         wToolsCustom._see(vm, w, false)
     }
 

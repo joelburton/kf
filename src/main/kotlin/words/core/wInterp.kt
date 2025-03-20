@@ -3,12 +3,14 @@ package kf.words.core
 import com.github.ajalt.mordant.rendering.TextColors.yellow
 import com.github.ajalt.mordant.terminal.Terminal
 import com.github.ajalt.mordant.terminal.danger
+import kf.FScanner
 import kf.ForthVM
 import kf.IWordClass
 import kf.TerminalStringInterface
 import kf.Word
 import kf.strFromAddrLen
 import kf.interps.InterpBase
+import kf.interps.InterpEval
 
 object wInterp : IWordClass {
     override val name = "Interp"
@@ -112,30 +114,22 @@ object wInterp : IWordClass {
      */
 
     fun w_evaluate(vm: ForthVM) {
-
-        // TODO: this might not be the best approach; we'd want
-        // everything the same: ANSI, raw-term-ability, etc
-        // better perhaps: being able to "stuff" input into
-        // the normal input?
-        // or, even better: a different string buffer loc
-
         val len = vm.dstk.pop()
         val addr = vm.dstk.pop()
+
+        if (vm.interp !is InterpEval) throw RuntimeException("not an eval!")
+
+        // - hide away current scanner (so we can restore it so that we can
+        //   later handle anything *after* "evaluate" on this line
+        // - make a new temporary scanner in a scratch space
+        // - evaluate this
+        // - restore the old scanner
+
         val s = Pair(addr, len).strFromAddrLen(vm)
-
-        val prevIO = vm.io
-//        val prevVerbosity = vm.verbosity
-
-        vm.io = Terminal(terminalInterface = TerminalStringInterface(s))
-//        vm.verbosity = -2
-
-        try {
-//            interpretLoop(vm)   fixme
-        } finally {
-            vm.io = prevIO
-//            vm.verbosity = prevVerbosity
-        }
-
+        val curScanner = vm.interp.scanner
+        vm.interp.scanner = FScanner(vm, 0x200, 0x250) // fixme: needs a real home
+        (vm.interp as InterpEval).eval(s + " eof")
+        vm.interp.scanner = curScanner
     }
 
     /**

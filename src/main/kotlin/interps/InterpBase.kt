@@ -6,51 +6,38 @@ import kf.FScanner
 import kf.ForthVM
 import kf.ForthVM.Companion.REG_STATE
 import kf.VERSION_STRING
-import kf.strFromAddrLen
 
 /** Base for any "interpreter", even one that has no interpreter CLI at all. */
 
 interface IInterp {
     val name: String
-    val code: String
-    fun resetInterpreter()
+    fun reset()
     fun addInterpreterCode()
-    fun rebootInterpreter()
-    fun getToken(): String
+    fun reboot()
     val isInterpreting: Boolean
     val isCompiling: Boolean
     var state: Int
     var scanner: FScanner
     fun banner()
-    fun _compile(token: String)
-    fun _interpret(token: String)
+    fun compile(token: String)
+    fun interpret(token: String)
     fun eval(line: String)
 }
 
 
 open class InterpBase(val vm: ForthVM) : IInterp {
     override val name: String = "Base"
-    override val code: String = ""
 
     companion object {
         const val STATE_INTERPRETING: Int = 0
         const val STATE_COMPILING: Int = -1
     }
 
-    // fixme: need this for now, since lots of words refer to it, even if they aren't words this would use
-
     /**  Scanner for reading and tokenizing input line. */
+
     override var scanner: FScanner = FScanner(
         vm, vm.memConfig.interpBufferStart, vm.memConfig.interpBufferEnd
     )
-
-    override fun getToken(): String {
-        if (D) vm.dbg(3, "getToken")
-        val s = scanner.parseName().strFromAddrLen(vm)
-//        if (s.length == 0) throw ParseError("Name expected")
-        if (D) vm.dbg(3, "returning s: '$s'")
-        return s
-    }
 
     /** A register for interpreter use: state of interpreting/compiling. */
 
@@ -66,32 +53,40 @@ open class InterpBase(val vm: ForthVM) : IInterp {
 
     /**  Handle a VM reboot at the interpreter layer.
      */
-    override fun rebootInterpreter() {
+    override fun reboot() {
         if (D) vm.dbg(3, "InterpBase.rebootInterpreter")
 
-        // Put interpreter code in mem; the VM will start executing here
         addInterpreterCode()
-        resetInterpreter()
+        reset()
         if (vm.verbosity > 0) banner()
     }
 
     /**  Handle a VM reset at the interpreter layer.
      */
-    override fun resetInterpreter() {
+    override fun reset() {
         if (D) vm.dbg(3, "InterpBase.resetInterpreter")
 
         state = STATE_INTERPRETING
+        scanner.reset()
     }
 
     override fun addInterpreterCode() {
-        vm.appendWord("(FOO)")
+        vm.appendWord("(FOO)") // just a silly word so we can test
     }
 
     override fun banner() {
         vm.io.success("\nWelcome to ${VERSION_STRING} ($name)\n")
     }
 
-    override fun eval(line: String) { TODO() }
-    override fun _interpret(line: String) { TODO() }
-    override fun _compile(line: String) { TODO() }
+    override fun interpret(line: String) {
+        throw NotImplementedError("InterpBase cannot interpret")
+    }
+
+    override fun compile(line: String) {
+        throw NotImplementedError("InterpBase cannot compile")
+    }
+
+    override fun eval(line: String) {
+        throw NotImplementedError("InterpBase cannot eval")
+    }
 }

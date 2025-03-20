@@ -6,6 +6,7 @@ import kf.ForthVM
 import kf.IWordClass
 import kf.Word
 import kf.addr
+import kf.words.custom.wToolsCustom.w_dotCode
 
 
 object wMachine : IWordClass {

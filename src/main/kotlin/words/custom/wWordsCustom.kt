@@ -3,6 +3,7 @@ package kf.words.custom
 import kf.ForthVM
 import kf.IWordClass
 import kf.Word
+import kf.strFromAddrLen
 
 object wWordsCustom : IWordClass {
     override val name = "WordsExtra"
@@ -20,7 +21,7 @@ object wWordsCustom : IWordClass {
     /**  `hide` ( in:"name" -- : hides word )
      */
     fun w_hideWord(vm: ForthVM) {
-        val name: String = vm.interp.getToken()
+        val name: String =  vm.interp.scanner.parseName().strFromAddrLen(vm)
         val w: Word = vm.dict[name]
         w.hidden = true
     }
@@ -29,7 +30,7 @@ object wWordsCustom : IWordClass {
     /**  `unhide` ( in:"name" -- : un-hides word )
      */
     fun w_unhideWord(vm: ForthVM) {
-        val name: String = vm.interp.getToken()
+        val name: String =  vm.interp.scanner.parseName().strFromAddrLen(vm)
         val w: Word = vm.dict[name]
         w.hidden = false
     }
@@ -65,7 +66,7 @@ object wWordsCustom : IWordClass {
     /** `callable.` ( "word" -- : print callable addr ) */
 
     fun w_callableDot(vm: ForthVM) {
-        val token: String = vm.interp.getToken()
+        val token: String =  vm.interp.scanner.parseName().strFromAddrLen(vm)
         val w: Word = vm.dict[token]
         vm.io.println(w.fn.toString())
     }

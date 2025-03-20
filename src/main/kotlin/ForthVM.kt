@@ -154,7 +154,7 @@ class ForthVM(
         dict.addModule(mMachine)
         if (includePrimitives) addCoreWords()
 
-        interp.rebootInterpreter()
+        interp.reboot()
         reset()
     }
 
@@ -167,7 +167,7 @@ class ForthVM(
         ip = cstart
         if (D) dbg_indent = 0
 
-        interp.resetInterpreter()
+        interp.reset()
     }
 
 

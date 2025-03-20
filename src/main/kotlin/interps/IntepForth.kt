@@ -2,7 +2,7 @@ package kf.interps
 
 import kf.ForthVM
 
-class InterpForth(vm: ForthVM) : InterpCLI(vm) {
+class InterpForth(vm: ForthVM) : InterpEval(vm) {
     override val name = "Forth"
     override val code =  """
     begin 
