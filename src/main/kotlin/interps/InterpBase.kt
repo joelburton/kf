@@ -6,6 +6,7 @@ import kf.FScanner
 import kf.ForthVM
 import kf.ForthVM.Companion.REG_STATE
 import kf.VERSION_STRING
+import kf.strFromAddrLen
 
 /** Base for any "interpreter", even one that has no interpreter CLI at all. */
 
@@ -21,6 +22,9 @@ interface IInterp {
     var state: Int
     var scanner: FScanner
     fun banner()
+    fun _compile(token: String)
+    fun _interpret(token: String)
+    fun eval(line: String)
 }
 
 
@@ -42,7 +46,10 @@ open class InterpBase(val vm: ForthVM) : IInterp {
 
     override fun getToken(): String {
         if (D) vm.dbg(3, "getToken")
-        return scanner.parseNameToStr()
+        val s = scanner.parseName().strFromAddrLen(vm)
+//        if (s.length == 0) throw ParseError("Name expected")
+        if (D) vm.dbg(3, "returning s: '$s'")
+        return s
     }
 
     /** A register for interpreter use: state of interpreting/compiling. */
@@ -83,4 +90,8 @@ open class InterpBase(val vm: ForthVM) : IInterp {
     override fun banner() {
         vm.io.success("\nWelcome to ${VERSION_STRING} ($name)\n")
     }
+
+    override fun eval(line: String) { TODO() }
+    override fun _interpret(line: String) { TODO() }
+    override fun _compile(line: String) { TODO() }
 }

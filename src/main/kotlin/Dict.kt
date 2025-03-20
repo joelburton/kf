@@ -1,7 +1,11 @@
 package kf
 
+import com.github.ajalt.mordant.rendering.TextColors.yellow
+import com.github.ajalt.mordant.rendering.TextStyles.bold
+import com.github.ajalt.mordant.rendering.Whitespace
 import com.github.ajalt.mordant.terminal.Terminal
 import com.github.ajalt.mordant.terminal.muted
+import com.github.ajalt.mordant.widgets.Text
 
 class WordNotFoundException(msg: String) : ForthError(msg)
 class DictFullError() : Exception("Dictionary full")
@@ -93,12 +97,14 @@ class Dict(val vm: ForthVM, val capacity: Int = 1024)  {
 
     fun addModule(mod: IWordClass) {
         if (D) vm.dbg(3, "dict.addModule: ${mod.name}")
-        if (vm.verbosity >= 1) vm.io.print("${mod.name}: ")
+        if (vm.verbosity >= 1) vm.io.println(bold(yellow("${mod.name}:")))
+        val sb = StringBuilder()
         for (w in mod.words) {
             add(w)
-            if (vm.verbosity >= 1) vm.io.print("${w.name} ")
+            if (vm.verbosity >= 1) sb.append("${w.name} ")
         }
-        if (vm.verbosity >= 1) vm.io.println()
+        if (vm.verbosity >= 1)
+            vm.io.println(Text("    $sb", whitespace= Whitespace.PRE_WRAP))
 
         vm.modulesLoaded.put(mod.name, mod)
     }

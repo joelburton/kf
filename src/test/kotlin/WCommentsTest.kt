@@ -1,40 +1,40 @@
-//import kf.ParseError
-//import kf.primitives.WComments
-//import org.junit.jupiter.api.Test
-//
-//import org.junit.jupiter.api.Assertions.*
-//import kotlin.test.assertFailsWith
-//
-//class WCommentsTest : ForthTestCase() {
-//    val comments = WComments
-//
-//    @Test
-//    fun w_parenComment() {
-//        vm.interpScanner.fill("( test )")
-//        comments.w_parenComment(vm)
-//        assertEquals(true, vm.interpScanner.atEnd)
-//
-//        vm.interpScanner.fill("( test )   foo")
-//        comments.w_parenComment(vm)
-//        assertEquals(false, vm.interpScanner.atEnd)
-//
-//        vm.interpScanner.fill("( test    foo")
-//        assertFailsWith<ParseError> { comments.w_parenComment(vm) }
-//    }
-//
-//    @Test
-//    fun w_backslashComment() {
-//        vm.interpScanner.fill("\\ test )")
-//        comments.w_backslashComment(vm)
-//        assertEquals(true, vm.interpScanner.atEnd)
-//
-//        vm.interpScanner.fill("   \\ ( test )")
-//        comments.w_backslashComment(vm)
-//        assertEquals(true, vm.interpScanner.atEnd)
-//
-//        vm.interpScanner.fill("  foo  \\ ( test )")
-//        vm.interpScanner.parseName()
-//        comments.w_backslashComment(vm)
-//        assertEquals(true, vm.interpScanner.atEnd)
-//    }
-//}
+import kf.words.core.ext.wCommentsExt
+import kf.words.core.wComments
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Test
+
+class WCommentsTest : ForthTestCase() {
+    val comments = wComments
+    val ext = wCommentsExt
+    
+    @Test
+    fun w_parenComment() {
+        vm.interp.scanner.fill("( test )")
+        comments.w_parenComment(vm)
+        assertEquals(true, vm.interp.scanner.atEnd)
+
+        vm.interp.scanner.fill("( test )   foo")
+        comments.w_parenComment(vm)
+        assertEquals(false, vm.interp.scanner.atEnd)
+
+        vm.interp.scanner.fill("( test    foo")
+        comments.w_parenComment(vm)
+        assertEquals(true, vm.interp.scanner.atEnd)
+    }
+
+    @Test
+    fun w_backslashComment() {
+        vm.interp.scanner.fill("\\ test )")
+        ext.w_backslashComment(vm)
+        assertEquals(true, vm.interp.scanner.atEnd)
+
+        vm.interp.scanner.fill("   \\ ( test )")
+        ext.w_backslashComment(vm)
+        assertEquals(true, vm.interp.scanner.atEnd)
+
+        vm.interp.scanner.fill("  foo  \\ ( test )")
+        vm.interp.scanner.parseName()
+        ext.w_backslashComment(vm)
+        assertEquals(true, vm.interp.scanner.atEnd)
+    }
+}

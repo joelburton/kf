@@ -6,16 +6,21 @@ import kf.Word
 class InterpFast(vm: ForthVM) : InterpCLI(vm) {
     override val name = "Fast"
     override val code = """
-        ] begin 
+        begin 
             refill while
-                process-line
+                begin
+                    parse-name dup while
+                        interp-process-token
+                    repeat
+                    drop drop
                 interp-prompt
             repeat
-        eof [
+        eof
         """
 
     override fun rebootInterpreter() {
-        vm.dict.add(Word("process-line", ::w_processLine))
+//        vm.dict.add(Word("INTERP-PROCESS-LINE", ::w_processLine))
+        vm.dict.add(Word("INTERP-PROCESS-TOKEN", ::w_processToken))
         super.rebootInterpreter()
     }
 }

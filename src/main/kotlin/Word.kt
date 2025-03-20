@@ -6,11 +6,11 @@ import com.github.ajalt.mordant.terminal.warning
 typealias StaticFunc = (ForthVM) -> Unit
 
 fun w_notImpl(vm: ForthVM) {
-    TODO("Not implemented")
+    throw ForthError("Not implemented")
 }
 
 class Word(
-    val name: String,
+    name: String,
     var fn: StaticFunc,
     var cpos: Int = NO_ADDR,
     var dpos: Int = NO_ADDR,
@@ -22,6 +22,8 @@ class Word(
     var deferToWn: Int? = null,
     var wn: Int = 0,
 ) {
+    val name = name.lowercase()
+
     companion object {
         fun noWordFn(vm: ForthVM) {
             vm.io.warning("No Word Fn ran")
@@ -32,17 +34,13 @@ class Word(
         /**  Explanation for header strings */
         const val HEADER_STR: String =
             " IMmediate Compile-Only Interp-Only REcurse HIdden Code Data"
-
-
     }
 
     override fun toString() = name
     operator fun invoke(vm: ForthVM) {
         vm.currentWord = this
         if (D) {
-            var s = gray(fn.toString()
-                .removeSuffix("(kf.ForthVM): kotlin.Unit")
-                .removePrefix("fun "))
+            var s = getFnName()
             vm.dbg(2, "x@ ${(vm.ip-1).addr} -> $name $s")
             vm.dbg_indent += 1
         }
@@ -51,6 +49,15 @@ class Word(
             vm.dbg_indent -= 1
             vm.dbg(3, "x@ ${vm.ip.addr} <- $name")
         }
+    }
+
+    fun getFnName(): String {
+        var s = gray(
+            fn.toString()
+                .removeSuffix("(kf.ForthVM): kotlin.Unit")
+                .removePrefix("fun ")
+        )
+        return s
     }
 
     /**  Useful for debugging and to support `w_see` and `w_simple-see`. */

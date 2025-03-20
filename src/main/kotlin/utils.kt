@@ -4,7 +4,7 @@ package kf
 
 import kotlin.text.HexFormat
 
-const val D = true
+const val D = false
 const val VERSION_STRING = "KPupForth 0.1.0"
 
 
@@ -79,3 +79,15 @@ fun Int.numToStr(base: Int): String = this.toString(base.coerceIn(2, 36))
 
 val String.isCharLit get() = (get(0) == '\'')
         && (length == 2 || (length == 3 && get(2) == '\''))
+
+/** Return string from addr,len pair. */
+
+fun Pair<Int, Int>.strFromAddrLen(vm: ForthVM) =
+    CharArray(second) { i -> vm.mem[first + i].toChar() }.concatToString()
+
+/** Return string from address of counted string. */
+
+fun Int.strFromCSAddr(vm: ForthVM): String {
+    @Suppress("KotlinConstantConditions") val len = vm.mem[this]
+    return CharArray(len) { i -> vm.mem[this + i + 1].toChar() }.concatToString()
+}

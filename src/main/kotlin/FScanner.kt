@@ -1,110 +1,169 @@
 package kf
 
-class FScanner(val vm: ForthVM, val bufStartAddr: Int, val bufEndAddr: Int) {
-    var bufPtr = 0  // buffer pointer
+/** Scanner for parsing buffers.
+ *
+ * There are 3 different algos here:
+ *
+ * - parseName: used for `PARSE-NAME`
+ * - parse: used for `PARSE`
+ * - wordParse: used for `WORD` (A slightly weird algorithm)
+ *
+ * Generally, avoid `wordParse`; it is here because it is required by the
+ * Forth word `WORD`, which itself should be avoided in favor of `PARSE-NAME`
+ * or `PARSE`.
+ *
+ * In all cases, *it is not an error* if the scanning terminates without
+ * finding a closing character. So, while it's a bit gross, Forth treats
+ * stuff like:  `." no-close`  or  `( no-close`   as ok.
+ *
+ * The algorithms return a Pair(addr, len), but this can be turned into a
+ * real string.
+
+ * If the input buffer is already exhausted (at the end), no error is raised--
+ * it just returns the pair with len=0.
+ *
+ * To explicitly consume everything and ignore it (like for "\" comments,
+ * use `.nextLine()`.
+ *
+ */
+
+class FScanner(val vm: ForthVM, val bufStart: Int, val bufEnd: Int) {
+    var bufPtr = bufStart  // buffer addr
     var bufLen = 0  // length of entire buffer
-    var tokStart = 0
-    var tokLen = 0
+    var tokPtr = bufStart  // start addr of most-recently-found token
+    var tokLen = 0  // length of same
 
     companion object {
-        const val SPACE = 0x20
+        val whitespace = arrayOf(
+            ' '.code,
+            '\t'.code,
+            '\n'.code,
+            '\r'.code,
+        )
     }
+
+    val atEnd get() = bufPtr >= bufStart + bufLen
+
+    /** Return string of most-recently-found token. */
+
+    fun curToken() = Pair(tokPtr, tokLen).strFromAddrLen(vm)
 
     /** Reset */
 
     fun reset() {
-        bufPtr = bufStartAddr
+        bufPtr = bufStart
         bufLen = 0
-        tokStart = bufStartAddr
+        tokPtr = bufStart
         tokLen = 0
     }
 
-    /** Set string to the input buffer. */
+    /** Reset buffer and fill it from string. */
 
-    fun fill(s: String) {
+    fun fill(str: String) {
         reset()
-        for (c in s) vm.mem[bufStartAddr + bufLen++] = c.code
-        bufPtr = bufStartAddr
+        for (char in str) {
+            if (bufLen > bufEnd - bufStart) throw ForthError("Buffer overflow")
+            vm.mem[bufStart + bufLen++] = char.code
+        }
     }
 
-    // Perhaps just for debugging
-    override fun toString(): String {
-        val chars = CharArray(bufLen) { i -> vm.mem[bufStartAddr + i].toChar() }
-        return chars.concatToString()
+    /** Return string of entire buffer (useful for debugging.) */
+
+    override fun toString() = Pair(bufStart, bufLen).strFromAddrLen(vm)
+
+    /** Get whitespace-separated token.
+     *
+     * - skip over all whitespace at start
+     * - get all non-space chars
+     * - skip one space
+     *
+     *   ...hello...
+     *      ^     ^   = tokPtr and bufPtr (tokLen=5, bufLen unchanged)
+     *
+     * This should be used to "get the next token". To "get the input
+     * from this token", use `parse`.
+     *
+     **/
+
+    fun parseName(): Pair<Int, Int> {
+        val max = bufStart + bufLen
+
+        while (bufPtr < max && vm.mem[bufPtr] in whitespace) bufPtr += 1
+        tokPtr = bufPtr
+
+        while (bufPtr < max && vm.mem[bufPtr] !in whitespace) bufPtr += 1
+        tokLen = bufPtr - tokPtr
+
+        if (bufPtr < max) bufPtr += 1
+
+        return Pair(tokPtr, tokLen)
     }
 
-    /** Get range of buffer as normal K string. */
+    /** General parse for a term character.
+     *
+     * - skip nothing at start
+     * - get all non-term chars
+     *
+     * with term="
+     *    ...hello"".
+     *    ^        ^  = tokPtr & bufPtr
+     *
+     * This is used to parse things like `." hi"` and such. Note that, per the
+     * specs, *it does not* consume or require any whitespace after it.
+     * So `." hi"10` could be successfully read as (string "hi", number 10)
+     * if the call to this was followed by parseName.
+     *
+     **/
 
-    fun getAsString(addr: Int, len: Int): String {
-        val chars = CharArray(len) { i -> vm.mem[addr + i].toChar() }
-        return chars.concatToString()
-    }
+    fun parse(term: Char): Pair<Int, Int> {
+        val max = bufStart + bufLen
 
-    /** Get range of buffer as normal K string. */
-
-    fun getAsCString(addr: Int): String {
-        val len = vm.mem[addr]
-        val chars = CharArray(len) { i -> vm.mem[addr + i +1].toChar() }
-        return chars.concatToString()
-    }
-
-    /** Get space-separated word. Returns (addr, len). */
-
-    fun parseName() {
-        val max = bufStartAddr + bufLen
-
-        while (bufPtr < max && vm.mem[bufPtr] == SPACE) bufPtr += 1
-        tokStart = bufPtr
-        while (bufPtr < max && vm.mem[bufPtr] != SPACE) bufPtr += 1
-        tokLen = bufPtr - tokStart
-        if (bufPtr < max && vm.mem[bufPtr++] != SPACE)
-            throw Exception("WOULD NEVER HAPPEN?")
-    }
-
-    fun parseNameToStr(): String {
-        parseName()
-        val chars = CharArray(tokLen) { i -> vm.mem[tokStart + i].toChar() }
-        return chars.concatToString()
-    }
-
-    fun parseNameToPAir(): Pair<Int, Int> {
-        parseName()
-        return Pair(tokStart, tokLen)
-    }
-
-    fun parseToStr(term: Char): String {
-        parse(term)
-        val chars = CharArray(tokLen) { i -> vm.mem[tokStart + i].toChar() }
-        return chars.concatToString()
-    }
-
-    fun parseToPair(term: Char): Pair<Int, Int> {
-        parse(term)
-        return Pair(tokStart, tokLen)
-    }
-
-    /** General parse for an ending character. Returns (addr, len) */
-
-    fun parse(term: Char) {
-        val max = bufStartAddr + bufLen
-        var at = bufPtr
-        var phraseLen = 0
-
-        tokStart = bufPtr
+        tokPtr = bufPtr
         while (bufPtr < max && vm.mem[bufPtr] != term.code) bufPtr += 1
-        if (bufPtr == max) throw ParseError("Expected terminator")
-        tokLen = bufPtr - tokStart
-        bufPtr += 1  // advance past closing term
-        if (bufPtr < max) if (vm.mem[bufPtr++] != SPACE)
-            throw ParseError("Unexpected character")
+
+        tokLen = bufPtr - tokPtr
+
+        // skip the terminator, but don't require or skip space after it.
+        if (bufPtr < max) bufPtr += 1
+
+        return Pair(tokPtr, tokLen)
     }
 
-    /** Get rest of line. */
+    /** General parse for an ending character, using `WORD` algo.
+     *
+     *  with term=x
+     *    xxHELLOxx.
+     *      ^     ^  = tokPtr & bufPtr
+     *
+     *  with term=' ', same but term=any-whitespace-character.
+     *
+     *  This is a weird algorithm, and be avoided except for the Forth word
+     *  `WORD`.
+     *
+     **/
+
+    fun wordParse(term: Char): Pair<Int, Int> {
+        var terms = if (term == ' ') whitespace else arrayOf(term.code)
+        val max = bufStart + bufLen
+
+        while (bufPtr < max && vm.mem[bufPtr] in terms) bufPtr += 1
+
+        tokPtr = bufPtr
+        while (bufPtr < max && vm.mem[bufPtr] !in terms) bufPtr += 1
+
+        tokLen = bufPtr - tokPtr
+        if (bufPtr < max) bufPtr += 1
+
+        return Pair(tokPtr, tokLen)
+    }
+
+    /** Consume rest of line.
+     *
+     * Any parsing after this will always have len=0.
+     *
+     **/
 
     fun nextLine() {
-        bufPtr = bufEndAddr
-//        bufLen = bufEndAddr - bufStartAddr
+        bufLen = 0
     }
-
-//    val atEnd get() = bufPtr == bufStartAddr + bufLen
 }

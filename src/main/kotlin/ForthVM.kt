@@ -4,8 +4,14 @@ package kf
 import com.github.ajalt.mordant.rendering.TextColors.gray
 import com.github.ajalt.mordant.terminal.*
 import kf.interps.IInterp
-import kf.primitives.WInterp
-import kf.words.*
+import kf.words.core.ext.mCoreExt
+import kf.words.core.mCore
+import kf.words.custom.mCustom
+import kf.words.doublenums.mDoubleNums
+import kf.words.facility.mFacility
+import kf.words.fileaccess.mFileAccess
+import kf.words.machine.mMachine
+import kf.words.tools.mTools
 import kotlin.reflect.KProperty
 import kotlin.time.TimeSource
 
@@ -145,9 +151,7 @@ class ForthVM(
         currentWord = Word.noWord
 
         dict.reset()
-        dict.addModule(wLowLevel)
-//        dict.addModule(WMachine)
-//        dict.addModule(WInterp)
+        dict.addModule(mMachine)
         if (includePrimitives) addCoreWords()
 
         interp.rebootInterpreter()
@@ -176,37 +180,13 @@ class ForthVM(
         if (D) dbg(3, "vm.addCoreWords")
 
         for (mod in arrayOf(
-            wChars,
-            wComments,
-            wCompiling,
-            wCreate,
-            wDoubleCell,
-            wFormatting,
-            wFunctions,
-            wIO,
-            wIfThenCase,
-            wInterp,
-            wInterpExtra,
-            wLogic,
-            wLoops,
-            wLowLevelDebug,
-            wMath,
-            wMemory,
-            wMemoryExtra,
-            wParsing,
-            wRegisters,
-            wStackOps,
-            wStrings,
-            wSystem,
-            wUnsigned,
-            wValues,
-            wVariables,
-            wWords,
-
-            WInterp,
-
-            wTools,
-            wToolsExtra,
+            mCore,
+            mCoreExt,
+            mDoubleNums,
+            mFacility,
+            mFileAccess,
+            mTools,
+            mCustom,
         )) {
             dict.addModule(mod)
         }

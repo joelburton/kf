@@ -5,9 +5,10 @@ import kf.D
 import kf.ForthVM
 import kf.InvalidState
 import kf.Word
+import kf.strFromAddrLen
 import kf.isCharLit
 import kf.toForthInt
-import kf.words.wToolsExtra
+import kf.words.custom.wToolsCustom
 
 /** Base class for interpreters that don't have a CLI, but can evaluate
  * and compile. */
@@ -45,7 +46,7 @@ open class InterpEval(vm: ForthVM) : InterpBase(vm) {
      * However, words that are "immediate-mode" will execute.
      */
 
-    fun _compile(token: String) {
+    override fun _compile(token: String) {
         if (D) vm.dbg(3, "vm.interpCompile: $token")
         val w: Word? = vm.dict.getSafeChkRecursion(token, vm.io)
 
@@ -66,8 +67,7 @@ open class InterpEval(vm: ForthVM) : InterpBase(vm) {
         }
     }
 
-    fun _interpret(token: String) {
-
+    override fun _interpret(token: String) {
         if (D) vm.dbg(3, "vm.interpInterpret: $token")
         val w: Word? = vm.dict.getSafe(token)
         if (w != null) {
@@ -80,14 +80,26 @@ open class InterpEval(vm: ForthVM) : InterpBase(vm) {
         }
     }
 
-    fun eval(line: String) {
+    override fun eval(line: String) {
+        // fixme: flawed, but needed for bootstrapping interp code
         scanner.fill(line)
         w_processLine(vm)
     }
 
+    fun w_processToken(vm: ForthVM) {
+        val len = vm.dstk.pop()
+        val addr = vm.dstk.pop()
+        var token = Pair(addr, len).strFromAddrLen(vm)
+        if (D) vm.dbg(3, "vm.w_processToken")
+        if (isInterpreting) _interpret(token)
+        else _compile(token)
+    }
+
     fun w_processLine(vm: ForthVM) {
+        // fixme: flawed, but curr needed for eval
         while (true) {
-            val name = scanner.parseNameToStr()
+            val name = getToken()
+//            val name = scanner.parseNameToStr()
             if (name.length == 0) break
             if (isInterpreting) _interpret(name)
             else _compile(name)
@@ -99,7 +111,7 @@ open class InterpEval(vm: ForthVM) : InterpBase(vm) {
         state = STATE_COMPILING
         code.split("\n")
             .forEach { eval(it) }
-            .also { wToolsExtra.w_dumpCode(vm) }
+            .also { if (D && vm.verbosity > 1) wToolsCustom.w_dotCode(vm) }
     }
 
 
