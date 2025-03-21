@@ -2,25 +2,24 @@ package words.core
 
 import EvalForthTestCase
 import ForthTestCase
-import kf.InvalidState
-import kf.ParseError
-import kf.Word
+import kf.*
 import kf.interps.InterpBase.Companion.STATE_INTERPRETING
-import kf.recorder
-import kf.w_notImpl
 import kf.words.core.ext.wCompileExt
 import kf.words.core.ext.wInterpExt
-import kf.words.core.ext.wParseExt
 import kf.words.core.wCompiling
-import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.Assertions.*
-import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
 import kotlin.test.assertFailsWith
 
 
 class wCompilingTest : ForthTestCase() {
     val mod = wCompiling
+
+    init {
+        vm.dict.addModule(wCompiling)
+        vm.dict.addModule(wCompileExt)
+    }
 
     @Test
     fun w_colon() {
@@ -85,7 +84,7 @@ class wCompilingFuncTest : EvalForthTestCase() {
 
     @BeforeEach
     fun beforeEach() {
-        vm.reboot()
+        vm.reboot(true)
     }
 
     @Test
@@ -123,16 +122,17 @@ class wCompilingFuncTest : EvalForthTestCase() {
     @Test
     fun recursionWorks() {
         // normal func
-        assertFailsWith<ParseError> { eval(": f1 xf1 ;") }
-        recorder.clearOutput()
+        assertFailsWith<ParseError> { eval(": f1 f1 ;") }
 
         // normal func w/predecessor
-        eval(": f2 42 ; : f2 f2 ; f2")
+        eval(": f2 42 ;")
+        eval(": f2 f2 ;")
+        eval("f2")
         assertDStack(42)
-
         // recursive func
-        val c = ": f3 1- dup dup . 0 > if recurse then ; 3 f3 "
-        eval(c)
+
+        recorder.clearOutput()
+        eval(": f3 1- dup dup . 0 > if recurse then ; 3 f3 ")
         assertPrinted("2 1 0 ")
     }
 
@@ -159,5 +159,10 @@ class wCompilingFuncTest : EvalForthTestCase() {
         eval(": iff immediate postpone if ;")
         eval(": test 10 iff 20 then ; test")
         assertDStack(20)
+        assertRStack()
+
+        eval(": do_ immediate postpone do_ ;")
+        eval(": test 3 0 do_ 10 loop ; test")
+        assertDStack(10, 10, 10)
     }
 }

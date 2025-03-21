@@ -34,9 +34,9 @@ object wIfThen: IWordClass {
      */
 
     fun w_if(vm: ForthVM) {
-        vm.appendWord("0branch-abs")
-        vm.rstk.push(vm.cend)
-        vm.appendCode(0xff, CellMeta.JumpLoc)
+        vm.appendWord("0branch")
+        vm.dstk.push(vm.cend)
+        vm.appendCode(0xffff, CellMeta.JumpLoc)
     }
 
     /** ELSE     CORE
@@ -58,11 +58,11 @@ object wIfThen: IWordClass {
      */
 
     fun w_else(vm: ForthVM) {
-        val orig = vm.rstk.pop()
-        vm.appendWord("branch-abs")
-        vm.rstk.push(vm.cend)
-        vm.appendCode(0xff, CellMeta.JumpLoc)
-        vm.mem[orig] = vm.cend
+        val ifRef = vm.rstk.pop()
+        vm.appendWord("branch")
+        vm.dstk.push(vm.cend)
+        vm.appendCode(0xfffe, CellMeta.JumpLoc)
+        vm.mem[ifRef] = (vm.cend - ifRef)
     }
 
     /** THEN     CORE
@@ -82,7 +82,7 @@ object wIfThen: IWordClass {
      */
 
     fun w_then(vm: ForthVM) {
-        val orig: Int = vm.rstk.pop()
-        vm.mem[orig] = vm.cend
+        val ifRef: Int = vm.dstk.pop()
+        vm.mem[ifRef] = vm.cend - ifRef
     }
 }

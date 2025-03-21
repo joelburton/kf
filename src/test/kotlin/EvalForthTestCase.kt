@@ -1,7 +1,9 @@
 import com.github.ajalt.mordant.rendering.AnsiLevel
 import com.github.ajalt.mordant.terminal.Terminal
+import kf.ForthError
 import kf.IntEOF
 import kf.ForthVM
+import kf.IWordClass
 import kf.TerminalTestInterface
 import kf.interps.InterpBase
 import kf.interps.InterpEval
@@ -11,6 +13,8 @@ import kf.recorder
 import kf.words.core.ext.wCompileExt
 import kf.words.core.ext.wInterpExt
 import kf.words.core.ext.wParseExt
+import kf.words.core.wCompiling
+import kf.words.machine.wMachine
 import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
 
@@ -20,7 +24,7 @@ fun dummyFn(vm: ForthVM) {
 
 /** Test cases that need a VM, but doesn't need to eval or load modules. */
 
-open class ForthTestCase {
+open class ForthTestCase() {
     val testIO = TerminalTestInterface()
     val vm = ForthVM(
         io = Terminal(
@@ -32,6 +36,7 @@ open class ForthTestCase {
     init {
         vm.interp = InterpBase(vm)
         vm.verbosity = -2
+        vm.dict.addModule(wMachine)
     }
 
     fun assertDStack(vararg items: Int) {
@@ -73,7 +78,7 @@ open class EvalForthTestCase : ForthTestCase() {
         vm.verbosity = -2
     }
 
-    fun eval(s: String): String {
+    fun evalx(s: String): String {
         val io = vm.io.terminalInterface as TerminalTestInterface
         io.addInputs(s)
         with(vm) {
@@ -86,6 +91,26 @@ open class EvalForthTestCase : ForthTestCase() {
                 }
             } catch (_: IntEOF) {
                 return recorder.output()
+            }
+        }
+    }
+
+    fun eval(s: String): String {
+        with(vm) {
+//            reset()
+            interp.scanner.fill(s)
+            ip = memConfig.scratchStart
+            try {
+                while (true) {
+                    val wn = mem[ip++]
+                    val w = dict[wn]
+                    w(this)
+                }
+            } catch (_: IntEOF) {
+                return recorder.output()
+            } catch (e: ForthError) {
+                reset()
+                throw e
             }
         }
     }

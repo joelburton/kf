@@ -138,7 +138,7 @@ open class InterpEval(vm: ForthVM) : InterpBase(vm) {
 
         vm.appendWord("PARSE-NAME")
         vm.appendWord("DUP")
-        vm.appendJump("0BRANCH", 5) // to eof
+        vm.appendJump("0BRANCH", 4) // to 2drop
         vm.appendWord("BOOTSTRAP-PROCESS-TOKEN")
         vm.appendJump("BRANCH", -6)
         vm.appendWord("2DROP")
