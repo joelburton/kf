@@ -161,7 +161,7 @@ class wCompilingFuncTest : EvalForthTestCase() {
         assertDStack(20)
         assertRStack()
 
-        eval(": do_ immediate postpone do_ ;")
+        eval(": do_ immediate postpone do ;")
         eval(": test 3 0 do_ 10 loop ; test")
         assertDStack(10, 10, 10)
     }

@@ -53,9 +53,9 @@ object wLoops: IWordClass {
 
     fun w_plusLoop(vm: ForthVM) {
         val numExits = vm.rstk.pop()
-        vm.appendJump("(loop)", vm.rstk.popFrom(numExits) - vm.cend - 1)
+        vm.appendJump("(loop)", vm.dstk.popFrom(numExits) - vm.cend - 1)
         for (i in numExits downTo 1) {
-            val bwRef = vm.rstk.pop()
+            val bwRef = vm.dstk.pop()
             vm.mem[bwRef] = vm.cend - bwRef
         }    }
 
@@ -78,7 +78,7 @@ object wLoops: IWordClass {
      * */
 
     fun w_begin(vm: ForthVM) {
-        vm.rstk.push(vm.cend)
+        vm.dstk.push(vm.cend)
     }
 
 
@@ -90,7 +90,7 @@ object wLoops: IWordClass {
      * */
 
     fun w_until(vm: ForthVM) {
-        val bwref = vm.rstk.pop()
+        val bwref = vm.dstk.pop()
         vm.appendJump("0branch", bwref - vm.cend - 1)
     }
 
@@ -104,7 +104,7 @@ object wLoops: IWordClass {
 
     private fun w_while(vm: ForthVM) {
         vm.appendJump("0branch", 0xffff)
-        vm.rstk.push(vm.cend) // location of while
+        vm.dstk.push(vm.cend) // location of while
     }
 
     /** BEGIN .a. WHILE .b. REPEAT
@@ -115,9 +115,9 @@ object wLoops: IWordClass {
      *
      */
     private fun w_repeat(vm: ForthVM) {
-        val whileRef = vm.rstk.pop()
+        val whileRef = vm.dstk.pop()
         vm.mem[whileRef - 1] = (vm.cend - whileRef) + 3 // failing while goes past me
-        val bwref = vm.rstk.pop()
+        val bwref = vm.dstk.pop()
         vm.appendJump("branch", (bwref - vm.cend) - 1)
     }
 
@@ -138,8 +138,8 @@ object wLoops: IWordClass {
 
     fun w_do(vm: ForthVM) {
         vm.appendWord("(do)")
-        vm.rstk.push(vm.cend) // start of do loop, so end can come back to us
-        vm.rstk.push(0)  // how many forward refs we'll need to fix (LEAVE)L
+        vm.dstk.push(vm.cend) // start of do loop, so end can come back to us
+        vm.dstk.push(0)  // how many forward refs we'll need to fix (LEAVE)L
     }
 
     /** This is the runtime part --- move the limit/start vars to the Lstack */
@@ -161,8 +161,8 @@ object wLoops: IWordClass {
         vm.appendWord("R>")
         vm.appendWord("2drop")
         vm.appendJump("branch", 0xffff)
-        val count = vm.rstk.pop()
-        vm.rstk.push(vm.cend - 1, count + 1)
+        val count = vm.dstk.pop()
+        vm.dstk.push(vm.cend - 1, count + 1)
     }
 
     /** The LOOP part has both immediate and runtime parts.
@@ -173,10 +173,10 @@ object wLoops: IWordClass {
 
     /**  loop */
     fun w_loop(vm: ForthVM) {
-        val numExits = vm.rstk.pop()
-        vm.appendJump("(loop)", vm.rstk.popFrom(numExits) - vm.cend - 1)
+        val numExits = vm.dstk.pop()
+        vm.appendJump("(loop)", vm.dstk.popFrom(numExits) - vm.cend - 1)
         for (i in numExits downTo 1) {
-            val bwRef = vm.rstk.pop()
+            val bwRef = vm.dstk.pop()
             vm.mem[bwRef] = vm.cend - bwRef
         }
     }
