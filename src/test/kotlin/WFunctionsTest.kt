@@ -3,7 +3,7 @@ import kf.words.custom.wFunctionsCustom
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 
-class WFunctionsTest: ForthTestCase() {
+class WFunctionsTest: EvalForthTestCase() {
     val mod = kf.words.core.wFunctions
     var w: Word
 

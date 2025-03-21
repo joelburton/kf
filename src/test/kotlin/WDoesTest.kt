@@ -3,7 +3,7 @@ import kf.words.custom.wCreateCustom
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 
-class WDoesTest : ForthTestCase() {
+class WDoesTest : EvalForthTestCase() {
     val mod = kf.words.core.wCreate
 
     @Test

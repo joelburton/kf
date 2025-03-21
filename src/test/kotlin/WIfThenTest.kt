@@ -1,6 +1,6 @@
 import org.junit.jupiter.api.Test
 
-class WIfThenTest : ForthTestCase() {
+class WIfThenTest : EvalForthTestCase() {
     var mod = kf.words.core.wIfThen
 
     @Test

@@ -3,7 +3,7 @@ import kf.strFromCSAddr
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
 
-class FScannerTest : ForthTestCase() {
+class FScannerTestEval : EvalForthTestCase() {
 
     @Test
     fun reset() {

@@ -1,6 +1,6 @@
 import org.junit.jupiter.api.Test
 
-class WMathTest : ForthTestCase() {
+class WMathTest : EvalForthTestCase() {
     val mod = kf.words.core.wMath
 
 

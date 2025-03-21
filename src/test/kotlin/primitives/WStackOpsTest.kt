@@ -1,10 +1,10 @@
 package primitives
 
-import ForthTestCase
+import EvalForthTestCase
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 
-class WStackOpsTest : ForthTestCase() {
+class WStackOpsTest : EvalForthTestCase() {
     val mod = kf.words.core.wStackOps
     val ext = kf.words.core.ext.wStackOpsExt
     val rstack = kf.words.core.wRStack

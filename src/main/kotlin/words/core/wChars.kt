@@ -1,34 +1,30 @@
 package kf.words.core
 
+import kf.CharLitError
 import kf.ForthVM
+import kf.ForthVM.Companion.CHAR_SIZE
 import kf.IWordClass
-import kf.ParseError
 import kf.Word
 import kf.strFromAddrLen
 
 object wChars: IWordClass {
-    override val name = "Chars"
-    override val description = "Words dealing with characters & char memory"
+    override val name = "kf.words.core.wChars"
+    override val description = "Characters & char memory"
 
     override val words
         get() = arrayOf(
             Word("C!", ::w_cStore),
             Word("C,", ::w_cComma),
             Word("C@", ::w_cFetch),
+
+            Word("CHAR", ::w_char),
+            Word("[CHAR]", ::w_bracketChar, imm = true, compO = true),
+
             Word("CHAR+", ::w_charPlus),
             Word("CHARS", ::w_chars),
-            Word("[CHAR]", ::w_bracketChar, imm = true, compO = true),
-            Word("CHAR", ::w_char),
         )
 
-    /** C!   c-store     CORE
-     *
-     * ( char c-addr -- )
-     *
-     * Store char at c-addr. When character size is smaller than cell size,
-     * only the number of low-order bits corresponding to character size are
-     * transferred.
-     */
+    /** `C!` `( char c-addr -- )` Store char at c-addr */
 
     fun w_cStore(vm: ForthVM) {
         val addr = vm.dstk.pop()
@@ -36,94 +32,59 @@ object wChars: IWordClass {
         vm.mem[addr] = char
     }
 
-    /** C,  c-comma   CORE
-     *
-     * ( char -- )
-     *
-     * Reserve space for one character in the data space and store char in the
-     * space. If the data-space pointer is character aligned when C, begins
-     * execution, it will remain character aligned when C, finishes execution.
-     * An ambiguous condition exists if the data-space pointer is not
-     * character-aligned prior to execution of C,.
-     */
+    /** `C,` `( char -- )` Store  char at next available space in DATA */
 
     fun w_cComma(vm: ForthVM) {
         val char = vm.dstk.pop()
         vm.mem[vm.dend++] = char
     }
 
-    /** C@   c-fetch     CORE
-     *
-     * ( c-addr -- char )
-     *
-     * Fetch the character stored at c-addr. When the cell size is greater than
-     * character size, the unused high-order bits are all zeroes.
-     */
+    /** `C@` `( c-addr -- char )` Fetch char stored at c-addr */
 
     fun w_cFetch(vm: ForthVM) {
         val addr = vm.dstk.pop()
         vm.dstk.push(vm.mem[addr])
     }
 
-    /** CHAR+    char-plus   CORE
-     *
-     * ( c-addr1 -- c-addr2 )
-     *
-     * Add the size in address units of a character to c-addr1, giving c-addr2.
-     */
+    /** `CHAR` `( "<spaces>name" -- char )` Push first letter of name */
 
-    fun w_charPlus(vm: ForthVM) {
-        val addr1 = vm.dstk.pop()
-        vm.dstk.push(addr1 + 1)
+    fun w_char(vm: ForthVM) {
+        val token =  vm.interp.scanner.parseName().strFromAddrLen(vm)
+        if (token.isEmpty()) throw CharLitError("Empty")
+        vm.dstk.push(token[0].code)
     }
 
-    /** CHARS    chars   CORE
+
+    /** ```[CHAR]``` IM CO
      *
-     * ( n1 -- n2 )
+     * Compilation: ( "<spaces>name" -- )
      *
-     * n2 is the size in address units of n1 characters.
+     *   Skip leading space delimiters. Parse name delimited by a space. Append
+     *   the run-time semantics given below to the current definition.
+     *
+     * Run-time: ( -- char )
+     *
+     *   Place char, the value of the first character of name, on the stack.
      */
 
-    fun w_chars(vm: ForthVM) {
-        val n1 = vm.dstk.pop()
-        vm.dstk.push(n1 * 1)
-    }
-
-    /** ```[CHAR]```     bracket-char    CORE
-     *
-     * Interpretation:
-     * Interpretation semantics for this word are undefined.
-     *
-     * Compilation:
-     * ( "<spaces>name" -- )
-     * Skip leading space delimiters. Parse name delimited by a space. Append
-     * the run-time semantics given below to the current definition.
-     *
-     * Run-time:
-     * ( -- char )
-     * Place char, the value of the first character of name, on the stack.
-     */
-
-    private fun w_bracketChar(vm: ForthVM) {
+    fun w_bracketChar(vm: ForthVM) {
         val token = vm.interp.scanner.parseName().strFromAddrLen(vm)
-        if (token.length != 1)
-            throw ParseError("Char literal must be one character")
+        if (token.isEmpty()) throw CharLitError("Empty")
         vm.appendLit(token[0].code)
     }
 
-    /** CHAR     char    CORE
-     *
-     * ( "<spaces>name" -- char )
-     *
-     * Skip leading space delimiters. Parse name delimited by a space. Put the
-     * value of its first character onto the stack.
-     */
+    /** `CHAR+` `( c-addr1 -- c-addr2 )` Add size of a char to c-addr1 */
 
-    private fun w_char(vm: ForthVM) {
-        val token =  vm.interp.scanner.parseName().strFromAddrLen(vm)
-        if (token.length != 1)
-            throw ParseError("Char literal must be one character")
-        vm.dstk.push(token[0].code)
+    fun w_charPlus(vm: ForthVM) {
+        val addr1 = vm.dstk.pop()
+        vm.dstk.push(addr1 + CHAR_SIZE)
+    }
+
+    /** `CHARS` ( n1 -- n2 ) n2 is the size in address units of n1 chars */
+
+    fun w_chars(vm: ForthVM) {
+        val n1 = vm.dstk.pop()
+        vm.dstk.push(n1 * CHAR_SIZE)
     }
 
 }

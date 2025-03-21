@@ -5,7 +5,7 @@ import kf.IWordClass
 import kf.Word
 
 object wComments: IWordClass {
-    override val name = "Comments"
+    override val name = "kf.words.core.wComments"
     override val description = "Comments"
 
     override val words

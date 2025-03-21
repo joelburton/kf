@@ -5,7 +5,7 @@ import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
 import kotlin.test.assertFailsWith
 
-class WMachineTest : ForthTestCase() {
+class WMachineTest : EvalForthTestCase() {
     val mod = kf.words.machine.wMachine
 
     @Test

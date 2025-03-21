@@ -2,7 +2,10 @@ package kf
 
 
 import com.github.ajalt.mordant.rendering.TextColors.gray
-import com.github.ajalt.mordant.terminal.*
+import com.github.ajalt.mordant.terminal.StandardTerminalInterface
+import com.github.ajalt.mordant.terminal.Terminal
+import com.github.ajalt.mordant.terminal.danger
+import com.github.ajalt.mordant.terminal.info
 import kf.interps.IInterp
 import kf.words.core.ext.mCoreExt
 import kf.words.core.mCore
@@ -303,7 +306,6 @@ class ForthVM(
         }
     }
 
-
     companion object {
         const val REG_BASE = 0
         const val REG_VERBOSITY = 1
@@ -316,5 +318,7 @@ class ForthVM(
         const val MAX_INT: Int = 0x7fffffff
         const val TRUE: Int = -1
         const val FALSE: Int = 0
+
+        const val CHAR_SIZE: Int = 1
     }
 }

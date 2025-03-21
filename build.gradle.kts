@@ -2,7 +2,7 @@ group = "kf"
 version = "1.0-SNAPSHOT"
 
 plugins {
-    kotlin("jvm") version "2.1.10"
+    kotlin("jvm") version "2.1.20"
 //    id("org.jetbrains.dokka") version "2.0.0"
     id("io.ktor.plugin") version "3.1.1"
 }

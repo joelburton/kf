@@ -6,7 +6,7 @@ import com.github.ajalt.mordant.terminal.warning
 typealias StaticFunc = (ForthVM) -> Unit
 
 fun w_notImpl(vm: ForthVM) {
-    throw WordNotImplemented("Not implemented")
+        throw WordNotImplemented("Not implemented")
 }
 
 class Word(

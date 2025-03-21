@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test
 import kotlin.test.assertFailsWith
 
 
-class WCompilingTest : ForthTestCase() {
+class WCompilingTest : EvalForthTestCase() {
     val mod = wCompiling
 
     @Test

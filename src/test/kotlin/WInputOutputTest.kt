@@ -2,7 +2,7 @@ import kf.ForthVM
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 
-class WInputOutputTest : ForthTestCase() {
+class WInputOutputTest : EvalForthTestCase() {
     val mod = kf.words.core.wIO
 
     @Test

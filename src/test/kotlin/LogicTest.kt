@@ -2,7 +2,7 @@ import kf.ForthVM.Companion.FALSE
 import kf.ForthVM.Companion.TRUE
 import org.junit.jupiter.api.Test
 
-class WLogicTest : ForthTestCase() {
+class WLogicTest : EvalForthTestCase() {
     val mod = kf.words.core.wLogic
     val ext = kf.words.core.ext.wLogicExt
     val custom = kf.words.custom.wLogicCustom

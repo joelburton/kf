@@ -1,10 +1,10 @@
 package primitives
 
-import ForthTestCase
+import EvalForthTestCase
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 
-class WInternalsTest : ForthTestCase() {
+class WInternalsTest : EvalForthTestCase() {
     val mod = kf.words.custom.wToolsCustom
 
     @Test

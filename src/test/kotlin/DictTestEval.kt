@@ -16,7 +16,7 @@ object FakeMod: IWordClass {
 }
 
 
-class DictTest  : ForthTestCase() {
+class DictTestEval  : EvalForthTestCase() {
     val dict: Dict = Dict(ForthVM(), capacity = 3)
 
     @Test

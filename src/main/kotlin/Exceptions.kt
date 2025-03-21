@@ -10,6 +10,9 @@ sealed class ForthError(m: String) : RuntimeException(m)
 /**  Might be an invalid number or missing word. */
 class ParseError(m: String) : ForthError("Parse error: $m")
 
+/** Invalid char. */
+class CharLitError(m: String) : ForthError(m)
+
 /** Using compile-only word in interpreter, etc. */
 class InvalidState(m: String) : ForthError("Invalid state: $m")
 

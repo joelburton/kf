@@ -1,6 +1,6 @@
 package primitives
 
-import ForthTestCase
+import EvalForthTestCase
 import kotlinx.datetime.Instant
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
@@ -11,7 +11,7 @@ fun Int.approxEquals(other: Int, tolerance: Double = 0.5): Boolean {
     return abs(this - other) < tolerance
 }
 
-class WMiscTest : ForthTestCase() {
+class WMiscTest : EvalForthTestCase() {
     val mod = kf.words.facility.wFacilityExt
     val custom = kf.words.custom.wTimeCustom
 
