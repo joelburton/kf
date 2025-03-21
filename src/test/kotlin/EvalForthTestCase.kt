@@ -15,6 +15,7 @@ import kf.words.core.ext.wInterpExt
 import kf.words.core.ext.wParseExt
 import kf.words.core.wCompiling
 import kf.words.machine.wMachine
+import org.junit.jupiter.api.BeforeEach
 import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
 
@@ -76,6 +77,11 @@ open class EvalForthTestCase : ForthTestCase() {
     init {
         vm.interp = InterpFast(vm)
         vm.verbosity = -2
+    }
+
+    @BeforeEach
+    fun beforeEach() {
+        vm.reboot(true)
     }
 
     fun evalx(s: String): String {

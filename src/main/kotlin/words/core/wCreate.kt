@@ -14,19 +14,15 @@ object wCreate: IWordClass {
         get() = arrayOf(
             Word("CREATE", ::w_create),
             Word("DOES>", ::w_doesAngle, imm = true, compO = true),
-            Word("DOES", ::w_does),
-            Word("ALLOT", ::w_allot),
+            Word("(DOES)", ::w_parenDoes),
         )
 
-    /**
-     * CREATE
-     * CORE
-     * ( "<spaces>name" -- )
-     * Skip leading space delimiters. Parse name delimited by a space. Create a definition for name with the execution semantics defined below. If the data-space pointer is not aligned, reserve enough data space to align it. The new data-space pointer defines name's data field. CREATE does not allocate data space in name's data field.
+    /** `CREATE`
      *
-     * name Execution:
-     * ( -- a-addr )
-     * a-addr is the address of name's data field. The execution semantics of name may be extended by using DOES>.
+     * Compilation: ( C: "<spaces>name" -- )
+     *  Create name. Do not allocate any data, but assign dpos to DATA.
+     *
+     * Execution of name: ( -- a-addr ) Get address of DATA for word.
      */
 
     fun w_create(vm: ForthVM) {
@@ -35,18 +31,11 @@ object wCreate: IWordClass {
             name,
             cpos = Word.NO_ADDR,
             dpos = vm.dend,
-            fn = ::w_addr)
+            fn = vm.dict["ADDR"].fn)
         vm.dict.add(w)
     }
 
-
-    /**  ( n -- ) Get n spaces in data section. */
-    fun w_allot(vm: ForthVM) {
-        val d = vm.dstk.pop()
-        vm.dend += d
-    }
-
-    /**  does> : inside of compilation, adds "does" + "ret"
+    /** `DOES>` IM CO ( -- ) Append DOES/EXIT to current definition.
      *
      * Example:
      *
@@ -55,26 +44,24 @@ object wCreate: IWordClass {
      *  then:
      *      life   => 42
      *
-     *  `does>` modifies the definition of `const`` at the time of compiling it.
+     *  `DOES` modifies the definition of `const`` at the time of compiling it.
      *
      * */
 
     fun w_doesAngle(vm: ForthVM) {
-        vm.appendWord("does")
+        vm.appendWord("(DOES)")
 
         // don't append a ;s -- it's the same thing -- but the decompiler
         // stops printing a word def at that, and it's helpful to see the
         // "does part" for a word.
-        vm.appendWord("exit")
+        vm.appendWord("EXIT")
     }
 
-    /**  does: change most recent word from data to call-fn-with-data-num */
+    /** `(DOES)` ( -- ) Change most-recent-word to call-fn-with-data-num */
 
-    fun w_does(vm: ForthVM) {
+    fun w_parenDoes(vm: ForthVM) {
         val w: Word = vm.dict.last
-        w.fn = vm.dict["addrcall"].fn
+        w.fn = vm.dict["ADDRCALL"].fn
         w.cpos = vm.ip + 1
     }
-
-
 }

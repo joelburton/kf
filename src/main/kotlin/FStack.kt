@@ -1,5 +1,8 @@
 package kf
 
+import kotlin.math.absoluteValue
+
+
 class StackOverflowError(name: String) :
     ForthError("${name}: Stack overflow")
 
@@ -60,6 +63,52 @@ class FStack(
     fun push(vararg vs: Int) {
         if (sp - vs.size <= startAt) throw StackOverflowError(name)
         for (v in vs) vm.mem[--sp] = v
+    }
+
+    /** Push double num in two parts (first lo, then high) */
+    fun dblPush(n: Long) {
+        if (n > ForthVM.MAX_INT) throw NumOutOfRange(n)
+        push(n.toInt(), 0)
+
+    // more to figure out, but holding onto this as a start:
+
+        //        if (n >= 0) {
+        //            val hi = (n ushr 32).toInt()
+        //            val lo = (n and 0xFFFF_FFFF).toInt()
+        //            push(lo, hi)
+        //            println("POS $lo,$hi")
+        //        } else {
+        //            val na = n.absoluteValue
+        //            val hi = -(na ushr 32).toInt() - 1
+        //            val lo = -(na and 0xFFFF_FFFF).toInt()
+        //            push(lo, hi)
+        //            println("NEG $lo,$hi")
+        //        }
+
+
+    }
+
+    /** Pop double num in two parts (high first, then lo) */
+    fun dblPop(): Long {
+        val hi = pop()
+        if (hi != 0 && hi != -1) throw NumOutOfRange(hi.toLong())
+
+        val lo = pop()
+        return lo.toLong()
+
+        // see above:
+        //
+        //        val hi = pop()
+        //        val lo = pop()
+        //        if (hi >= 0) {
+        //            assert(lo >= 0)
+        //            return (hi.toLong() shl 32) or (lo.toLong() and 0xFFFF_FFFF)
+        //        } else {
+        //            return (
+        //                    (hi.toLong().inv() shl 32)
+        //                            or (lo.toLong().inv() and 0xFFFF_FFFF)
+        //                        .inv())
+        //        }
     }
 
     /** Remove & return top item. */

@@ -82,11 +82,6 @@ class wCompilingTest : ForthTestCase() {
 
 class wCompilingFuncTest : EvalForthTestCase() {
 
-    @BeforeEach
-    fun beforeEach() {
-        vm.reboot(true)
-    }
-
     @Test
     fun canDefineWords() {
         eval(": test 123 ;")
@@ -156,6 +151,8 @@ class wCompilingFuncTest : EvalForthTestCase() {
         assertDStack(12)
         assertTrue(recorder.output().isEmpty())
 
+        // trying some plain aliasing of complex words to shake out bugs
+
         eval(": iff immediate postpone if ;")
         eval(": test 10 iff 20 then ; test")
         assertDStack(20)
@@ -164,5 +161,6 @@ class wCompilingFuncTest : EvalForthTestCase() {
         eval(": do_ immediate postpone do ;")
         eval(": test 3 0 do_ 10 loop ; test")
         assertDStack(10, 10, 10)
+        assertRStack()
     }
 }

@@ -1,29 +1,13 @@
 //import kf.Word
-//import kf.words.custom.wCreateCustom
 //import org.junit.jupiter.api.Assertions.assertEquals
 //import org.junit.jupiter.api.Test
 //
 //class WDoesTest : EvalForthTestCase() {
-//    override val mod = kf.words.core.wCreate
+//    val mod = kf.words.core.wCreate
 //
-//    @Test
-//    fun w_doesAngle() {
-//        mod.w_doesAngle(vm)
-//        assertEquals(vm.dict["does"].wn, vm.mem[vm.cend - 2])
-//        assertEquals(vm.dict[";s"].wn, vm.mem[vm.cend - 1])
+//    init {
+//        vm.dict.addModule(kf.words.custom.wCreateCustom)
 //    }
-//
-//    @Test
-//    fun w_does() {
-//        val w = Word("foo", vm.dict["addrcall"].fn)
-//        vm.dict.add(w)
-//        vm.currentWord = w
-//        vm.ip = 0x100
-//        mod.w_does(vm)
-//        assertEquals(vm.dict["addrcall"].fn, w.fn)
-//        assertEquals(0x101, w.cpos)
-//    }
-//
 //
 //    @Test
 //    fun w_addr() {
@@ -49,21 +33,4 @@
 //        assertDStack(42)
 //    }
 //
-//    @Test
-//    fun w_create() {
-//        eval("create foo")
-//        assertEquals(vm.dend, vm.dict["foo"].dpos)
-//    }
-//
-//    @Test
-//    fun integrationTestConstant() {
-//        eval(": const create , does> @ ; 42 const life life")
-//        assertDStack(42)
-//    }
-//
-//    @Test
-//    fun integrationTestVariable() {
-//        eval(": variable create , ; 42 variable life life @")
-//        assertDStack(42)
-//    }
 //}

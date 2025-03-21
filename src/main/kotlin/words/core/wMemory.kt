@@ -23,6 +23,7 @@ object wMemory : IWordClass {
             Word("HERE", ::w_here),
             Word("ALIGN", ::w_align),
             Word("ALIGNED", ::w_aligned),
+            Word("ALLOT", ::w_allot),
         )
 
     /** !    store   CORE
@@ -203,4 +204,11 @@ object wMemory : IWordClass {
     fun w_aligned(vm: ForthVM) {
         /* always aligned */
     }
+
+    /**  ( n -- ) Get n spaces in data section. */
+    fun w_allot(vm: ForthVM) {
+        val d = vm.dstk.pop()
+        vm.dend += d
+    }
+
 }
