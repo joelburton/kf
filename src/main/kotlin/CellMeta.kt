@@ -14,10 +14,10 @@ enum class CellMeta {
     StringLen,
     NumLit;
 
-    fun getExplanation(vm: ForthVM, v: Int): String {
+    fun getExplanation(vm: ForthVM, v: Int, k: Int): String {
         return when (this) {
             WordNum -> vm.dict[v].name
-            JumpLoc -> "  --> ${v.addr}"
+            JumpLoc -> "  --> $v to ${(k + v).addr}"
             Unknown, NumLit -> "$v ${v.hex} ${v.charRepr}"
             StringLen -> "$v (string length)"
             CharLit -> v.charRepr

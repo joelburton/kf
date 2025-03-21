@@ -53,7 +53,7 @@ object wToolsCustom : IWordClass {
 
     private fun _dump(vm: ForthVM, k: Int, simple: Boolean) {
         val v: Int = vm.mem[k]
-        val exp = vm.cellMeta[k].getExplanation(vm, v)
+        val exp = vm.cellMeta[k].getExplanation(vm, v, k)
             .apply { padEnd(20 - length) }
         val name = vm.dict.getByMem(k)?.let { "[word: ${it.name}]" } ?: ""
         vm.io.println(

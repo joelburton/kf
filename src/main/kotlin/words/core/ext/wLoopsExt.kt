@@ -44,8 +44,8 @@ object wLoopsExt : IWordClass {
      * */
 
     fun w_again(vm: ForthVM) {
-        val bwref = vm.dstk.pop()
-        vm.appendJump("branch", bwref)
+        val bwref = vm.rstk.pop()
+        vm.appendJump("branch", bwref - vm.cend - 1)
     }
 
     /**  until
