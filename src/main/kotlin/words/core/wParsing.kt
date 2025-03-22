@@ -9,7 +9,7 @@ import kf.strFromAddrLen
 import kf.toForthInt
 
 object wParsing : IWordClass {
-    override val name = "Parsing"
+    override val name = "kf.words.core.wParsing"
     override val description = "Parsing buffers"
 
     override val words
@@ -77,6 +77,9 @@ object wParsing : IWordClass {
      */
 
     fun w_toNumber(vm: ForthVM) {
+        // This implementation is limited --- it throws an error on failure,
+        // rather than returning addr-of-string and len-of-unconverted.
+
         val len = vm.dstk.pop()
         val addr = vm.dstk.pop()
         vm.dstk.dblPop()  // we don't actually use these

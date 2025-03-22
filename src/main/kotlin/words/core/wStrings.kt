@@ -1,13 +1,12 @@
 package kf.words.core
 
-import kf.CellMeta
 import kf.ForthVM
 import kf.IWordClass
 import kf.Word
 import kf.strFromAddrLen
 
-object wStrings: IWordClass {
-    override val name = "Strings"
+object wStrings : IWordClass {
+    override val name = "kf.words.core.wStrings"
     override val description = "Strings"
 
     override val words
@@ -18,90 +17,40 @@ object wStrings: IWordClass {
             Word("TYPE", ::w_type),
         )
 
-    /** COUNT    CORE
-     *
-     * ( c-addr1 -- c-addr2 u )
-     *
-     * Return the character string specification for the counted string stored
-     * at c-addr1. c-addr2 is the address of the first character after c-addr1.
-     * u is the contents of the character at c-addr1, which is the length in
-     * characters of the string at c-addr2.
-     */
+    /** `COUNT` ( c-addr1 -- c-addr2 u ) First char, length of counted str */
 
     fun w_count(vm: ForthVM) {
         val addr = vm.dstk.pop()
         vm.dstk.push(addr + 1, vm.mem[addr])
     }
 
-    /** ."   dot-quote   CORE
-     *
-     * Interpretation:
-     * Interpretation semantics for this word are undefined.
-     *
-     * Compilation:
-     * ( "ccc<quote>" -- )
-     * Parse ccc delimited by " (double-quote). Append the run-time semantics
-     * given below to the current definition.
-     *
-     * Run-time:
-     * ( -- )
-     * Display ccc.
-     */
+    /** `."` ( -- ) Display string */
 
-    private fun w_dotQuote(vm: ForthVM) {
+     fun w_dotQuote(vm: ForthVM) {
+        val s = vm.scanner.parse('"').strFromAddrLen(vm)
+
         if (vm.interp.isInterpreting) {
-            val s = vm.scanner.parse('"').strFromAddrLen(vm)
             vm.io.print(s)
         } else {
-            val (addr, len) = vm.scanner.parse('"')
-            vm.appendWord("lit-string")
-            vm.appendCode(len, CellMeta.StringLen)
-            for (i in 0 until len) {
-                vm.appendCode(vm.mem[addr + i], CellMeta.CharLit)
-            }
-            vm.appendWord("type")
+            vm.appendStr(s)
+            vm.appendWord("TYPE")
         }
     }
 
-    /** S"   s-quote     CORE
-     *
-     * Interpretation:
-     * Interpretation semantics for this word are undefined.
-     *
-     * Compilation:
-     * ( "ccc<quote>" -- )
-     * Parse ccc delimited by " (double-quote). Append the run-time semantics
-     * given below to the current definition.
-     *
-     * Run-time:
-     * ( -- c-addr u )
-     * Return c-addr and u describing a string consisting of the characters
-     * ccc. A program shall not alter the returned string.
-     */
+    /** `S"` ( -- c-addr u ) Get address and length of string */
 
     fun w_sQuote(vm: ForthVM) {
-        if (vm.interp.isInterpreting) {
             val s = vm.scanner.parse('"').strFromAddrLen(vm)
+
+        if (vm.interp.isInterpreting) {
             val strAddr: Int = vm.appendStrToData(s)
-            vm.dstk.push(strAddr)
-            vm.dstk.push(s.length)
+            vm.dstk.push(strAddr, s.length)
         } else {
-            val (addr, len) = vm.scanner.parse('"')
-            vm.appendWord("lit-string")
-            vm.appendCode(len, CellMeta.StringLen)
-            for (i in 0 until len) {
-                vm.appendCode(vm.mem[addr + i], CellMeta.CharLit)
-            }
+            vm.appendStr(s)
         }
     }
 
-    /**
-     * TYPE
-     * CORE
-     * ( c-addr u -- )
-     * If u is greater than zero, display the character string specified by
-     * c-addr and u.
-     */
+    /** `TYPE` ( c-addr u -- ) Display string */
 
     fun w_type(vm: ForthVM) {
         val len = vm.dstk.pop()
@@ -111,9 +60,4 @@ object wStrings: IWordClass {
             .joinToString("")
         vm.io.print(output)
     }
-
-
-
-
-
 }

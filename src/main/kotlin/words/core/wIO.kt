@@ -4,17 +4,7 @@ import com.github.ajalt.mordant.input.KeyboardEvent
 import com.github.ajalt.mordant.input.enterRawModeOrNull
 import com.github.ajalt.mordant.rendering.TextColors.yellow
 import com.github.ajalt.mordant.terminal.prompt
-import kf.ForthBufferError
-import kf.ForthError
-import kf.ForthIOError
-import kf.ForthVM
-import kf.IWordClass
-import kf.IntEOF
-import kf.TerminalFileInterface
-import kf.TerminalTestInterface
-import kf.Word
-import kf.w_notImpl
-import kotlin.use
+import kf.*
 
 object wIO : IWordClass {
     override val name = "IO"

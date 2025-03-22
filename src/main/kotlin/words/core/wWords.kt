@@ -8,64 +8,46 @@ import kf.strFromAddrLen
 import kf.strFromCSAddr
 
 object wWords : IWordClass {
-    override val name = "Words"
+    override val name = "kf.words.core.wWords"
     override val description = "Acting on words"
 
     override val words
         get() = arrayOf(
+            Word("[']", ::w_bracketTick, imm = true, compO = true),
             Word("'", ::w_tick),
             Word("FIND", ::w_find),
             Word(">BODY", ::w_toBody),
-            Word("[']", ::w_bracketTick, imm = true, compO = true),
         )
 
     /**
-     * [']   CORE
-     *
-     * Interpretation:
-     * Interpretation semantics for this word are undefined.
+     * `[']` ( -- xt ) Get xt of word
      *
      * Compilation:
      *      ( "<spaces>name" -- )
-     * Skip leading space delimiters. Parse name delimited by a space. Find
-     * name. Append the run-time semantics given below to the current definition.
      *
-     * An ambiguous condition exists if name is not found.
-     *
-     * Run-time:
-     *      ( -- xt )
+     * Run-time: ( -- xt )
      * Place name's execution token xt on the stack. The execution token
      * returned by the compiled phrase "['] X" is the same value returned by
      * "' X" outside of compilation state.
      */
 
     fun w_bracketTick(vm: ForthVM) {
-        val token =  vm.scanner.parseName().strFromAddrLen(vm)
+        val token = vm.scanner.parseName().strFromAddrLen(vm)
         if (D) vm.dbg(3, "w_bracketTick: token='$token'")
         val wn: Int = vm.dict.getNum(token)
         vm.appendLit(wn)
     }
 
-    /** ' CORE
-     *
-     *      ( "<spaces>name" -- xt )
-     *
-     * Skip leading space delimiters. Parse name delimited by a space. Find
-     * name and return xt, the execution token for name. An ambiguous condition
-     * exists if name is not found. When interpreting, ' xyz EXECUTE is
-     * equivalent to xyz.
-     */
+    /** `'` ( "<spaces>name" -- xt ) Get xt of word */
 
     fun w_tick(vm: ForthVM) {
-        val token =  vm.scanner.parseName().strFromAddrLen(vm)
+        val token = vm.scanner.parseName().strFromAddrLen(vm)
         val wn = vm.dict.getNum(token)
         vm.dstk.push(wn)
     }
 
     /**
-     * FIND
-     *
-     * ( c-addr -- c-addr 0 | xt 1 | xt -1 )
+     * `FIND` ( c-addr -- c-addr 0 | xt 1 | xt -1 ) Find definition
      *
      * Find the definition named in the counted string at c-addr. If the
      * definition is not found, return c-addr and zero. If the definition is
@@ -75,11 +57,13 @@ object wWords : IWordClass {
      * returned while not compiling.
      */
 
-    private fun w_find(vm: ForthVM) {
-        val addr: Int = vm.dstk.pop()
+    fun w_find(vm: ForthVM) {
+        val addr = vm.dstk.pop()
         val token = addr.strFromCSAddr(vm)
         if (D) vm.dbg(3, "w_find: token='$token'")
+
         val w = vm.dict.getSafe(token)
+
         if (w == null) {
             if (D) vm.dbg(3, "w_find: not found")
             vm.dstk.push(addr, 0)
@@ -92,14 +76,7 @@ object wWords : IWordClass {
         }
     }
 
-    /**
-     * >BODY    CORE
-     *
-     * ( xt -- a-addr )
-     *
-     * a-addr is the data-field address corresponding to xt. An ambiguous
-     * condition exists if xt is not for a word defined via CREATE.
-     */
+    /** `>BODY` ( xt -- a-addr ) Get data-field address corresponding to xt. */
 
     fun w_toBody(vm: ForthVM) {
         val w = vm.dict[vm.dstk.pop()]

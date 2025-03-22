@@ -134,7 +134,7 @@ object wMath : IWordClass {
         vm.dstk.push((n1 % n2), (n1 / n2))
     }
 
-    /** `* /MOD`   ( n1 n2 n3 -- n4 n5 ) n1 * n2 / n3 => remainder quotient */
+    /** `* /MOD` ( n1 n2 n3 -- n4 n5 ) n1 * n2 / n3 => remainder quotient */
 
     fun w_starSlashMod(vm: ForthVM) {
         val divBy = vm.dstk.pop()
