@@ -10,17 +10,17 @@ class wCommentsExtTest : ForthTestCase() {
 
     @Test
     fun w_backslashComment() {
-        vm.interp.scanner.fill("\\ test )")
+        vm.scanner.fill("\\ test )")
         mod.w_backslashComment(vm)
-        assertEquals(true, vm.interp.scanner.atEnd)
+        assertEquals(true, vm.scanner.atEnd)
 
-        vm.interp.scanner.fill("   \\ ( test )")
+        vm.scanner.fill("   \\ ( test )")
         mod.w_backslashComment(vm)
-        assertEquals(true, vm.interp.scanner.atEnd)
+        assertEquals(true, vm.scanner.atEnd)
 
-        vm.interp.scanner.fill("  foo  \\ ( test )")
-        vm.interp.scanner.parseName()
+        vm.scanner.fill("  foo  \\ ( test )")
+        vm.scanner.parseName()
         mod.w_backslashComment(vm)
-        assertEquals(true, vm.interp.scanner.atEnd)
+        assertEquals(true, vm.scanner.atEnd)
     }
 }

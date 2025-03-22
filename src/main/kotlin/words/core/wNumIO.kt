@@ -6,7 +6,7 @@ import kf.Word
 import kf.numToStr
 
 object wNumIO : IWordClass {
-    override val name = "IO"
+    override val name = "kf.words.core.IO"
     override val description = "General input and output"
 
     override val words
@@ -17,35 +17,19 @@ object wNumIO : IWordClass {
         )
 
 
-    /** DECIMAL  CORE
-     *
-     * ( -- )
-     *
-     * Set the numeric conversion radix to ten (decimal).
-     */
+    /** `DECIMAL` ( -- ) Set the numeric conversion radix to ten (decimal) */
 
     fun w_decimal(vm: ForthVM) {
         vm.base = 10
     }
 
-    /** BASE     CORE
-     *
-     * ( -- a-addr )
-     *
-     * a-addr is the address of a cell containing the current number-conversion
-     * radix {{2...36}}.
-     */
+    /** `BASE` ( -- a-addr ) a-addr is address of cell containing radix */
 
     fun w_base(vm: ForthVM) {
         vm.dstk.push(ForthVM.Companion.REG_BASE)
     }
 
-    /** .   dot     CORE
-     *
-     * ( n -- )
-     *
-     * Display n in free field format.
-     */
+    /** `.` ( n -- ) Display n in free field format */
 
     fun w_dot(vm: ForthVM) {
         vm.io.print("${vm.dstk.pop().numToStr(vm.base)} ")

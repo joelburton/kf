@@ -38,7 +38,7 @@ object wBload : IWordClass {
      * */
 
     fun w_includeBinary(vm: ForthVM) {
-        val path =  vm.interp.scanner.parseName().strFromAddrLen(vm)
+        val path =  vm.scanner.parseName().strFromAddrLen(vm)
         readPrimitiveClass(vm, path)
     }
 }

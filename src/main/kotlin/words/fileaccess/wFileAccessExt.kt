@@ -29,7 +29,7 @@ object wFileAccessExt: IWordClass {
     /**  `include` `( in:"file" -- : read Forth file in )` */
 
     fun w_include(vm: ForthVM) {
-        val path =  vm.interp.scanner.parseName().strFromAddrLen(vm)
+        val path =  vm.scanner.parseName().strFromAddrLen(vm)
 
         val prevIO: Terminal = vm.io
         val prevVerbosity: Int = vm.verbosity

@@ -7,7 +7,7 @@ import kf.strFromAddrLen
 import kf.words.custom.wCreateCustom.w_addr
 
 object wCreate: IWordClass {
-    override val name = "Create"
+    override val name = "kf.words.core.wCreate"
     override val description = "Data allocation and DOES"
 
     override val words
@@ -26,7 +26,7 @@ object wCreate: IWordClass {
      */
 
     fun w_create(vm: ForthVM) {
-        val name =  vm.interp.scanner.parseName().strFromAddrLen(vm)
+        val name =  vm.scanner.parseName().strFromAddrLen(vm)
         val w = Word(
             name,
             cpos = Word.NO_ADDR,

@@ -30,7 +30,7 @@ object wCompiling : IWordClass {
      */
 
     fun w_colon(vm: ForthVM) {
-        val name: String = vm.interp.scanner.parseName().strFromAddrLen(vm)
+        val name: String = vm.scanner.parseName().strFromAddrLen(vm)
 
         val newWord = Word(
             name,
@@ -101,7 +101,7 @@ object wCompiling : IWordClass {
      */
 
     fun w_postpone(vm: ForthVM) {
-        val token: String = vm.interp.scanner.parseName().strFromAddrLen(vm)
+        val token: String = vm.scanner.parseName().strFromAddrLen(vm)
         vm.appendWord("[compile]")
         vm.appendWord(token)
     }

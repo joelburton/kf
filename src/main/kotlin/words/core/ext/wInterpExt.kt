@@ -26,7 +26,7 @@ object wInterpExt: IWordClass {
      */
 
     fun w_parseName(vm: ForthVM) {
-        val (addr, len) = vm.interp.scanner.parseName()
+        val (addr, len) = vm.scanner.parseName()
         if (D) vm.dbg(2, "w_parseName: addr=$addr len=$len")
         vm.dstk.push(addr, len)
     }
@@ -55,7 +55,7 @@ object wInterpExt: IWordClass {
         if (input == null) {
             vm.dstk.push(0)
         } else {
-            vm.interp.scanner.fill(input)
+            vm.scanner.fill(input)
             vm.dstk.push(1)
         }
     }

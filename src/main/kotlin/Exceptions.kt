@@ -34,6 +34,12 @@ class BloadError(m: String) : ForthError("Bload error: $m")
 /** Number outside of our range (32-bit signed) */
 class NumOutOfRange(m: Long) : ForthError("Number out of range: $m")
 
+/** Buffer overruns, etc. */
+class ForthBufferError(m: String) : ForthError(m)
+
+/** Input/output problem */
+class ForthIOError(m: String) : ForthError(m)
+
 /** Base class of "interruptions".
  *
  * These are things that might stop the interpreter or quit the program.
@@ -96,3 +102,4 @@ class IntBye(m: String="Bye") : ForthInterrupt(m)
  * will actually shut the server down.
  */
 class IntServerShutDown(m: String="Shutdown") : ForthInterrupt(m)
+

@@ -4,8 +4,12 @@ import com.github.ajalt.mordant.input.KeyboardEvent
 import com.github.ajalt.mordant.input.enterRawModeOrNull
 import com.github.ajalt.mordant.rendering.TextColors.yellow
 import com.github.ajalt.mordant.terminal.prompt
+import kf.ForthBufferError
+import kf.ForthError
+import kf.ForthIOError
 import kf.ForthVM
 import kf.IWordClass
+import kf.IntEOF
 import kf.TerminalFileInterface
 import kf.TerminalTestInterface
 import kf.Word
@@ -22,119 +26,72 @@ object wIO : IWordClass {
             Word("SPACE", ::w_space),
             Word("SPACES", ::w_spaces),
             Word("EMIT", ::w_emit),
-            Word("ACCEPT", ::w_notImpl),
+            Word("ACCEPT", ::w_accept),
             Word("KEY", ::w_key),
             Word("BL", ::w_bl),
         )
 
-    /** cr   c-r     CORE
-     *
-     * ( -- )
-     *
-     * Cause subsequent output to appear at the beginning of the next line.
-     */
+    /** `CR` ( -- ) Cause subsequent output to be on next line */
 
     fun w_cr(vm: ForthVM) {
         vm.io.println()
     }
 
-    /** SPACE    CORE
-     *
-     * ( -- )
-     *
-     * Display one space.
-     */
+    /** `SPACE` ( -- ) Display one space */
 
     fun w_space(vm: ForthVM) {
         vm.io.print(" ")
     }
 
-    /** SPACES   CORE
-     *
-     * ( n -- )
-     *
-     * If n is greater than zero, display n spaces.
-     */
+    /** `SPACES` ( n -- ) Display n spaces */
 
     fun w_spaces(vm: ForthVM) {
-        val n = vm.dstk.pop()
-        repeat(n) { vm.io.print(" ") }
+        repeat(vm.dstk.pop()) { vm.io.print(" ") }
     }
 
-    /** EMIT     CORE
-     *
-     * ( x -- )
-     *
-     * If x is a graphic character in the implementation-defined character set
-     * , display x. The effect of EMIT for all other values of x is
-     * implementation-defined.
-     */
+    /** `EMIT` ( x -- ) Display character with value x */
 
     fun w_emit(vm: ForthVM) {
-        val c = vm.dstk.pop()
-        vm.io.print(c.toChar().toString())
+        vm.io.print(vm.dstk.pop().toChar())
     }
 
-    /** DECIMAL  CORE
-     *
-     * ( -- )
-     *
-     * Set the numeric conversion radix to ten (decimal).
-     */
+    /** `DECIMAL` ( -- ) Set the numeric conversion radix to ten (decimal) */
 
     fun w_decimal(vm: ForthVM) {
         vm.base = 10
     }
 
-    /** BASE     CORE
-     *
-     * ( -- a-addr )
-     *
-     * a-addr is the address of a cell containing the current number-conversion
-     * radix {{2...36}}.
-     */
+    /** BASE ( -- a-addr ) a-addr is the address of base */
 
     fun w_base(vm: ForthVM) {
         vm.dstk.push(ForthVM.Companion.REG_BASE)
     }
 
-    /** ACCEPT   CORE
-     *
-     * ( c-addr +n1 -- +n2 )
-     *
-     * Receive a string of at most +n1 characters. An ambiguous condition
-     * exists if +n1 is zero or greater than 32,767. Display graphic characters
-     * as they are received. A program that depends on the presence or absence
-     * of non-graphic characters in the string has an environmental dependency.
-     * The editing functions, if any, that the system performs in order to
-     * construct the string are implementation-defined.
-     *
-     * Input terminates when an implementation-defined line terminator is
-     * received. When input terminates, nothing is appended to the string, and
-     * the display is maintained in an implementation-defined way.
-     *
-     * +n2 is the length of the string stored at c-addr.
-     */
+    /** ACCEPT ( c-addr +n1 -- +n2 ) Get line to c-addr (n1 max len, n2 len) */
 
+    fun w_accept(vm: ForthVM) {
+        val maxLen = vm.dstk.pop()
+        val addr = vm.dstk.pop()
+        val s = vm.io.readLineOrNull(false)
 
-    /** KEY  CORE
-     *
-     * ( -- char )
-     *
-     *  Receive one character char, a member of the implementation-defined
-     *  character set. Keyboard events that do not correspond to such
-     *  characters are discarded until a valid character is received, and those
-     *  events are subsequently unavailable.
-     *
-     * All standard characters can be received. Characters received by KEY are
-     * not displayed.
-     */
+        if (s != null) {
+            if (s.length > maxLen)
+                throw ForthBufferError("Input exceeded max length: $maxLen")
+            for (i in s.indices) vm.mem[addr + i] = s[i].code
+            vm.dstk.push(s.length)
+        } else {
+            throw IntEOF("Accept failed")
+        }
+    }
+
+    /** KEY ( -- char ) Receive one character (not displayed) */
 
     fun w_key(vm: ForthVM) {
         // todo: much of this should probably move down into the IO layer
+
         val ti = vm.io.terminalInterface
         if (ti is TerminalFileInterface || ti is TerminalTestInterface)
-            throw RuntimeException("Cannot use `key` from file input")
+            throw ForthIOError("Cannot use `key` from file input")
 
         val rawMode = vm.io.enterRawModeOrNull()
         if (rawMode == null) {
@@ -165,6 +122,5 @@ object wIO : IWordClass {
     fun w_bl(vm: ForthVM) {
         vm.dstk.push(0x20)
     }
-
 
 }

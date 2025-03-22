@@ -3,11 +3,10 @@ package kf.words.core
 import kf.ForthVM
 import kf.IWordClass
 import kf.Word
-import kf.w_notImpl
 
 
 object wFunctions: IWordClass {
-    override val name = "Functions"
+    override val name = "kf.words.core.wFunctions"
     override val description = "Handling calling and exiting custom functions"
 
     override val words = arrayOf(
@@ -15,57 +14,44 @@ object wFunctions: IWordClass {
         Word("EXIT", ::w_exit),
     )
 
-
-
-    /**
-     * EXECUTE     CORE
+    /** `EXECUTE` ( i * x xt -- j * x ) Execute word with wn=xt
      *
-     * ( i * x xt -- j * x )
+     *   `' dup execute` should be the same as `dup`
      *
-     * Remove xt from the stack and perform the semantics identified by it.
-     * Other stack effects are due to the word EXECUTEd.
-     */
+     **/
 
     fun w_execute(vm: ForthVM) {
         val wn = vm.dstk.pop()
         vm.dict[wn](vm)
     }
 
-    /** EXIT     CORE
+    /** EXIT ( -- ) ( R: nest-sys -- ) Return from call
      *
-     * Interpretation:
-     * Interpretation semantics for this word are undefined.
+     * Before executing EXIT within a do-loop, a program shall discard the
+     * loop-control parameters by executing UNLOOP.
      *
-     * Execution:
-     *      ( -- ) ( R: nest-sys -- )
-     *
-     * Return control to the calling definition specified by nest-sys. Before
-     * executing EXIT within a do-loop, a program shall discard the loop-control
-     * parameters by executing UNLOOP.
-     *
+     * There is an alias of this, `;S`, which exists to help the decompiler
+     * figure out when a function is returning mid-function or the end of the
+     * function definition.
      */
 
     fun w_exit(vm: ForthVM) {
         vm.ip = vm.rstk.pop()
     }
 
-
-
-// Not a word -- just a func
-
-    /** `call` ( -- : call word in current_word )
+    /** `CALL` ( --  ) call currentWord
      *
-     * The `current_word` stuff feels like a kludge; perhaps this should
-     * be on the stack? Or at least, in a register? Then we wouldn't need
-     * duplicative stuff like w_callByAddr, since this also calls by addr ---
-     * they just get the addr from different places.
-     */
+     * This is the function that colon-definitions get (as opposed to
+     * primitives, where their function is an actual Kotlin func.
+     *
+     * This isn't registered as a word --- just as a function. It wouldn't
+     * be possible to define this in Forth, since it relies on the Kotlin-only
+     * "currentWord" data.
+     *
+     **/
+
     fun w_call(vm: ForthVM) {
         vm.rstk.push(vm.ip)
         vm.ip = vm.currentWord.cpos
     }
-
-
 }
-
-

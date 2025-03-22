@@ -94,6 +94,9 @@ val String.isCharLit get() = (get(0) == '\'')
 fun Pair<Int, Int>.strFromAddrLen(vm: ForthVM) =
     CharArray(second) { i -> vm.mem[first + i].toChar() }.concatToString()
 
+fun Pair<Int, Int>.strFromLenAddr(vm: ForthVM) =
+    CharArray(first) { i -> vm.mem[second + i].toChar() }.concatToString()
+
 /** Return string from address of counted string. */
 
 fun Int.strFromCSAddr(vm: ForthVM): String {

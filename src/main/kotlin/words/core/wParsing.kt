@@ -7,9 +7,8 @@ import kf.IWordClass
 import kf.Word
 import kf.strFromAddrLen
 import kf.toForthInt
-import kf.w_notImpl
 
-object wParsing: IWordClass {
+object wParsing : IWordClass {
     override val name = "Parsing"
     override val description = "Parsing buffers"
 
@@ -17,60 +16,48 @@ object wParsing: IWordClass {
         get() = arrayOf(
             Word("WORD", ::w_word),
             Word("SOURCE", ::w_source),
-            Word(">IN", ::w_notImpl),
+            Word(">IN", ::w_toIn),
             Word(">NUMBER", ::w_toNumber),
         )
 
-    /**
-     * WORD     CORE
+    /** WORD ( char "<chars>ccc<char>" -- c-addr ) Parse word from input
      *
-     * ( char "<chars>ccc<char>" -- c-addr )
-     *
-     * Skip leading delimiters. Parse characters ccc delimited by char. An
-     * ambiguous condition exists if the length of the parsed string is greater
-     * than the implementation-defined length of a counted string.
+     * Skip leading delimiters. Parse characters ccc delimited by char.
      *
      * c-addr is the address of a transient region containing the parsed word
      * as a counted string. If the parse area was empty or contained no
      * characters other than the delimiter, the resulting string has a zero
-     * length. A program may replace characters within the string.
+     * length.
      */
 
     fun w_word(vm: ForthVM) {
         val char = vm.dstk.pop().toChar()
-        val (addr, len) = vm.interp.scanner.wordParse(char)
-        val bufAddr = 0x250   // fixme
+        val (addr, len) = vm.scanner.wordParse(char)
+
+        val bufAddr = vm.memConfig.scratchStart
         var i = bufAddr
         vm.cellMeta[i] = CellMeta.StringLen
         vm.mem[i++] = len
-        for (j in addr until addr+len) {
+        for (j in addr until addr + len) {
             vm.cellMeta[i] = CellMeta.CharLit
             vm.mem[i++] = vm.mem[j]
         }
+
         vm.dstk.push(bufAddr)
     }
-    /**
-     * SOURCE   CORE
-     *
-     * ( -- c-addr u )
-     *
-     * c-addr is the address of, and u is the number of characters in, the
-     * input buffer.
-     */
+
+    /** SOURCE ( -- c-addr u ) Address of # of chars in input buffer */
 
     fun w_source(vm: ForthVM) {
-        vm.dstk.push(vm.interp.scanner.bufStart)
-        vm.dstk.push(vm.interp.scanner.bufLen)
+        vm.dstk.push(vm.scanner.start)
+        vm.dstk.push(vm.scanner.nChars)
     }
 
-    /**
-     * >IN      to-in     CORE
-     *
-     * ( -- a-addr )
-     *
-     * a-addr is the address of a cell containing the offset in characters from
-     * the start of the input buffer to the start of the parse area.
-     */
+    /** >IN ( -- a-addr ) a-addr is addr of cells with bufPtr - bufStart */
+
+    fun w_toIn(vm: ForthVM) {
+        vm.dstk.push(ForthVM.Companion.REG_IN_PTR)
+    }
 
     /**
      * >NUMBER  to-number     CORE
@@ -92,11 +79,11 @@ object wParsing: IWordClass {
     fun w_toNumber(vm: ForthVM) {
         val len = vm.dstk.pop()
         val addr = vm.dstk.pop()
-        val ud1b = vm.dstk.pop()  // we don't actually use these
-        val ud1a = vm.dstk.pop()
+        vm.dstk.dblPop()  // we don't actually use these
+
         val s = Pair(addr, len).strFromAddrLen(vm)
-        if (D) vm.dbg(2, "w_toNumber: s=\"$s\"")
+        if (D) vm.dbg(3, "w_toNumber: s=\"$s\"")
         val i = s.toForthInt(vm.base)   // just assume it works for now
-        vm.dstk.push(i, 0, /* addr */0, /* # unconverted */ 0)
+        vm.dstk.push(i, 0, /* addr */ 0, /* # unconverted */ 0)
     }
 }

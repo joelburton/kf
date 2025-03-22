@@ -104,7 +104,7 @@ open class InterpEval(vm: ForthVM) : InterpBase(vm) {
     /** Evaluate a line. */
 
     override fun eval(line: String) {
-        scanner.fill(line)
+        vm.scanner.fill(line)
         try {
             vm.runVM()
         } catch (e: ForthInterrupt) {

@@ -19,5 +19,4 @@ class wDoubleNumsTest : ForthTestCase() {
         mod.w_dDot(vm)
         assertPrinted("-42 ")
     }
-
 }

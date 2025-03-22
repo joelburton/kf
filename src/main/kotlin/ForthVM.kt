@@ -95,10 +95,22 @@ class ForthVM(
      * passed in, and normally wouldn't ever change. However, to hack around,
      * users *can* change this.
      */
-    var cstart: Int by RegisterDelegate(REG_CSTART)
+    var cstart
+        get() = mem[REG_CSTART]
+        set(value) {
+            mem[REG_CSTART] = value
+        }
 
     /** Start of the DATA section. See [cstart]. */
     var dstart: Int by RegisterDelegate(REG_DSTART)
+
+    /** A register for interpreter use: state of interpreting/compiling. */
+
+    var inPtr: Int
+        get() = mem[REG_IN_PTR]
+        set(value) {
+            mem[REG_IN_PTR] = value
+        }
 
     // *************************************************************************
 
@@ -128,6 +140,10 @@ class ForthVM(
      * 1970 epoch on a 32-bit machine.
      */
     val timeMarkCreated = TimeSource.Monotonic.markNow()
+
+    /**  Scanner for reading and tokenizing input line. */
+
+    var scanner: FScanner = FScanner(this)
 
 
     init {
@@ -236,6 +252,16 @@ class ForthVM(
         return startAddr + 1
     }
 
+    /**  Append lit string to the code section
+     */
+    fun appendStr(s: String) {
+        if (D) dbg(3, "vm.appendStr: $s")
+
+        appendWord("lit-string")
+        appendCode(s.length, CellMeta.StringLen)
+        for (c in s) mem[cend++] = c.code
+    }
+
     /**  Append jump + loc to the code section
      */
     fun appendJump(s: String, addr: Int) {
@@ -276,11 +302,7 @@ class ForthVM(
                 reset()
             } catch (e: ForthInterrupt) {
                 when (e) {
-                    is IntQuit -> {
-                        if (io.terminalInterface !is StandardTerminalInterface)
-                            throw e
-                        rstk.reset()
-                    }
+                    is IntQuit -> throw e
                     else -> throw e
                 }
             }
@@ -314,6 +336,7 @@ class ForthVM(
         const val REG_DSTART = 4
         const val REG_DEND = 5
         const val REG_STATE = 7
+        const val REG_IN_PTR = 8
 
         const val MAX_INT: Int = 0x7fffffff
         const val TRUE: Int = -1

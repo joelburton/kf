@@ -105,7 +105,7 @@ object wToolsCustom : IWordClass {
     }
 
     fun w_dotSeeSimple(vm: ForthVM) {
-        val w = vm.dict[vm.interp.scanner.parseName().strFromAddrLen(vm)]
+        val w = vm.dict[vm.scanner.parseName().strFromAddrLen(vm)]
         _see(vm, w, true)
     }
 

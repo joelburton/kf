@@ -16,7 +16,6 @@ object wStrings: IWordClass {
             Word(".\"", ::w_dotQuote, imm = true),
             Word("S\"", ::w_sQuote, imm = true),
             Word("TYPE", ::w_type),
-            Word("LIT-STRING", ::w_litString, compO = true),
         )
 
     /** COUNT    CORE
@@ -51,10 +50,10 @@ object wStrings: IWordClass {
 
     private fun w_dotQuote(vm: ForthVM) {
         if (vm.interp.isInterpreting) {
-            val s = vm.interp.scanner.parse('"').strFromAddrLen(vm)
+            val s = vm.scanner.parse('"').strFromAddrLen(vm)
             vm.io.print(s)
         } else {
-            val (addr, len) = vm.interp.scanner.parse('"')
+            val (addr, len) = vm.scanner.parse('"')
             vm.appendWord("lit-string")
             vm.appendCode(len, CellMeta.StringLen)
             for (i in 0 until len) {
@@ -82,12 +81,12 @@ object wStrings: IWordClass {
 
     fun w_sQuote(vm: ForthVM) {
         if (vm.interp.isInterpreting) {
-            val s = vm.interp.scanner.parse('"').strFromAddrLen(vm)
+            val s = vm.scanner.parse('"').strFromAddrLen(vm)
             val strAddr: Int = vm.appendStrToData(s)
             vm.dstk.push(strAddr)
             vm.dstk.push(s.length)
         } else {
-            val (addr, len) = vm.interp.scanner.parse('"')
+            val (addr, len) = vm.scanner.parse('"')
             vm.appendWord("lit-string")
             vm.appendCode(len, CellMeta.StringLen)
             for (i in 0 until len) {
@@ -114,13 +113,6 @@ object wStrings: IWordClass {
     }
 
 
-
-    fun w_litString(vm: ForthVM) {
-        val len = vm.mem[vm.ip++]
-        val addr = vm.ip
-        vm.dstk.push(addr, len)
-        vm.ip += len
-    }
 
 
 

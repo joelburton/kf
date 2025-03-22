@@ -49,7 +49,7 @@ object wChars: IWordClass {
     /** `CHAR` `( "<spaces>name" -- char )` Push first letter of name */
 
     fun w_char(vm: ForthVM) {
-        val token =  vm.interp.scanner.parseName().strFromAddrLen(vm)
+        val token =  vm.scanner.parseName().strFromAddrLen(vm)
         if (token.isEmpty()) throw CharLitError("Empty")
         vm.dstk.push(token[0].code)
     }
@@ -68,7 +68,7 @@ object wChars: IWordClass {
      */
 
     fun w_bracketChar(vm: ForthVM) {
-        val token = vm.interp.scanner.parseName().strFromAddrLen(vm)
+        val token = vm.scanner.parseName().strFromAddrLen(vm)
         if (token.isEmpty()) throw CharLitError("Empty")
         vm.appendLit(token[0].code)
     }

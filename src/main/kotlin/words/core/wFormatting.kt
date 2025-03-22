@@ -1,13 +1,11 @@
 package kf.words.core
 
-import kf.ForthVM
 import kf.IWordClass
 import kf.Word
-import kf.numToStr
 import kf.w_notImpl
 
 object wFormatting: IWordClass {
-    override val name = "Formatting"
+    override val name = "kf.words.core.wFormatting"
     override val description = "Picture words for numbers"
 
     override val words
@@ -18,7 +16,6 @@ object wFormatting: IWordClass {
             Word("<#", ::w_notImpl),
             Word("HOLD", ::w_notImpl),
             Word("SIGN", ::w_notImpl),
-
         )
 
     /**

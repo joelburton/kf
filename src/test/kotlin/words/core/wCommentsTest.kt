@@ -10,16 +10,16 @@ class wCommentsTest : ForthTestCase() {
 
     @Test
     fun w_parenComment() {
-        vm.interp.scanner.fill("( test )")
+        vm.scanner.fill("( test )")
         mod.w_parenComment(vm)
-        assertEquals(true, vm.interp.scanner.atEnd)
+        assertEquals(true, vm.scanner.atEnd)
 
-        vm.interp.scanner.fill("( test )   foo")
+        vm.scanner.fill("( test )   foo")
         mod.w_parenComment(vm)
-        assertEquals(false, vm.interp.scanner.atEnd)
+        assertEquals(false, vm.scanner.atEnd)
 
-        vm.interp.scanner.fill("( test    foo")
+        vm.scanner.fill("( test    foo")
         mod.w_parenComment(vm)
-        assertEquals(true, vm.interp.scanner.atEnd)
+        assertEquals(true, vm.scanner.atEnd)
     }
 }

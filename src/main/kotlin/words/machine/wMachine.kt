@@ -1,11 +1,6 @@
 package kf.words.machine
 
-import kf.D
-import kf.IntBrk
-import kf.ForthVM
-import kf.IWordClass
-import kf.Word
-import kf.addr
+import kf.*
 
 
 object wMachine : IWordClass {
@@ -24,6 +19,7 @@ object wMachine : IWordClass {
         Word("[LITERAL]", ::w_bracketLiteral, compO = true),
         Word("COLD", ::w_cold, imm = true, interpO = true),
         Word("COLD-RAW", ::w_coldRaw, imm = true, interpO = true),
+        Word("LIT-STRING", ::w_litString, compO = true),
         )
 
     /** `lit` ( -- n : Push next cell directly onto stack and cptr++ )
@@ -135,6 +131,16 @@ object wMachine : IWordClass {
     fun w_coldRaw(vm: ForthVM) {
         vm.reboot(false)
     }
+
+
+    // fixme: needs docs, test
+    fun w_litString(vm: ForthVM) {
+        val len = vm.mem[vm.ip++]
+        val addr = vm.ip
+        vm.dstk.push(addr, len)
+        vm.ip += len
+    }
+
 
 
 }

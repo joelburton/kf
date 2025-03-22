@@ -1,7 +1,5 @@
 package kf
 
-import kf.ForthError
-
 /** Scanner for parsing buffers.
  *
  * There are 3 different algos here:
@@ -29,10 +27,13 @@ import kf.ForthError
  *
  */
 
-class FScanner(val vm: ForthVM, val bufStart: Int, val bufEnd: Int) {
-    var bufPtr = bufStart  // buffer addr
-    var bufLen = 0  // length of entire buffer
-    var tokPtr = bufStart  // start addr of most-recently-found token
+class FScanner(val vm: ForthVM) {
+    val start = vm.memConfig.interBufStart
+    val end = vm.memConfig.interpBufEnd
+    val size = end - start
+
+    var nChars = 0  // # of chars in entire buffer
+    var tokIdx = 0  // start idx of most-recently-found token
     var tokLen = 0  // length of same
 
     companion object {
@@ -44,18 +45,18 @@ class FScanner(val vm: ForthVM, val bufStart: Int, val bufEnd: Int) {
         )
     }
 
-    val atEnd get() = bufPtr >= bufStart + bufLen
+    val atEnd get() = vm.inPtr >= nChars
 
     /** Return string of most-recently-found token. */
 
-    fun curToken() = Pair(tokPtr, tokLen).strFromAddrLen(vm)
+    fun curToken() = Pair(start + tokIdx, tokLen).strFromAddrLen(vm)
 
     /** Reset */
 
     fun reset() {
-        bufPtr = bufStart
-        bufLen = 0
-        tokPtr = bufStart
+        vm.inPtr = 0
+        nChars = 0
+        tokIdx = 0
         tokLen = 0
     }
 
@@ -64,14 +65,14 @@ class FScanner(val vm: ForthVM, val bufStart: Int, val bufEnd: Int) {
     fun fill(str: String) {
         reset()
         for (char in str) {
-            if (bufLen > bufEnd - bufStart) throw MemError("Buffer overflow")
-            vm.mem[bufStart + bufLen++] = char.code
+            if (nChars > size) throw MemError("Buffer overflow")
+            vm.mem[start + nChars++] = char.code
         }
     }
 
     /** Return string of entire buffer (useful for debugging.) */
 
-    override fun toString() = Pair(bufStart, bufLen).strFromAddrLen(vm)
+    override fun toString() = Pair(start, nChars).strFromAddrLen(vm)
 
     /** Get whitespace-separated token.
      *
@@ -80,7 +81,7 @@ class FScanner(val vm: ForthVM, val bufStart: Int, val bufEnd: Int) {
      * - skip one space
      *
      *   ...hello...
-     *      ^     ^   = tokPtr and bufPtr (tokLen=5, bufLen unchanged)
+     *      ^     ^   = tokPtr and vm.inPtr (tokLen=5, bufLen unchanged)
      *
      * This should be used to "get the next token". To "get the input
      * from this token", use `parse`.
@@ -88,17 +89,17 @@ class FScanner(val vm: ForthVM, val bufStart: Int, val bufEnd: Int) {
      **/
 
     fun parseName(): Pair<Int, Int> {
-        val max = bufStart + bufLen
+        while (vm.inPtr < nChars && vm.mem[start + vm.inPtr] in whitespace)
+            vm.inPtr += 1
+        tokIdx = vm.inPtr
 
-        while (bufPtr < max && vm.mem[bufPtr] in whitespace) bufPtr += 1
-        tokPtr = bufPtr
+        while (vm.inPtr < nChars && vm.mem[start + vm.inPtr] !in whitespace)
+            vm.inPtr += 1
+        tokLen = vm.inPtr - tokIdx
 
-        while (bufPtr < max && vm.mem[bufPtr] !in whitespace) bufPtr += 1
-        tokLen = bufPtr - tokPtr
+        if (vm.inPtr < nChars) vm.inPtr += 1
 
-        if (bufPtr < max) bufPtr += 1
-
-        return Pair(tokPtr, tokLen)
+        return Pair(start + tokIdx, tokLen)
     }
 
     /** General parse for a term character.
@@ -108,7 +109,7 @@ class FScanner(val vm: ForthVM, val bufStart: Int, val bufEnd: Int) {
      *
      * with term="
      *    ...hello"".
-     *    ^        ^  = tokPtr & bufPtr
+     *    ^        ^  = tokPtr & vm.inPtr
      *
      * This is used to parse things like `." hi"` and such. Note that, per the
      * specs, *it does not* consume or require any whitespace after it.
@@ -118,24 +119,23 @@ class FScanner(val vm: ForthVM, val bufStart: Int, val bufEnd: Int) {
      **/
 
     fun parse(term: Char): Pair<Int, Int> {
-        val max = bufStart + bufLen
+        tokIdx = vm.inPtr
+        while (vm.inPtr < nChars && vm.mem[start + vm.inPtr] != term.code)
+            vm.inPtr += 1
 
-        tokPtr = bufPtr
-        while (bufPtr < max && vm.mem[bufPtr] != term.code) bufPtr += 1
-
-        tokLen = bufPtr - tokPtr
+        tokLen = vm.inPtr - tokIdx
 
         // skip the terminator, but don't require or skip space after it.
-        if (bufPtr < max) bufPtr += 1
+        if (vm.inPtr < nChars) vm.inPtr += 1
 
-        return Pair(tokPtr, tokLen)
+        return Pair(start + tokIdx, tokLen)
     }
 
     /** General parse for an ending character, using `WORD` algo.
      *
      *  with term=x
      *    xxHELLOxx.
-     *      ^     ^  = tokPtr & bufPtr
+     *      ^     ^  = tokPtr & vm.inPtr
      *
      *  with term=' ', same but term=any-whitespace-character.
      *
@@ -146,17 +146,18 @@ class FScanner(val vm: ForthVM, val bufStart: Int, val bufEnd: Int) {
 
     fun wordParse(term: Char): Pair<Int, Int> {
         var terms = if (term == ' ') whitespace else arrayOf(term.code)
-        val max = bufStart + bufLen
 
-        while (bufPtr < max && vm.mem[bufPtr] in terms) bufPtr += 1
+        while (vm.inPtr < nChars && vm.mem[start + vm.inPtr] in terms)
+            vm.inPtr += 1
 
-        tokPtr = bufPtr
-        while (bufPtr < max && vm.mem[bufPtr] !in terms) bufPtr += 1
+        tokIdx = vm.inPtr
+        while (vm.inPtr < nChars && vm.mem[start + vm.inPtr] !in terms)
+            vm.inPtr += 1
 
-        tokLen = bufPtr - tokPtr
-        if (bufPtr < max) bufPtr += 1
+        tokLen = vm.inPtr - tokIdx
+        if (vm.inPtr < nChars) vm.inPtr += 1
 
-        return Pair(tokPtr, tokLen)
+        return Pair(start + tokIdx, tokLen)
     }
 
     /** Consume rest of line.
@@ -166,6 +167,6 @@ class FScanner(val vm: ForthVM, val bufStart: Int, val bufEnd: Int) {
      **/
 
     fun nextLine() {
-        bufLen = 0
+        nChars = 0
     }
 }

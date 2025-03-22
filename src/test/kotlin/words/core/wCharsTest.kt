@@ -39,30 +39,30 @@ class wCharsTest : ForthTestCase() {
 
     @Test
     fun w_char() {
-        vm.interp.scanner.fill("AB")
+        vm.scanner.fill("AB")
         mod.w_char(vm)
         assertDStack(65)
 
         // B should be consumed as part of this
-        val (_, len) = vm.interp.scanner.parseName()
+        val (_, len) = vm.scanner.parseName()
         assertEquals(0, len)
 
-        vm.interp.scanner.fill("")
+        vm.scanner.fill("")
         assertFailsWith<CharLitError> { mod.w_char(vm) }
     }
 
     @Test
     fun w_bracketChar() {
-        vm.interp.scanner.fill("AB")
+        vm.scanner.fill("AB")
         mod.w_bracketChar(vm)
         assertDStack()
         assertEquals(65, vm.mem[vm.cend - 1])
 
         // B should be consumed as part of this
-        val (_, len) = vm.interp.scanner.parseName()
+        val (_, len) = vm.scanner.parseName()
         assertEquals(0, len)
 
-        vm.interp.scanner.fill("")
+        vm.scanner.fill("")
         assertFailsWith<CharLitError> { mod.w_char(vm) }
     }
 

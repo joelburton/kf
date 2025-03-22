@@ -6,7 +6,7 @@ import kf.Word
 
 
 object wDoubleCell : IWordClass {
-    override val name = "DoubleCell"
+    override val name = "kf.words.core.wDoubleCell"
     override val description = "Double-cell words"
 
     override val words

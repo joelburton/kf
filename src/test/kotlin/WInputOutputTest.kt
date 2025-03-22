@@ -6,12 +6,6 @@
 //    override val mod = kf.words.core.wIO
 //
 //    @Test
-//    fun w_cr() {
-//        mod.w_cr(vm)
-//        assertPrinted("\n")
-//    }
-//
-//    @Test
 //    fun w_emit() {
 //        vm.dstk.push(65)
 //        mod.w_emit(vm)
@@ -51,21 +45,9 @@
 //    }
 //
 //    @Test
-//    fun w_base() {
-//        mod.w_base(vm)
-//        assertDStack(ForthVM.REG_BASE)
-//    }
-//
-//    @Test
 //    fun w_hex() {
 //        kf.words.core.ext.wNumIOExt.w_hex(vm)
 //        assertEquals(16, vm.base)
-//    }
-//
-//    @Test
-//    fun w_decimal() {
-//        mod.w_decimal(vm)
-//        assertEquals(10, vm.base)
 //    }
 //
 //    @Test

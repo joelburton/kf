@@ -22,7 +22,7 @@ class wCreateTest : ForthTestCase() {
     @Test
     fun w_create() {
         val dend = vm.dend
-        vm.interp.scanner.fill("foo")
+        vm.scanner.fill("foo")
         mod.w_create(vm)
         val foo = vm.dict["foo"]
         assertEquals(foo.dpos, dend)

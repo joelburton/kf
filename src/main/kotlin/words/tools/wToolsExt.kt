@@ -40,7 +40,7 @@ object wToolsExt: IWordClass {
     /**  `\[defined\]` I ( in:"name" -- f : is this word defined? )
      */
     private fun w_bracketDefined(vm: ForthVM) {
-        val token: String =  vm.interp.scanner.parseName().strFromAddrLen(vm)
+        val token: String =  vm.scanner.parseName().strFromAddrLen(vm)
         val def = vm.dict.getSafe(token) != null
         vm.dstk.push(if (def) ForthVM.Companion.TRUE else ForthVM.Companion.FALSE)
     }
@@ -48,7 +48,7 @@ object wToolsExt: IWordClass {
     /**  `\[undefined\]` I ( in:"name" -- f : is this word undefined? )
      */
     private fun w_bracketUndefined(vm: ForthVM) {
-        val token: String =  vm.interp.scanner.parseName().strFromAddrLen(vm)
+        val token: String =  vm.scanner.parseName().strFromAddrLen(vm)
         val def = vm.dict.getSafe(token) != null
         vm.dstk.push(if (def) ForthVM.Companion.FALSE else ForthVM.Companion.TRUE)
     }
@@ -57,8 +57,8 @@ object wToolsExt: IWordClass {
     /** `synonym` ( in:"new" in:"old" -- : makes new word as alias of old )
      */
     fun w_synonym(vm: ForthVM) {
-        val newName: String =  vm.interp.scanner.parseName().strFromAddrLen(vm)
-        val oldName: String =  vm.interp.scanner.parseName().strFromAddrLen(vm)
+        val newName: String =  vm.scanner.parseName().strFromAddrLen(vm)
+        val oldName: String =  vm.scanner.parseName().strFromAddrLen(vm)
         val curWord: Word = vm.dict[oldName]
         val nw = Word(
             newName,
@@ -75,7 +75,7 @@ object wToolsExt: IWordClass {
     /**  `forget` ( in:"name" -- : delete word and all following words )
      */
     fun w_forget(vm: ForthVM) {
-        val newName: String =  vm.interp.scanner.parseName().strFromAddrLen(vm)
+        val newName: String =  vm.scanner.parseName().strFromAddrLen(vm)
         val w: Word = vm.dict[newName]
         vm.dict.truncateAt(w.wn)
         if (w.cpos != Word.Companion.NO_ADDR) vm.cend = w.cpos

@@ -29,7 +29,7 @@ object wDeferExt : IWordClass {
     /** `defer` ( "word" -- : create word pointing to uninitialized fn ) */
 
     fun w_defer(vm: ForthVM) {
-        val name = vm.interp.scanner.parseName().strFromAddrLen(vm)
+        val name = vm.scanner.parseName().strFromAddrLen(vm)
         val w = Word(
             name,
             cpos = Word.NO_ADDR,
@@ -51,7 +51,7 @@ object wDeferExt : IWordClass {
 
     fun w_is(vm: ForthVM) {
         val sourceWord = vm.dict[vm.dstk.pop()]
-        val token = vm.interp.scanner.parseName().strFromAddrLen(vm)
+        val token = vm.scanner.parseName().strFromAddrLen(vm)
         val deferredWord =
             vm.dict[token]
         changeDeferPointer(vm, deferredWord, sourceWord)

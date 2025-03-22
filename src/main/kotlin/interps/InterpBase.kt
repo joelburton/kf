@@ -4,6 +4,7 @@ import com.github.ajalt.mordant.terminal.success
 import kf.D
 import kf.FScanner
 import kf.ForthVM
+import kf.ForthVM.Companion.REG_IN_PTR
 import kf.ForthVM.Companion.REG_STATE
 import kf.VERSION_STRING
 
@@ -17,7 +18,6 @@ interface IInterp {
     val isInterpreting: Boolean
     val isCompiling: Boolean
     var state: Int
-    var scanner: FScanner
     fun banner()
     fun compile(token: String)
     fun interpret(token: String)
@@ -32,12 +32,6 @@ open class InterpBase(val vm: ForthVM) : IInterp {
         const val STATE_INTERPRETING: Int = 0
         const val STATE_COMPILING: Int = -1
     }
-
-    /**  Scanner for reading and tokenizing input line. */
-
-    override var scanner: FScanner = FScanner(
-        vm, vm.memConfig.interBufStart, vm.memConfig.interpBufEnd
-    )
 
     /** A register for interpreter use: state of interpreting/compiling. */
 
@@ -67,7 +61,7 @@ open class InterpBase(val vm: ForthVM) : IInterp {
         if (D) vm.dbg(3, "InterpBase.resetInterpreter")
 
         state = STATE_INTERPRETING
-        scanner.reset()
+        vm.scanner.reset()
     }
 
     override fun addInterpreterCode() {

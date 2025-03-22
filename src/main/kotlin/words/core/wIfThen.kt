@@ -6,7 +6,7 @@ import kf.IWordClass
 import kf.Word
 
 object wIfThen: IWordClass {
-    override val name = "IfThen"
+    override val name = "kf.words.core.wIfThen"
     override val description = "Conditionals"
 
     override val words
@@ -16,73 +16,32 @@ object wIfThen: IWordClass {
             Word("THEN", ::w_then, imm = true, compO = true),
         )
 
-    /** IF   CORE
-     *
-     * Interpretation:
-     * Interpretation semantics for this word are undefined.
-     *
-     * Compilation:
-     * ( C: -- orig )
-     * Put the location of a new unresolved forward reference orig onto the
-     * control flow stack. Append the run-time semantics given below to the
-     * current definition. The semantics are incomplete until orig is resolved,
-     * e.g., by THEN or ELSE.
-     *
-     * Run-time:
-     * ( x -- )
-     * If all bits of x are zero, continue execution at the location specified by the resolution of orig.
-     */
+    /** `IF` IM CO ( f -- ) If flag is false, skip to ELSE (or THEN) */
 
     fun w_if(vm: ForthVM) {
         vm.appendWord("0branch")
         vm.dstk.push(vm.cend)
+        // "THEN" will fix this fake address
         vm.appendCode(0xffff, CellMeta.JumpLoc)
     }
 
-    /** ELSE     CORE
-     *
-     * Interpretation:
-     * Interpretation semantics for this word are undefined.
-     *
-     * Compilation:
-     * ( C: orig1 -- orig2 )
-     * Put the location of a new unresolved forward reference orig2 onto the
-     * control flow stack. Append the run-time semantics given below to the
-     * current definition. The semantics will be incomplete until orig2 is
-     * resolved (e.g., by THEN). Resolve the forward reference orig1 using the
-     * location following the appended run-time semantics.
-     *
-     * Run-time:
-     * ( -- )
-     * Continue execution at the location given by the resolution of orig2.
-     */
+    /** `ELSE` IM CO ( -- ) If provided, if IF fails, start exec here */
 
     fun w_else(vm: ForthVM) {
-        val ifRef = vm.rstk.pop()
+        val ifRef = vm.dstk.pop()
         vm.appendWord("branch")
         vm.dstk.push(vm.cend)
+        // "THEN" will fix this fake address
         vm.appendCode(0xfffe, CellMeta.JumpLoc)
+        // but we can fix the "IF" fake fwd-ref
         vm.mem[ifRef] = (vm.cend - ifRef)
     }
 
-    /** THEN     CORE
-     *
-     * Interpretation:
-     * Interpretation semantics for this word are undefined.
-     *
-     * Compilation:
-     * ( C: orig -- )
-     * Append the run-time semantics given below to the current definition.
-     * Resolve the forward reference orig using the location of the appended
-     * run-time semantics.
-     *
-     * Run-time:
-     * ( -- )
-     * Continue execution.
-     */
+    /** THEN ( -- ) Finish the IF/ELSE/THEN */
 
     fun w_then(vm: ForthVM) {
         val ifRef: Int = vm.dstk.pop()
+        // Fix the fake ref of ELSE (or if no ELSE, the one for IF)
         vm.mem[ifRef] = vm.cend - ifRef
     }
 }

@@ -62,7 +62,7 @@ object wCompilingCustom : IWordClass {
      */
 
     fun w_postpone(vm: ForthVM) {
-        val token: String =  vm.interp.scanner.parseName().strFromAddrLen(vm)
+        val token: String =  vm.scanner.parseName().strFromAddrLen(vm)
         val w = vm.dict[token]
         val cw = vm.dict.last
 

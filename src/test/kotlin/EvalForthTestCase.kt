@@ -68,7 +68,24 @@ open class ForthTestCase() {
             recorder.clearOutput()
         }
     }
+
+    fun see(name: String) {
+        _see(vm, vm.dict[name], false)
+        print(getOutput())
+    }
+
+    fun setInput(s: String) {
+        (vm.io.terminalInterface as TerminalTestInterface).addInputs(s)
+    }
+
+    fun dump(start: Int, len: Int) {
+        for (i in start until start + len) {
+            print("${vm.mem[i]} ")
+        }
+        println()
+    }
 }
+
 
 /** Test case that relies on a full Forth VM w/eval and other mods. */
 
@@ -84,27 +101,27 @@ open class EvalForthTestCase : ForthTestCase() {
         vm.reboot(true)
     }
 
-    fun evalx(s: String): String {
-        val io = vm.io.terminalInterface as TerminalTestInterface
-        io.addInputs(s)
-        with(vm) {
-            ip = memConfig.codeStart
-            try {
-                while (true) {
-                    val wn = mem[ip++]
-                    val w = dict[wn]
-                    w(this)
-                }
-            } catch (_: IntEOF) {
-                return recorder.output()
-            }
-        }
-    }
+//    fun evalx(s: String): String {
+//        val io = vm.io.terminalInterface as TerminalTestInterface
+//        io.addInputs(s)
+//        with(vm) {
+//            ip = memConfig.codeStart
+//            try {
+//                while (true) {
+//                    val wn = mem[ip++]
+//                    val w = dict[wn]
+//                    w(this)
+//                }
+//            } catch (_: IntEOF) {
+//                return recorder.output()
+//            }
+//        }
+//    }
 
     fun eval(s: String): String {
         with(vm) {
 //            reset()
-            interp.scanner.fill(s)
+            vm.scanner.fill(s)
             ip = memConfig.scratchStart
             try {
                 while (true) {
@@ -121,8 +138,4 @@ open class EvalForthTestCase : ForthTestCase() {
         }
     }
 
-    fun see(name: String) {
-        _see(vm, vm.dict[name], false)
-        print(getOutput())
-    }
 }
