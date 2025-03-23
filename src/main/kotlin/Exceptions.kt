@@ -43,6 +43,9 @@ class ForthIOError(m: String) : ForthError(m)
 /** Use of deferred word */
 class ForthDeferredWordError(m: String) : ForthError(m)
 
+/** Word length */
+class WordLengthError(m: String) : ForthError(m)
+
 /** Base class of "interruptions".
  *
  * These are things that might stop the interpreter or quit the program.

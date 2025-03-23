@@ -9,7 +9,6 @@ object mCustom: IMetaWordModule {
         wBload,
         wCharsCustom,
         wCompilingCustom,
-        wCreateCustom,
         wFunctionsCustom,
         wInterpCustom,
         wIOCustom,

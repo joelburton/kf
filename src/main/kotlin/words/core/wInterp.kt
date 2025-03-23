@@ -104,9 +104,12 @@ object wInterp : IWordModule {
 
         val s = Pair(addr, len).strFromAddrLen(vm)
         val curScanner = vm.scanner
+        val prevSourceId = vm.sourceId
         vm.scanner = FScanner(vm) // fixme: needs a real home
+        vm.sourceId = -1
         (vm.interp as InterpEval).eval(s + " eof")
         vm.scanner = curScanner
+        vm.sourceId = prevSourceId
     }
 
     /**

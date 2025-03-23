@@ -4,6 +4,7 @@ import kf.ForthVM
 import kf.IWordModule
 import kf.Word
 import kf.strFromAddrLen
+import kf.words.core.wFunctions.w_call
 
 object wCreate: IWordModule {
     override val name = "kf.words.core.wCreate"
@@ -14,7 +15,9 @@ object wCreate: IWordModule {
             Word("CREATE", ::w_create),
             Word("DOES>", ::w_doesAngle, imm = true, compO = true),
             Word("(DOES)", ::w_parenDoes),
-        )
+            Word("(ADDR)", ::w_parenAddr, hidden = true),
+            Word("(ADDRCALL)", ::w_parenAddrCall, compO = true, hidden = true),
+            )
 
     /** `CREATE`
      *
@@ -30,7 +33,7 @@ object wCreate: IWordModule {
             name,
             cpos = Word.NO_ADDR,
             dpos = vm.dend,
-            fn = vm.dict["ADDR"].fn)
+            fn = vm.dict["(ADDR)"].fn)
         vm.dict.add(w)
     }
 
@@ -60,7 +63,28 @@ object wCreate: IWordModule {
 
     fun w_parenDoes(vm: ForthVM) {
         val w: Word = vm.dict.last
-        w.fn = vm.dict["ADDRCALL"].fn
+        w.fn = vm.dict["(ADDRCALL)"].fn
         w.cpos = vm.ip + 1
     }
+
+
+    /** `(ADDR)` For pure-data words, like "create age 1 allot" (ie variable) */
+
+    fun w_parenAddr(vm: ForthVM) {
+        val addr: Int = vm.currentWord.dpos
+        vm.dstk.push(addr)
+    }
+
+    /**`(ADDRCALL)` ( -- addr : w/currWord: push dpos, then call it )'
+     *
+     * Used for all "does" words (it's the "function" for a constant). This
+     * word will need to have both a dpos and a cpos, and only words
+     * made by create + does will have that.
+     * */
+
+    fun w_parenAddrCall(vm: ForthVM) {
+        w_parenAddr(vm)
+        w_call(vm)
+    }
+
 }

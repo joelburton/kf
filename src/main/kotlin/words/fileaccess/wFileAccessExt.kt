@@ -26,16 +26,16 @@ object wFileAccessExt: IWordModule {
 
     // *************************************************************************
 
-    /**  `include` `( in:"file" -- : read Forth file in )` */
-
-    fun w_include(vm: ForthVM) {
-        val path =  vm.scanner.parseName().strFromAddrLen(vm)
-
+    fun include(vm: ForthVM, path: String) {
         val prevIO: Terminal = vm.io
         val prevVerbosity: Int = vm.verbosity
+        val prevSourceId: Int = vm.sourceId
 
         vm.io = Terminal(terminalInterface = TerminalFileInterface(path))
         vm.verbosity = -2
+        vm.includedFiles.add(path)
+        vm.sourceId = vm.includedFiles.lastIndex + 1
+
         try {
             vm.runVM()
         } catch (e: ForthInterrupt) {
@@ -46,8 +46,15 @@ object wFileAccessExt: IWordModule {
             }
         } finally {
             vm.io = prevIO
+            vm.sourceId = prevSourceId
             vm.verbosity = prevVerbosity
         }
     }
 
+    /**  `include` `( in:"file" -- : read Forth file in )` */
+
+    fun w_include(vm: ForthVM) {
+        val path =  vm.scanner.parseName().strFromAddrLen(vm)
+        include(vm, path)
+    }
 }

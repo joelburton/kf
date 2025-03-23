@@ -22,6 +22,10 @@ class Word(
     var deferToWn: Int? = null,
     var wn: Int = 0,
 ) {
+
+    init {
+        if (name.length > 32) throw WordLengthError("Word name too long: $name")
+    }
     val name = name.lowercase()
 
     companion object {
@@ -59,7 +63,7 @@ class Word(
     /**  Useful for debugging and to support `w_see` and `w_simple-see`. */
     fun getHeaderStr(): String {
         return java.lang.String.format(
-            "%s %-32s %-2s %-2s %-2s %-2s %-2s C:%-5s D:%-5s\n",
+            "%s %-36s %-2s %-2s %-2s %-2s %-2s C:%-5s D:%-5s\n",
             gray(String.format("(%3d)", wn)),
             yellow(name),
             if (imm) "IM" else "",

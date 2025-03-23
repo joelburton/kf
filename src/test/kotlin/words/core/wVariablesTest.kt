@@ -2,12 +2,17 @@ package words.core
 
 import EvalForthTestCase
 import ForthTestCase
+import kf.words.core.wCreate
 import kf.words.core.wVariables
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
 
 class wVariablesTest : ForthTestCase() {
     val mod = wVariables
+
+    init {
+        vm.dict.addModule(wCreate)
+    }
 
     @Test
     fun w_constant() {

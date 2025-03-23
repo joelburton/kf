@@ -16,7 +16,6 @@ class wCreateTest : ForthTestCase() {
         vm.dict.addModule(wCreate)
         vm.dict.addModule(wFunctions)
         vm.dict.addModule(wCompiling)
-        vm.dict.addModule(kf.words.custom.wCreateCustom)
     }
 
     @Test
@@ -27,7 +26,7 @@ class wCreateTest : ForthTestCase() {
         val foo = vm.dict["foo"]
         assertEquals(foo.dpos, dend)
         assertEquals(dend, vm.dend)  // shouldn't change
-        assertEquals(foo.fn, vm.dict["addr"].fn)
+        assertEquals(foo.fn, vm.dict["(addr)"].fn)
     }
 
     @Test
@@ -39,12 +38,12 @@ class wCreateTest : ForthTestCase() {
 
     @Test
     fun w_parenDoes() {
-        val w = Word("foo", vm.dict["addrcall"].fn)
+        val w = Word("foo", vm.dict["(addrcall)"].fn)
         vm.dict.add(w)
         vm.currentWord = w
         vm.ip = 0x100
         mod.w_parenDoes(vm)
-        assertEquals(vm.dict["addrcall"].fn, w.fn)
+        assertEquals(vm.dict["(addrcall)"].fn, w.fn)
         assertEquals(0x101, w.cpos)
     }
 }

@@ -134,6 +134,12 @@ class ForthVM(
     /** List of {name: class} for all primitive modules loaded. */
     val modulesLoaded: HashMap<String, IWordModule> = HashMap()
 
+    /** List of files included. */
+    val includedFiles: ArrayList<String> = ArrayList()
+
+    /** Source ID (-1 = evaluate, 0 = stdin, # = fileId */
+    var sourceId: Int = 0
+
     /** Time mark for when VM started (the `millis` word reports # of millis
      * since server start, since it's not possible to return millis before the
      * 1970 epoch on a 32-bit machine.

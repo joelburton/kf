@@ -10,13 +10,21 @@ object wIOExt: IWordModule {
     override val description = "Input/Output"
 
     override val words = arrayOf<Word>(
-        Word("SOURCE-ID", ::w_notImpl),
+        Word("SOURCE-ID", ::w_sourceId),
         Word("RESTORE-INPUT", ::w_notImpl),
         Word("SAVE-INPUT", ::w_notImpl),
     )
 
+    /** `SOURCE-ID` ( -- 0 | -1 | fileid ) Return id of input source
+     *
+     * -1 : string (EVALUATE)
+     *  0 : stdin
+     *  # : # of file ID
+     *
+     */
+
     fun w_sourceId(vm: ForthVM) {
-        TODO()
+        vm.dstk.push(vm.sourceId)
     }
 
     fun w_restoreInput(vm: ForthVM) {
