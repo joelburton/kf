@@ -2,13 +2,13 @@ package kf.words.tools
 
 import kf.IntBye
 import kf.ForthVM
-import kf.IWordClass
+import kf.IWordModule
 import kf.Word
 import kf.strFromAddrLen
 import kf.w_notImpl
 
-object wToolsExt: IWordClass {
-    override val name = "ToolsExt"
+object wToolsExt: IWordModule {
+    override val name = "kf.words.tools.wToolsExt"
     override val description = "Programming tools"
 
     override val words

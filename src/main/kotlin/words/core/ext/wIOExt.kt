@@ -1,11 +1,12 @@
 package kf.words.core.ext
 
-import kf.IWordClass
+import kf.ForthVM
+import kf.IWordModule
 import kf.Word
 import kf.w_notImpl
 
-object wIOExt: IWordClass {
-    override val name = "IOExt"
+object wIOExt: IWordModule {
+    override val name = "kf.words.core.ext.wIOExt"
     override val description = "Input/Output"
 
     override val words = arrayOf<Word>(
@@ -13,4 +14,16 @@ object wIOExt: IWordClass {
         Word("RESTORE-INPUT", ::w_notImpl),
         Word("SAVE-INPUT", ::w_notImpl),
     )
+
+    fun w_sourceId(vm: ForthVM) {
+        TODO()
+    }
+
+    fun w_restoreInput(vm: ForthVM) {
+        TODO()
+    }
+
+    fun w_saveInput(vm: ForthVM) {
+        TODO()
+    }
 }

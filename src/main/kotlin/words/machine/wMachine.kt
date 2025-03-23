@@ -3,8 +3,8 @@ package kf.words.machine
 import kf.*
 
 
-object wMachine : IWordClass {
-    override val name = "LowLevel"
+object wMachine : IWordModule {
+    override val name = "kf.words.machine.wMachine"
     override val description = "Internal words needed for VM"
 
     override val words = arrayOf<Word>(

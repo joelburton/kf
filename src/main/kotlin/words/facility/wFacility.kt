@@ -2,8 +2,8 @@ package kf.words.facility
 
 import kf.*
 
-object wFacility : IWordClass {
-    override val name = "Facility"
+object wFacility : IWordModule {
+    override val name = "kf.words.facility.wFacility"
     override val description = "Facility words"
 
     override val words: Array<Word> = arrayOf(

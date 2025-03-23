@@ -1,26 +1,25 @@
 package kf.words.custom
 
-import kf.IWordClass
-import kf.Word
+import kf.IMetaWordModule
 
-object mCustom: IWordClass {
-    override val name = "custom.Custom"
+object mCustom: IMetaWordModule {
+    override val name = "kf.words.custom.mCustom"
     override val description = "Custom words"
-    override val words = arrayOf<Word>(
-        *wBload.words,
-        *wCharsCustom.words,
-        *wCompilingCustom.words,
-        *wCreateCustom.words,
-        *wFunctionsCustom.words,
-        *wInterpCustom.words,
-        *wIOCustom.words,
-        *wLogicCustom.words,
-        *wMemoryCustom.words,
-        *wNumIOCustom.words,
-        *wRegisters.words,
-        *wStacksCustom.words,
-        *wTimeCustom.words,
-        *wToolsCustom.words,
-        *wWordsCustom.words,
+    override val modules = arrayOf(
+        wBload,
+        wCharsCustom,
+        wCompilingCustom,
+        wCreateCustom,
+        wFunctionsCustom,
+        wInterpCustom,
+        wIOCustom,
+        wLogicCustom,
+        wMemoryCustom,
+        wNumIOCustom,
+        wRegisters,
+        wStacksCustom,
+        wTimeCustom,
+        wToolsCustom,
+        wWordsCustom,
     )
 }

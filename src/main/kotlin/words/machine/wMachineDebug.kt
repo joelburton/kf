@@ -1,11 +1,11 @@
 package kf.words.machine
 
 import kf.ForthVM
-import kf.IWordClass
+import kf.IWordModule
 import kf.Word
 
-object wMachineDebug : IWordClass {
-    override val name = "LowLevelDebug"
+object wMachineDebug : IWordModule {
+    override val name = "kf.words.machine.wMachineDebug"
     override val description = "Custom internal words needed for VM"
 
     override val words = arrayOf<Word>(

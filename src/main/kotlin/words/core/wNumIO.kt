@@ -1,11 +1,11 @@
 package kf.words.core
 
 import kf.ForthVM
-import kf.IWordClass
+import kf.IWordModule
 import kf.Word
 import kf.numToStr
 
-object wNumIO : IWordClass {
+object wNumIO : IWordModule {
     override val name = "kf.words.core.IO"
     override val description = "General input and output"
 

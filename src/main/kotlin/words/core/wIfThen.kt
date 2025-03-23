@@ -2,10 +2,10 @@ package kf.words.core
 
 import kf.CellMeta
 import kf.ForthVM
-import kf.IWordClass
+import kf.IWordModule
 import kf.Word
 
-object wIfThen: IWordClass {
+object wIfThen: IWordModule {
     override val name = "kf.words.core.wIfThen"
     override val description = "Conditionals"
 

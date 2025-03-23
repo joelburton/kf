@@ -1,11 +1,11 @@
 package kf.words.custom
 
 import kf.ForthVM
-import kf.IWordClass
+import kf.IWordModule
 import kf.Word
 
-object wRegisters : IWordClass {
-    override val name = "RegistersExtra"
+object wRegisters : IWordModule {
+    override val name = "kf.words.custom.wRegisters"
     override val description = "System registers"
     override val words get() = arrayOf(
         Word("R:CSTART", ::w_cstart),

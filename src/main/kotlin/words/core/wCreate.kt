@@ -1,12 +1,11 @@
 package kf.words.core
 
 import kf.ForthVM
-import kf.IWordClass
+import kf.IWordModule
 import kf.Word
 import kf.strFromAddrLen
-import kf.words.custom.wCreateCustom.w_addr
 
-object wCreate: IWordClass {
+object wCreate: IWordModule {
     override val name = "kf.words.core.wCreate"
     override val description = "Data allocation and DOES"
 

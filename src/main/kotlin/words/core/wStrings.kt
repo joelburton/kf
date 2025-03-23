@@ -1,11 +1,11 @@
 package kf.words.core
 
 import kf.ForthVM
-import kf.IWordClass
+import kf.IWordModule
 import kf.Word
 import kf.strFromAddrLen
 
-object wStrings : IWordClass {
+object wStrings : IWordModule {
     override val name = "kf.words.core.wStrings"
     override val description = "Strings"
 

@@ -3,12 +3,12 @@ package kf.words.custom
 import kf.ForthVM
 import kf.ForthVM.Companion.FALSE
 import kf.ForthVM.Companion.TRUE
-import kf.IWordClass
+import kf.IWordModule
 import kf.Word
 import kotlin.math.sqrt
 
-object wLogicCustom : IWordClass {
-    override val name = "LogicExtra"
+object wLogicCustom : IWordModule {
+    override val name = "kf.words.custom.wLogicCustom"
     override val description = "Logic Extra"
     override val words get() = arrayOf(
         Word("NOT", ::w_not ) ,

@@ -1,11 +1,11 @@
 package kf.words.core.ext
 
-import kf.IWordClass
+import kf.IWordModule
 import kf.Word
 import kf.w_notImpl
 
-object wCaseExt: IWordClass {
-    override val name = "core.ext.caseExt"
+object wCaseExt: IWordModule {
+    override val name = "kf.words.core.ext.wCaseExt"
     override val description = "Case"
 
     override val words

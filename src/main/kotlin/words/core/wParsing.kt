@@ -3,12 +3,12 @@ package kf.words.core
 import kf.CellMeta
 import kf.D
 import kf.ForthVM
-import kf.IWordClass
+import kf.IWordModule
 import kf.Word
 import kf.strFromAddrLen
 import kf.toForthInt
 
-object wParsing : IWordClass {
+object wParsing : IWordModule {
     override val name = "kf.words.core.wParsing"
     override val description = "Parsing buffers"
 

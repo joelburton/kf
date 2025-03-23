@@ -4,12 +4,12 @@ import com.github.ajalt.mordant.rendering.OverflowWrap
 import com.github.ajalt.mordant.rendering.Whitespace
 import com.github.ajalt.mordant.terminal.warning
 import kf.ForthVM
-import kf.IWordClass
+import kf.IWordModule
 import kf.Word
 import kf.strFromAddrLen
 
-object wCompilingCustom : IWordClass {
-    override val name = "Compiling"
+object wCompilingCustom : IWordModule {
+    override val name = "kf.words.custom.wCompilingCustom"
     override val description = "Compiling custom words"
 
     override val words get() = arrayOf(

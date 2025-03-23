@@ -1,11 +1,11 @@
 package kf.words.core.ext
 
 import kf.ForthVM
-import kf.IWordClass
+import kf.IWordModule
 import kf.Word
 
-object wCommentsExt : IWordClass {
-    override val name = "core.ext.commentsExt"
+object wCommentsExt : IWordModule {
+    override val name = "kf.words.core.ext.wCommentsExt"
     override val description = "Comments Extension"
 
     override val words get() = arrayOf(

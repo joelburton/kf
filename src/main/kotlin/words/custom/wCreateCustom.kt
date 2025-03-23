@@ -1,12 +1,12 @@
 package kf.words.custom
 
 import kf.ForthVM
-import kf.IWordClass
+import kf.IWordModule
 import kf.Word
 import kf.words.core.wFunctions.w_call
 
-object wCreateCustom : IWordClass {
-    override val name = "custom.wCreateCustom"
+object wCreateCustom : IWordModule {
+    override val name = "kf.words.custom.wCreateCustom"
     override val description = "Custom words for creating data"
 
     override val words

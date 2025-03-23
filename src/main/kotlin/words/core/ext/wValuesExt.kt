@@ -1,11 +1,11 @@
 package kf.words.core.ext
 
-import kf.IWordClass
+import kf.IWordModule
 import kf.Word
 import kf.w_notImpl
 
-object wValuesExt: IWordClass {
-    override val name = "core.ext.valuesExt"
+object wValuesExt: IWordModule {
+    override val name = "kf.words.core.ext.wValuesExt"
     override val description = "Flexible variables"
 
     override val words

@@ -1,12 +1,12 @@
 package kf.words.core.ext
 
 import kf.ForthVM
-import kf.IWordClass
+import kf.IWordModule
 import kf.Word
 import kf.strFromAddrLen
 
-object wWordsExt : IWordClass {
-    override val name = "core.ext.wordsExt"
+object wWordsExt : IWordModule {
+    override val name = "kf.words.core.ext.wWordsExt"
     override val description = "Acting on words"
 
     override val words

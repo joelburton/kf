@@ -3,15 +3,15 @@ package kf.words.tools
 import com.github.ajalt.mordant.rendering.OverflowWrap
 import com.github.ajalt.mordant.rendering.Whitespace
 import kf.ForthVM
-import kf.IWordClass
+import kf.IWordModule
 import kf.Word
 import kf.addr
 import kf.hex8
 import kf.strFromAddrLen
 import kf.words.custom.wToolsCustom
 
-object wTools: IWordClass {
-    override val name = "Tools"
+object wTools: IWordModule {
+    override val name = "kf.words.tools.wTools"
     override val description = "Programming tools"
 
     override val words

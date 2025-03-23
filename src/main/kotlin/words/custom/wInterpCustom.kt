@@ -5,7 +5,7 @@ import com.github.ajalt.mordant.rendering.TextStyles
 import kf.IntEOF
 import kf.IntQuitNonInteractive
 import kf.ForthVM
-import kf.IWordClass
+import kf.IWordModule
 import kf.TerminalFileInterface
 import kf.Word
 
@@ -14,8 +14,8 @@ import kf.Word
  * These are the primitives required for the interpreter, as well as some
  * things about some words (like `include` for reading Forth files in) that
  * are strongly related to the interpreter. */
-object wInterpCustom : IWordClass {
-    override val name = "InterpExtra"
+object wInterpCustom : IWordModule {
+    override val name = "kf.words.custom.wInterpCustom"
     override val description = "Old interpreter primitives"
     override val words
         get() = arrayOf(

@@ -4,15 +4,15 @@ import com.github.ajalt.mordant.terminal.Terminal
 import kf.IntEOF
 import kf.IntQuitNonInteractive
 import kf.ForthVM
-import kf.IWordClass
+import kf.IWordModule
 import kf.ForthInterrupt
 import kf.TerminalFileInterface
 import kf.Word
 import kf.strFromAddrLen
 import kf.w_notImpl
 
-object wFileAccessExt: IWordClass {
-    override val name = "FileAccessExt"
+object wFileAccessExt: IWordModule {
+    override val name = "kf.words.fileaccess.wFileAccessExt"
     override val description = "File access"
     override val words = arrayOf<Word>(
         Word("FILE-STATUS", ::w_notImpl),

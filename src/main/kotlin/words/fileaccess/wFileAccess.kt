@@ -1,11 +1,11 @@
 package kf.words.fileaccess
 
-import kf.IWordClass
+import kf.IWordModule
 import kf.Word
 import kf.w_notImpl
 
-object wFileAccess : IWordClass {
-    override val name = "File Access"
+object wFileAccess : IWordModule {
+    override val name = "kf.words.fileaccess.wFileAccess"
     override val description = "File Access"
     override val words = arrayOf<Word>(
         Word(" BIN", ::w_notImpl),

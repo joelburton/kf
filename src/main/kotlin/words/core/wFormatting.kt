@@ -1,10 +1,10 @@
 package kf.words.core
 
-import kf.IWordClass
+import kf.IWordModule
 import kf.Word
 import kf.w_notImpl
 
-object wFormatting: IWordClass {
+object wFormatting: IWordModule {
     override val name = "kf.words.core.wFormatting"
     override val description = "Picture words for numbers"
 

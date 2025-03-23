@@ -1,10 +1,10 @@
 package kf.words.core
 
 import kf.ForthVM
-import kf.IWordClass
+import kf.IWordModule
 import kf.Word
 
-object wMemory : IWordClass {
+object wMemory : IWordModule {
     override val name = "kf.words.core.wMemory"
     override val description = "High-level memory"
 

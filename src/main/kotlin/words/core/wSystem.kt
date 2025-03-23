@@ -2,12 +2,12 @@ package kf.words.core
 
 import kf.ForthVM
 import kf.ForthVM.Companion.FALSE
-import kf.IWordClass
+import kf.IWordModule
 import kf.Word
 import kf.strFromAddrLen
 
 
-object wSystem: IWordClass {
+object wSystem: IWordModule {
     override val name = "kf.words.core.wSystem"
     override val description = "The system outside of the VM"
 

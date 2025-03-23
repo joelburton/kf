@@ -1,10 +1,10 @@
 package kf.words.core
 
 import kf.ForthVM
-import kf.IWordClass
+import kf.IWordModule
 import kf.Word
 
-object wComments: IWordClass {
+object wComments: IWordModule {
     override val name = "kf.words.core.wComments"
     override val description = "Comments"
 

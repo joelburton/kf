@@ -1,12 +1,14 @@
 package kf.words.custom
 
+import com.github.ajalt.mordant.rendering.OverflowWrap
 import com.github.ajalt.mordant.rendering.TextColors.gray
+import com.github.ajalt.mordant.rendering.Whitespace
 import com.github.ajalt.mordant.terminal.warning
 import kf.*
 
 
-object wToolsCustom : IWordClass {
-    override val name = "ToolsExtra"
+object wToolsCustom : IWordModule {
+    override val name = "kf.words.custom.wToolsCustom"
     override val description = "Tools specific to KF"
     override val words
         get() = arrayOf(
@@ -23,6 +25,8 @@ object wToolsCustom : IWordClass {
             Word(".MEMCONFIG", ::w_dotMemConfig),
             Word(".DICT", ::w_dotDict),
             Word(".STACK-TRACE", ::w_dotStackTrace),
+            Word(".SIMILAR", ::w_dotSimilar),
+            Word("./WORDS", ::w_dotSlashWords),
 
 
             // ~~  *terminal*:lineno:char:<2> 20 10
@@ -137,5 +141,25 @@ object wToolsCustom : IWordClass {
             vm.io.print(w.getHeaderStr())
         }
         vm.io.println(gray(Word.Companion.HEADER_STR))
+    }
+
+    /** `.SIMILAR` ( -- ) Find similar words */
+
+    fun w_dotSimilar(vm: ForthVM) {
+        val term = vm.scanner.parseName().strFromAddrLen(vm).lowercase()
+
+        vm.io.println(
+            vm.dict.words
+                .filter { it.name.contains(term) }
+                .joinToString(" ") { it.name },
+            whitespace = Whitespace.NORMAL,
+            overflowWrap = OverflowWrap.BREAK_WORD
+        )
+    }
+
+    /** `./WORDS` ( -- n ) Get number of words */
+
+    fun w_dotSlashWords(vm: ForthVM) {
+        vm.dstk.push(vm.dict.size)
     }
 }

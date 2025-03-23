@@ -8,9 +8,9 @@ import kf.interps.InterpBase.Companion.STATE_INTERPRETING
 import kf.words.core.wIfThen
 import kf.words.core.wInterp
 import kf.words.custom.wToolsCustom.w_dotCode
-import org.junit.jupiter.api.Assertions.*
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
-import kotlin.test.assertFailsWith
 
 class wInterpTest : ForthTestCase() {
     val mod = wInterp

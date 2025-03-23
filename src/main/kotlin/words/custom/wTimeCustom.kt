@@ -1,12 +1,12 @@
 package kf.words.custom
 
 import kf.ForthVM
-import kf.IWordClass
+import kf.IWordModule
 import kf.Word
 
 
-object wTimeCustom : IWordClass {
-    override val name = "TimeExtra"
+object wTimeCustom : IWordModule {
+    override val name = "kf.words.custom.wTimeCustom"
     override val description = "Time Extra words"
 
     override val words get() = arrayOf(

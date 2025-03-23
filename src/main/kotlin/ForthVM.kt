@@ -2,7 +2,6 @@ package kf
 
 
 import com.github.ajalt.mordant.rendering.TextColors.gray
-import com.github.ajalt.mordant.terminal.StandardTerminalInterface
 import com.github.ajalt.mordant.terminal.Terminal
 import com.github.ajalt.mordant.terminal.danger
 import com.github.ajalt.mordant.terminal.info
@@ -133,7 +132,7 @@ class ForthVM(
     var ip = memConfig.codeStart
 
     /** List of {name: class} for all primitive modules loaded. */
-    val modulesLoaded: HashMap<String, IWordClass> = HashMap()
+    val modulesLoaded: HashMap<String, IWordModule> = HashMap()
 
     /** Time mark for when VM started (the `millis` word reports # of millis
      * since server start, since it's not possible to return millis before the
@@ -177,7 +176,7 @@ class ForthVM(
         currentWord = Word.noWord
 
         dict.reset()
-        dict.addModule(mMachine)
+        dict.addMetaModule(interp.module)
         if (includePrimitives) addCoreWords()
 
         interp.reboot()
@@ -204,7 +203,7 @@ class ForthVM(
     fun addCoreWords() {
         if (D) dbg(3, "vm.addCoreWords")
 
-        for (mod in arrayOf(
+        for (metaMod in arrayOf(
             mCore,
             mCoreExt,
             mDoubleNums,
@@ -212,6 +211,11 @@ class ForthVM(
             mFileAccess,
             mTools,
             mCustom,
+            )) {
+            dict.addMetaModule(metaMod)
+        }
+
+        for (mod in arrayOf<IWordModule>(
         )) {
             dict.addModule(mod)
         }

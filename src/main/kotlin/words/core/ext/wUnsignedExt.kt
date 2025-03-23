@@ -1,11 +1,11 @@
 package kf.words.core.ext
 
-import kf.IWordClass
+import kf.IWordModule
 import kf.Word
 import kf.w_notImpl
 
-object wUnsignedExt: IWordClass {
-    override val name = "core.ext.wUnsignedExt"
+object wUnsignedExt: IWordModule {
+    override val name = "kf.words.core.ext.wUnsignedExt"
     override val description = "Unsigned math"
 
     override val words

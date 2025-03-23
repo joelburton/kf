@@ -1,13 +1,12 @@
 package kf.words.facility
 
-import kf.IWordClass
-import kf.Word
+import kf.IMetaWordModule
 
-object mFacility: IWordClass {
-    override val name = "Facility"
+object mFacility: IMetaWordModule {
+    override val name = "kf.words.facility.mFacility"
     override val description = "Facility words"
-    override val words = arrayOf<Word>(
-        *wFacility.words,
-        *wFacilityExt.words,
+    override val modules = arrayOf(
+        wFacility,
+        wFacilityExt,
     )
 }

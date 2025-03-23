@@ -1,12 +1,12 @@
 package kf.words.doublenums
 
-import kf.IWordClass
-import kf.Word
+import kf.IMetaWordModule
+import kf.IWordModule
 
-object mDoubleNums: IWordClass {
-    override val name = "Double"
+object mDoubleNums: IMetaWordModule {
+    override val name = "kf.words.doublenums.mDoubleNums"
     override val description = "Double words"
-    override val words = arrayOf<Word>(
-        *wDoubleNums.words,
+    override val modules = arrayOf<IWordModule>(
+        wDoubleNums,
     )
 }

@@ -3,17 +3,11 @@ import com.github.ajalt.mordant.terminal.Terminal
 import kf.ForthError
 import kf.IntEOF
 import kf.ForthVM
-import kf.IWordClass
 import kf.TerminalTestInterface
 import kf.interps.InterpBase
-import kf.interps.InterpEval
 import kf.interps.InterpFast
 import kf.words.custom.wToolsCustom._see
 import kf.recorder
-import kf.words.core.ext.wCompileExt
-import kf.words.core.ext.wInterpExt
-import kf.words.core.ext.wParseExt
-import kf.words.core.wCompiling
 import kf.words.machine.wMachine
 import org.junit.jupiter.api.BeforeEach
 import kotlin.test.assertContentEquals

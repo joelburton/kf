@@ -2,18 +2,21 @@ package kf.interps
 
 import com.github.ajalt.mordant.terminal.warning
 import kf.*
+import kf.words.core.ext.wInterpExt.w_parseName
 import kf.words.custom.wToolsCustom
+import kf.words.mEvalInterp
 
 /** Base class for interpreters that don't have a CLI, but can evaluate
  * and compile. */
 
 open class InterpEval(vm: ForthVM) : InterpBase(vm) {
     override val name = "Eval"
+    override val module: IMetaWordModule = mEvalInterp
     // This isn't a real interpreter; just a test program that shows that this
     // can succeed at compiling the interpreter with the mini-interpreter.
     // Since there's nothing after this, expect it to break:
     open val code = """
-        10 20 + .
+        10 20 (.) (.) (WORDS)
     """
 
     /** Process a token: either compile or interpret it.
@@ -43,6 +46,9 @@ open class InterpEval(vm: ForthVM) : InterpBase(vm) {
         // In order to compile the interpreter, we need access to this
         // internal and non-standard word. Make sure it's added to the dict,
         // and hide it from users.
+        vm.dict.add(
+            Word("PARSE-NAME", ::w_parseName, hidden = true)
+        )
         vm.dict.add(
             Word("BOOTSTRAP-PROCESS-TOKEN", ::w_processToken, hidden = true)
         )

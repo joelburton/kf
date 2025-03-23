@@ -2,11 +2,11 @@ package kf.words.core
 
 import kf.CellMeta
 import kf.ForthVM
-import kf.IWordClass
+import kf.IWordModule
 import kf.Word
 import kf.strFromAddrLen
 
-object wVariables: IWordClass {
+object wVariables: IWordModule {
     override val name = "kf.words.core.wVariables"
     override val description = "Variables & constants"
 

@@ -5,7 +5,7 @@ import kf.*
 import kf.interps.InterpBase
 import kf.interps.InterpEval
 
-object wInterp : IWordClass {
+object wInterp : IWordModule {
     override val name = "kf.words.core.wInterp"
     override val description = "Interpreter"
 

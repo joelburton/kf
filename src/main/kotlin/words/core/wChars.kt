@@ -3,11 +3,11 @@ package kf.words.core
 import kf.CharLitError
 import kf.ForthVM
 import kf.ForthVM.Companion.CHAR_SIZE
-import kf.IWordClass
+import kf.IWordModule
 import kf.Word
 import kf.strFromAddrLen
 
-object wChars: IWordClass {
+object wChars: IWordModule {
     override val name = "kf.words.core.wChars"
     override val description = "Characters & char memory"
 

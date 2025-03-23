@@ -1,11 +1,11 @@
 package kf.words.core
 
 import kf.ForthVM
-import kf.IWordClass
+import kf.IWordModule
 import kf.Word
 
 
-object wDoubleCell : IWordClass {
+object wDoubleCell : IWordModule {
     override val name = "kf.words.core.wDoubleCell"
     override val description = "Double-cell words"
 

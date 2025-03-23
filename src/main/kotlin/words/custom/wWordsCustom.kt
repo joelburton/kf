@@ -1,12 +1,12 @@
 package kf.words.custom
 
 import kf.ForthVM
-import kf.IWordClass
+import kf.IWordModule
 import kf.Word
 import kf.strFromAddrLen
 
-object wWordsCustom : IWordClass {
-    override val name = "WordsExtra"
+object wWordsCustom : IWordModule {
+    override val name = "kf.words.custom.wWordsCustom"
     override val description = "Words Extension"
     override val words get() = arrayOf(
         Word("WN-FORGET", ::w_wnForget ) ,

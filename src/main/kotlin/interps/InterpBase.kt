@@ -6,7 +6,9 @@ import kf.FScanner
 import kf.ForthVM
 import kf.ForthVM.Companion.REG_IN_PTR
 import kf.ForthVM.Companion.REG_STATE
+import kf.IMetaWordModule
 import kf.VERSION_STRING
+import kf.words.mBaseInterp
 
 /** Base for any "interpreter", even one that has no interpreter CLI at all. */
 
@@ -22,12 +24,13 @@ interface IInterp {
     fun compile(token: String)
     fun interpret(token: String)
     fun eval(line: String)
+    val module: IMetaWordModule
 }
 
 
 open class InterpBase(val vm: ForthVM) : IInterp {
     override val name: String = "Base"
-
+    override val module: IMetaWordModule = mBaseInterp
     companion object {
         const val STATE_INTERPRETING: Int = 0
         const val STATE_COMPILING: Int = -1
@@ -72,11 +75,11 @@ open class InterpBase(val vm: ForthVM) : IInterp {
         vm.io.success("\nWelcome to ${VERSION_STRING} ($name)\n")
     }
 
-    override fun interpret(line: String) {
+    override fun interpret(token: String) {
         throw NotImplementedError("InterpBase cannot interpret")
     }
 
-    override fun compile(line: String) {
+    override fun compile(token: String) {
         throw NotImplementedError("InterpBase cannot compile")
     }
 

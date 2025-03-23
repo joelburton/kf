@@ -1,44 +1,57 @@
 package kf.words.custom
 
-import com.github.ajalt.mordant.terminal.Terminal
+import com.github.ajalt.mordant.terminal.warning
 import kf.*
+import kotlin.reflect.KClass
 
-object wBload : IWordClass {
-    override val name = "Include"
+object wBload : IWordModule {
+    override val name = "kf.words.custom.wBload"
     override val description = "Include binary files"
     override val words get() = arrayOf(
         // including new primitives and forth files
-        Word("BLOAD", ::w_includeBinary),
+        Word("BLOAD", ::w_bload),
+        Word("BLOAD-AGAIN", ::w_bloadAgain),
     )
 
     /**  Read in a primitive class dynamically
      */
-    fun readPrimitiveClass(vm: ForthVM, name: String) {
+    fun readPrimitiveClass(vm: ForthVM,
+                           name: String,
+                           reloadOk: Boolean = false) {
         if (D) vm.dbg(3, "vm.readPrimitiveClass: $name")
-        try {
-            // get the actual "forth module" (ie, Kotlin object) -- Kotlin
-            // objects are a type of singleton Java class, so there's a field
-            // always called INSTANCE on the class with the object
-            val mod = Class.forName(name)
-                .getDeclaredField("INSTANCE")
-                .get(null) as IWordClass
-            vm.dict.addModule(mod)
+        if (!reloadOk && name in vm.modulesLoaded) {
+            vm.io.warning("Already loaded: $name (use BLOAD-AGAIN to reload)")
+            return
+        }
+        val mod = try {
+            Class.forName(name).kotlin.objectInstance!! as IWordModule
         } catch (e: ClassNotFoundException) {
             throw BloadError("Can't find: $name")
         } catch (e: NoSuchFieldException) {
             throw BloadError("Not an object")
         } catch (e: ClassCastException) {
-            throw BloadError("Wrong interface: needs `name`, `primitives`")
+            throw BloadError("Wrong interface: needs `name`, `words`")
         }
+        vm.dict.addModule(mod)
     }
 
-    /**  `include-primitives` `( in:"file" -- : Read class file of primitives )`
+    /**  `BLOAD` `( in:"file" -- : Read class file of primitives )`
      *
      * These can be anything the JVM can understand: Java, Kotlin, Groovy, etc.
      * */
 
-    fun w_includeBinary(vm: ForthVM) {
+    fun w_bload(vm: ForthVM) {
         val path =  vm.scanner.parseName().strFromAddrLen(vm)
-        readPrimitiveClass(vm, path)
+        readPrimitiveClass(vm, path, reloadOk=false)
+    }
+
+    /**  `BLOAD` `( in:"file" -- : Read class file of primitives )`
+     *
+     * These can be anything the JVM can understand: Java, Kotlin, Groovy, etc.
+     * */
+
+    fun w_bloadAgain(vm: ForthVM) {
+        val path =  vm.scanner.parseName().strFromAddrLen(vm)
+        readPrimitiveClass(vm, path, reloadOk=true)
     }
 }

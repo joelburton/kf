@@ -1,12 +1,12 @@
 package kf.words.core.ext
 
 import kf.ForthVM
-import kf.IWordClass
+import kf.IWordModule
 import kf.Word
 
 
-object wRStackExt: IWordClass {
-    override val name = "RStackExt"
+object wRStackExt: IWordModule {
+    override val name = "kf.words.core.ext.wRStackExt"
     override val description = "Handling calling and exiting custom functions"
 
     override val words = arrayOf(

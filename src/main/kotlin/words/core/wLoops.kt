@@ -2,10 +2,10 @@ package kf.words.core
 
 import kf.D
 import kf.ForthVM
-import kf.IWordClass
+import kf.IWordModule
 import kf.Word
 
-object wLoops : IWordClass {
+object wLoops : IWordModule {
     override val name = "kf.words.core.wLoops"
     override val description = "Looping words"
 
@@ -34,6 +34,7 @@ object wLoops : IWordClass {
             Word("J", ::w_j, compO = true),
 
             Word("LEAVE", ::w_leave, imm = true, compO = true),
+            Word("(LEAVE)", ::w_parenLeave, compO = true),
             Word("UNLOOP", ::w_unloop, compO = true),
         )
 
@@ -247,12 +248,18 @@ object wLoops : IWordClass {
 
     fun w_leave(vm: ForthVM) {
         // should this be a subordinate word like "(LEAVE)" ?
-        vm.appendWord("R>")
-        vm.appendWord("R>")
-        vm.appendWord("2drop")
-        vm.appendJump("branch", 0xffff)
+//        vm.appendWord("R>")
+//        vm.appendWord("R>")
+//        vm.appendWord("2drop")
+        vm.appendJump("(leave)", 0xffff)
         val count = vm.rstk.pop()
         vm.rstk.push(vm.cend - 1, count + 1)
+    }
+
+    fun w_parenLeave(vm: ForthVM) {
+        vm.rstk.pop()
+        vm.rstk.pop()
+        vm.ip = vm.ip + vm.mem[vm.ip]
     }
 
 

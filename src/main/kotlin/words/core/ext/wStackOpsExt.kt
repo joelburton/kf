@@ -1,11 +1,11 @@
 package kf.words.core.ext
 
 import kf.ForthVM
-import kf.IWordClass
+import kf.IWordModule
 import kf.Word
 
-object wStackOpsExt: IWordClass {
-    override val name = "core.ext.stackOpsExt"
+object wStackOpsExt: IWordModule {
+    override val name = "kf.words.core.ext.stackOpsExt"
     override val description = "Stack operations"
 
     override val words

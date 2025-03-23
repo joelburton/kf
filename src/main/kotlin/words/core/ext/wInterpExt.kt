@@ -2,11 +2,11 @@ package kf.words.core.ext
 
 import kf.D
 import kf.ForthVM
-import kf.IWordClass
+import kf.IWordModule
 import kf.Word
 
-object wInterpExt: IWordClass {
-    override val name = "core.ext.interpExt"
+object wInterpExt: IWordModule {
+    override val name = "kf.words.core.ext.wInterpExt"
     override val description = "Interpreter extra words"
     override val words = arrayOf(
         Word("PARSE-NAME", ::w_parseName),
@@ -14,9 +14,7 @@ object wInterpExt: IWordClass {
 
         )
 
-    /** PARSE-NAME   CORE EXT
-     *
-     * ( "<spaces>name<space>" -- c-addr u )
+    /** `PARSE-NAME` ( "<spaces>name<space>" -- c-addr u ) Parse name
      *
      * Skip leading space delimiters. Parse name delimited by a space.
      *
@@ -27,16 +25,11 @@ object wInterpExt: IWordClass {
 
     fun w_parseName(vm: ForthVM) {
         val (addr, len) = vm.scanner.parseName()
-        if (D) vm.dbg(2, "w_parseName: addr=$addr len=$len")
+        if (D) vm.dbg(3, "w_parseName: addr=$addr len=$len")
         vm.dstk.push(addr, len)
     }
 
-    /** REFILL          CORE EXT
-     *
-     * ( -- flag )
-     *
-     * Attempt to fill the input buffer from the input source, returning a true
-     * flag if successful.
+    /** `REFILL` ( -- flag ) Refill input buffer from source
      *
      * When the input source is the user input device, attempt to receive input
      * into the terminal input buffer. If successful, make the result the input

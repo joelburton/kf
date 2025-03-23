@@ -1,13 +1,12 @@
 package kf.words.machine
 
-import kf.IWordClass
-import kf.Word
+import kf.IMetaWordModule
 
-object mMachine: IWordClass {
-    override val name = "Machine"
+object mMachine: IMetaWordModule {
+    override val name = "kf.words.machine.mMachine"
     override val description = "Machine words"
-    override val words = arrayOf<Word>(
-        *wMachine.words,
-        *wMachineDebug.words,
+    override val modules = arrayOf(
+        wMachine,
+        wMachineDebug,
     )
 }

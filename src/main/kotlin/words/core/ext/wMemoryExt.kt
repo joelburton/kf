@@ -1,12 +1,12 @@
 package kf.words.core.ext
 
 import kf.ForthVM
-import kf.IWordClass
+import kf.IWordModule
 import kf.Word
 
 
-object wMemoryExt : IWordClass {
-    override val name = "core.ext.memoryExt"
+object wMemoryExt : IWordModule {
+    override val name = "kf.words.core.ext.wMemoryExt"
     override val description = "High-level memory"
 
     override val words

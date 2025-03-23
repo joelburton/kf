@@ -1,6 +1,7 @@
 package kf
 
 import com.github.ajalt.mordant.rendering.TextColors.yellow
+import com.github.ajalt.mordant.rendering.TextColors.blue
 import com.github.ajalt.mordant.rendering.TextStyles.bold
 import com.github.ajalt.mordant.rendering.Whitespace
 import com.github.ajalt.mordant.terminal.muted
@@ -9,11 +10,23 @@ import com.github.ajalt.mordant.widgets.Text
 class WordNotFoundError(m: String) : ForthError("Word not found: $m")
 class DictFullError() : ForthError("Dictionary full")
 
-interface IWordClass {
+interface IWordModule {
     val name: String
     val description: String
     val words: Array<Word>
 }
+
+interface IMetaWordModule {
+    val name: String
+    val description: String
+    val modules: Array<IWordModule>
+}
+
+// todo: should "words" be kept in reverse order?
+// - that's always how we look for a word
+// - plus, we'd have nice idiotmatic code for get, like:
+
+//     words.first { it.name.equals(name, ignoreCash }
 
 class Dict(val vm: ForthVM, val capacity: Int = 1024)  {
     private val _words = arrayListOf<Word>()
@@ -86,11 +99,16 @@ class Dict(val vm: ForthVM, val capacity: Int = 1024)  {
         if (D) vm.dbg(3, "dict.add: ${word.name}")
         if (_words.size >= capacity) throw DictFullError()
         _words.add(word)
-        word.wn = _words.size - 1
+        word.wn = _words.lastIndex
     }
 
-    fun addModule(mod: IWordClass) {
+    fun addModule(mod: IWordModule, reloadOk: Boolean = false) {
         if (D) vm.dbg(3, "dict.addModule: ${mod.name}")
+
+        if (!reloadOk && mod.name in vm.modulesLoaded) {
+            vm.io.muted("Skipping already-loaded module: ${mod.name}")
+        }
+
         if (vm.verbosity >= 1) vm.io.println(bold(yellow("${mod.name}:")))
         val sb = StringBuilder()
         for (w in mod.words) {
@@ -101,6 +119,12 @@ class Dict(val vm: ForthVM, val capacity: Int = 1024)  {
             vm.io.println(Text("    $sb", whitespace= Whitespace.PRE_WRAP))
 
         vm.modulesLoaded.put(mod.name, mod)
+    }
+
+    fun addMetaModule(mod: IMetaWordModule) {
+        if (D) vm.dbg(3, "dict.addMetaModule: ${mod.name}")
+        if (vm.verbosity >= 1) vm.io.println(bold(blue("${mod.name}:")))
+        for (m in mod.modules) addModule(m, true)
     }
 
     // ******************************************************* manipulating dict

@@ -3,10 +3,10 @@ package kf.words.core
 import kf.ForthVM
 import kf.ForthVM.Companion.FALSE
 import kf.ForthVM.Companion.TRUE
-import kf.IWordClass
+import kf.IWordModule
 import kf.Word
 
-object wLogic : IWordClass {
+object wLogic : IWordModule {
     override val name = "kf.words.core.wLogic"
     override val description = "Comparison and logic words"
 

@@ -1,13 +1,12 @@
 package kf.words.tools
 
-import kf.IWordClass
-import kf.Word
+import kf.IMetaWordModule
 
-object mTools: IWordClass {
+object mTools: IMetaWordModule {
     override val name = "Tools"
     override val description = "Tools"
-    override val words = arrayOf<Word>(
-        *wTools.words,
-        *wToolsExt.words,
+    override val modules = arrayOf(
+        wTools,
+        wToolsExt,
     )
 }

@@ -1,13 +1,12 @@
 package kf.words.fileaccess
 
-import kf.IWordClass
-import kf.Word
+import kf.IMetaWordModule
 
-object mFileAccess: IWordClass {
-    override val name = "File Access"
+object mFileAccess: IMetaWordModule {
+    override val name = "kf.words.fileaccess.mFileAccess"
     override val description = "File Access"
-    override val words = arrayOf<Word>(
-        *wFileAccess.words,
-        *wFileAccessExt.words,
+    override val modules = arrayOf(
+        wFileAccess,
+        wFileAccessExt,
     )
 }

@@ -2,12 +2,12 @@ package kf.words.core
 
 import kf.D
 import kf.ForthVM
-import kf.IWordClass
+import kf.IWordModule
 import kf.Word
 import kf.strFromAddrLen
 import kf.strFromCSAddr
 
-object wWords : IWordClass {
+object wWords : IWordModule {
     override val name = "kf.words.core.wWords"
     override val description = "Acting on words"
 

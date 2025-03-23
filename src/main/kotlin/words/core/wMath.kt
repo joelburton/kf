@@ -2,11 +2,11 @@ package kf.words.core
 
 import kf.DivisionByZero
 import kf.ForthVM
-import kf.IWordClass
+import kf.IWordModule
 import kf.Word
 import kotlin.math.absoluteValue
 
-object wMath : IWordClass {
+object wMath : IWordModule {
     override val name = "kf.words.core.wMath"
     override val description = "Math operations"
 

@@ -6,7 +6,7 @@ import kotlin.test.assertFailsWith
 
 
 
-object FakeMod: IWordClass {
+object FakeMod: IWordModule {
     override val name = "FakeMod"
     override val description = "Fake"
     override val words = arrayOf<Word>(

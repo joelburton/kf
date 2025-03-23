@@ -63,6 +63,10 @@ class ForthCLI : CliktCommand("PupForth") {
         .default("fast")
         .help("interpreter to use")
 
+    val raw: Boolean by option("--raw")
+        .flag(default = false)
+        .help("Load only required modules for interp")
+
     fun runFiles(vm: ForthVM) {
         for (path in paths) {
             print("Running $path ... ")
@@ -105,7 +109,7 @@ class ForthCLI : CliktCommand("PupForth") {
         vm.interp = theInterp
 
         vm.verbosity = verbosity
-        vm.reboot()
+        vm.reboot(!raw)
 
         // first, process any files passed in on cmd line
         runFiles(vm)

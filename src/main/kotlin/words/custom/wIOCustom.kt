@@ -1,11 +1,11 @@
 package kf.words.custom
 
 import kf.ForthVM
-import kf.IWordClass
+import kf.IWordModule
 import kf.Word
 
-object wIOCustom: IWordClass {
-    override val name = "IOCustom"
+object wIOCustom: IWordModule {
+    override val name = "kf.words.custom.wIOCustom"
     override val description = "Custom words for IO"
     override val words = arrayOf<Word>(
         Word("NL",::w_nl),

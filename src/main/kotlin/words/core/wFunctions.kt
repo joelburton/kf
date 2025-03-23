@@ -1,11 +1,11 @@
 package kf.words.core
 
 import kf.ForthVM
-import kf.IWordClass
+import kf.IWordModule
 import kf.Word
 
 
-object wFunctions: IWordClass {
+object wFunctions: IWordModule {
     override val name = "kf.words.core.wFunctions"
     override val description = "Handling calling and exiting custom functions"
 

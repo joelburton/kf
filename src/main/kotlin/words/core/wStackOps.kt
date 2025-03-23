@@ -1,10 +1,10 @@
 package kf.words.core
 
 import kf.ForthVM
-import kf.IWordClass
+import kf.IWordModule
 import kf.Word
 
-object wStackOps: IWordClass {
+object wStackOps: IWordModule {
     override val name = "kf.words.core.wStackOps"
     override val description = "Stack operations"
 

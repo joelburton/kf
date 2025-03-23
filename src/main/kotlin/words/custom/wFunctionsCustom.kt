@@ -1,11 +1,11 @@
 package kf.words.custom
 
 import kf.ForthVM
-import kf.IWordClass
+import kf.IWordModule
 import kf.Word
 
-object wFunctionsCustom : IWordClass {
-    override val name = "Functions"
+object wFunctionsCustom : IWordModule {
+    override val name = "kf.words.custom.wFunctionsCustom"
     override val description = "Custom words for functions"
 
     override val words get() = arrayOf(

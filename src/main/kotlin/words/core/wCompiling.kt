@@ -1,12 +1,13 @@
 package kf.words.core
 
+import kf.ForthError
 import kf.ForthVM
-import kf.IWordClass
+import kf.IWordModule
 import kf.Word
 import kf.interps.InterpBase
 import kf.strFromAddrLen
 
-object wCompiling : IWordClass {
+object wCompiling : IWordModule {
     override val name = "kf.words.core.wCompiling"
     override val description = "Compiling colon words"
 
@@ -48,7 +49,12 @@ object wCompiling : IWordClass {
 
     fun w_semicolon(vm: ForthVM) {
         vm.appendWord(";S")
-        vm.dict.last.hidden = false
+        if (vm.dict.currentlyDefining?.name
+            .equals("(ANON)", ignoreCase = true)) {
+            vm.dstk.push(vm.dict.currentlyDefining!!.wn)
+        } else {
+            vm.dict.last.hidden = false
+        }
         vm.dict.currentlyDefining = null
         vm.interp.state = InterpBase.STATE_INTERPRETING
     }

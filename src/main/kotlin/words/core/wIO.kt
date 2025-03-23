@@ -6,8 +6,8 @@ import com.github.ajalt.mordant.rendering.TextColors.yellow
 import com.github.ajalt.mordant.terminal.prompt
 import kf.*
 
-object wIO : IWordClass {
-    override val name = "IO"
+object wIO : IWordModule {
+    override val name = "kf.words.core.wIO"
     override val description = "General input and output"
 
     override val words

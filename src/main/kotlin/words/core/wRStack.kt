@@ -1,11 +1,11 @@
 package kf.words.core
 
 import kf.ForthVM
-import kf.IWordClass
+import kf.IWordModule
 import kf.Word
 
 
-object wRStack: IWordClass {
+object wRStack: IWordModule {
     override val name = "kf.words.core.RStack"
     override val description = "Working with the return stack."
 

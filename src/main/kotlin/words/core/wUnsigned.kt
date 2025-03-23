@@ -1,13 +1,13 @@
 package kf.words.core
 
-import kf.IWordClass
+import kf.IWordModule
 import kf.Word
 import kf.words.core.wDoubleCell.w_mStar
 import kf.words.core.wLogic.w_lessThan
 import kf.words.core.wMath.w_fmSlashMod
 import kf.words.core.wNumIO.w_dot
 
-object wUnsigned: IWordClass {
+object wUnsigned: IWordModule {
     override val name = "kf.words.core.wUnsigned"
     override val description = "Unsigned math"
 

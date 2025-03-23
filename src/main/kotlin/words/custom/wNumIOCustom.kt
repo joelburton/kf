@@ -1,11 +1,11 @@
 package kf.words.custom
 
 import kf.ForthVM
-import kf.IWordClass
+import kf.IWordModule
 import kf.Word
 
-object wNumIOCustom: IWordClass {
-    override val name = "NumIO"
+object wNumIOCustom: IWordModule {
+    override val name = "kf.words.custom.wNumIOCustom"
     override val description = "Custom words for numbers and IO"
     override val words = arrayOf<Word>(
         Word("OCTAL",::w_octal),
