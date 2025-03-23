@@ -44,14 +44,13 @@ object wInterpExt: IWordModule {
     fun w_refill(vm: ForthVM) {
         // fixme: not handling the "if a string from evaluate" yet
 
-        val input = vm.io.readLineOrNull(false)
-        if (input == null) {
-            vm.dstk.push(0)
-        } else {
-            vm.scanner.fill(input)
-            vm.dstk.push(1)
-        }
+            val s = vm.source.readLineOrNull()
+            if (s == null) {
+                vm.dstk.push(0)
+
+            } else {
+                vm.scanner.fill(s)
+                vm.dstk.push(1)
+            }
     }
-
-
 }

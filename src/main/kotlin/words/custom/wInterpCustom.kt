@@ -33,7 +33,7 @@ object wInterpCustom : IWordModule {
 
     /** `interp-prompt` ( -- : show prompt for interpreter ) */
     fun w_interpPrompt(vm: ForthVM) {
-        if (vm.verbosity >= -1) {
+        if (vm.verbosity >= -1 && vm.source.id == 0) {
             val stkLen: Int = vm.dstk.size
             if (vm.interp.isInterpreting) {
                 vm.io.print(TextStyles.bold(TextColors.green("($stkLen) >>> ")))

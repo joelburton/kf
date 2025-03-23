@@ -24,7 +24,7 @@ object wIOExt: IWordModule {
      */
 
     fun w_sourceId(vm: ForthVM) {
-        vm.dstk.push(vm.sourceId)
+        vm.dstk.push(vm.source.id)
     }
 
     fun w_restoreInput(vm: ForthVM) {

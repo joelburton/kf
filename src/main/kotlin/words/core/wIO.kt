@@ -62,16 +62,15 @@ object wIO : IWordModule {
     fun w_accept(vm: ForthVM) {
         val maxLen = vm.dstk.pop()
         val addr = vm.dstk.pop()
-        val s = vm.io.readLineOrNull(false)
-
-        if (s != null) {
-            if (s.length > maxLen)
-                throw ForthBufferError("Input exceeded max length: $maxLen")
-            for (i in s.indices) vm.mem[addr + i] = s[i].code
-            vm.dstk.push(s.length)
-        } else {
-            throw IntEOF("Accept failed")
+        val s = vm.source.readLineOrNull()
+        if (s == null) {
+            // fixme: what to do?
+            return
         }
+        if (s.length > maxLen)
+            throw ForthBufferError("Input exceeded max length: $maxLen")
+        for (i in s.indices) vm.mem[addr + i] = s[i].code
+        vm.dstk.push(s.length)
     }
 
     /** KEY ( -- char ) Receive one character (not displayed) */

@@ -107,15 +107,19 @@ open class InterpEval(vm: ForthVM) : InterpBase(vm) {
         }
     }
 
-    /** Evaluate a line. */
+    /** Evaluate a line: simple one-line for bootstrapping. */
 
     override fun eval(line: String) {
         vm.scanner.fill(line)
         try {
-            vm.runVM()
+            while (true) {
+                val wn = vm.mem[vm.ip++]
+                val w = vm.dict[wn]
+                w(vm)
+            }
         } catch (e: ForthInterrupt) {
             when (e) {
-                is IntEOF -> {}
+                is IntEOF -> return
                 else -> throw e
             }
         }
@@ -132,7 +136,19 @@ open class InterpEval(vm: ForthVM) : InterpBase(vm) {
      fun bootstrapEval(line: String) {
         // the "mini-interpreter" is located in scratch space here
         vm.ip = vm.memConfig.scratchStart
-        eval(line)
+        vm.scanner.fill(line)
+        try {
+            while (true) {
+                val wn = vm.mem[vm.ip++]
+                val w = vm.dict[wn]
+                w(vm)
+            }
+        } catch (e: ForthInterrupt) {
+            when (e) {
+                is IntEOF -> return
+                else -> throw e
+            }
+        }
         vm.ip = vm.memConfig.codeStart
     }
 

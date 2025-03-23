@@ -12,7 +12,6 @@ import kf.words.custom.mCustom
 import kf.words.doublenums.mDoubleNums
 import kf.words.facility.mFacility
 import kf.words.fileaccess.mFileAccess
-import kf.words.machine.mMachine
 import kf.words.tools.mTools
 import kotlin.reflect.KProperty
 import kotlin.time.TimeSource
@@ -138,7 +137,8 @@ class ForthVM(
     val includedFiles: ArrayList<String> = ArrayList()
 
     /** Source ID (-1 = evaluate, 0 = stdin, # = fileId */
-    var sourceId: Int = 0
+    val sources = arrayListOf<InputSource>(StdInInputSource())
+    val source get() = sources.last()
 
     /** Time mark for when VM started (the `millis` word reports # of millis
      * since server start, since it's not possible to return millis before the
@@ -217,7 +217,7 @@ class ForthVM(
             mFileAccess,
             mTools,
             mCustom,
-            )) {
+        )) {
             dict.addMetaModule(metaMod)
         }
 
@@ -307,11 +307,17 @@ class ForthVM(
                 val w = dict[wn]
                 w(this)
             } catch (e: ForthError) {
-                io.danger("ERROR: " + e.message)
-                if (verbosity >= 3) e.printStackTrace()
+                io.danger("$source ERROR: " + e.message)
+                if (verbosity >= 3) io.print(gray(e.stackTraceToString()))
                 reset()
             } catch (e: ForthInterrupt) {
                 when (e) {
+                    is IntEOF -> {
+                        sources.removeLast()
+                        if (sources.isEmpty()) throw e
+                        ip = cstart
+                    }
+
                     is IntQuit -> throw e
                     else -> throw e
                 }

@@ -96,6 +96,8 @@ object wInterp : IWordModule {
 
         if (vm.interp !is InterpEval) throw RuntimeException("not an eval!")
 
+        // fixme: verbosity & restore where we were in line/scanner;
+        //  right now this doesn't allow anything after "evaluate" on line
         // - hide away current scanner (so we can restore it so that we can
         //   later handle anything *after* "evaluate" on this line
         // - make a new temporary scanner in a scratch space
@@ -103,13 +105,15 @@ object wInterp : IWordModule {
         // - restore the old scanner
 
         val s = Pair(addr, len).strFromAddrLen(vm)
-        val curScanner = vm.scanner
-        val prevSourceId = vm.sourceId
-        vm.scanner = FScanner(vm) // fixme: needs a real home
-        vm.sourceId = -1
-        (vm.interp as InterpEval).eval(s + " eof")
-        vm.scanner = curScanner
-        vm.sourceId = prevSourceId
+//        val curScanner = vm.scanner
+//        val prevSourceId = vm.inputSource.id
+//        vm.scanner = FScanner(vm) // fixme: needs a real home
+
+        vm.sources.add(EvalInputSource(s))
+//        (vm.interp as InterpEval).eval(s)
+//        vm.scanner = curScanner
+//        vm.sourceId = prevSourceId
+        vm.scanner.reset()
     }
 
     /**

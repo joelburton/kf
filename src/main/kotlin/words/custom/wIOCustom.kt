@@ -10,6 +10,7 @@ object wIOCustom : IWordModule {
     override val words = arrayOf<Word>(
         Word("NL", ::w_nl),
         Word(".INCLUDED-FILES", ::w_dotIncludedFiles),
+        Word(".INPUT-SOURCES", ::w_dotInputSources),
     )
 
     /** `nl` ( -- nlChar : return newline char )` */
@@ -21,9 +22,11 @@ object wIOCustom : IWordModule {
     /** `.INCLUDED-FILES` ( -- ) Print included files list */
 
     fun w_dotIncludedFiles(vm: ForthVM) {
-        print(
-            vm.includedFiles.indices.joinToString("\n")
-            { idx -> "$idx: ${vm.includedFiles[idx]}" })
+        print(vm.includedFiles.joinToString("\n"))
+    }
+
+    fun w_dotInputSources(vm: ForthVM) {
+        print(vm.sources.joinToString("\n") { "${it.id}: ${it.path}" })
     }
 
 

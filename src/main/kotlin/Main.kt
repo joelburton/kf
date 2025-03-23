@@ -12,6 +12,8 @@ import kf.interps.InterpBase
 import kf.interps.InterpEval
 import kf.interps.InterpFast
 import kf.interps.InterpForth
+import kf.words.core.ext.wInterpExt
+import kf.words.fileaccess.wFileAccessExt
 
 class ForthCLI : CliktCommand("PupForth") {
 
@@ -69,18 +71,20 @@ class ForthCLI : CliktCommand("PupForth") {
 
     fun runFiles(vm: ForthVM) {
         for (path in paths) {
-            print("Running $path ... ")
-            vm.io = Terminal(terminalInterface = TerminalFileInterface(path))
-            vm.verbosity = -2
-            try {
-                vm.runVM()
-            } catch (e: ForthInterrupt) {
-                when (e) {
-                    is IntEOF -> continue  // next file
-                    is IntQuit -> break  // move to interactive
-                    else -> throw e
-                }
-            }
+//            print("Running $path ... ")
+//            vm.io = Terminal(terminalInterface = TerminalFileInterface(path))
+//            vm.verbosity = -2
+//            vm.sources.clear()
+            wFileAccessExt.include(vm, path)
+//            try {
+//                vm.runVM()
+//            } catch (e: ForthInterrupt) {
+//                when (e) {
+//                    is IntEOF -> continue  // next file
+//                    is IntQuit -> break  // move to interactive
+//                    else -> throw e
+//                }
+//            }
         }
     }
 

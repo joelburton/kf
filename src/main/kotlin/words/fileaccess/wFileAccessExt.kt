@@ -1,12 +1,8 @@
 package kf.words.fileaccess
 
-import com.github.ajalt.mordant.terminal.Terminal
-import kf.IntEOF
-import kf.IntQuitNonInteractive
+import kf.FFileSource
 import kf.ForthVM
 import kf.IWordModule
-import kf.ForthInterrupt
-import kf.TerminalFileInterface
 import kf.Word
 import kf.strFromAddrLen
 import kf.w_notImpl
@@ -27,28 +23,29 @@ object wFileAccessExt: IWordModule {
     // *************************************************************************
 
     fun include(vm: ForthVM, path: String) {
-        val prevIO: Terminal = vm.io
-        val prevVerbosity: Int = vm.verbosity
-        val prevSourceId: Int = vm.sourceId
+//        val prevIO: Terminal = vm.io
+//        val prevVerbosity: Int = vm.verbosity
+//        val prevSourceId: Int = vm.sourceId
 
-        vm.io = Terminal(terminalInterface = TerminalFileInterface(path))
-        vm.verbosity = -2
-        vm.includedFiles.add(path)
-        vm.sourceId = vm.includedFiles.lastIndex + 1
+//        vm.io = Terminal(terminalInterface = TerminalFileInterface(path))
+//        vm.verbosity = -2
+        vm.includedFiles.add(path)  // fixme: we prob won't need this w/inputSources avail
+//        vm.sourceId = vm.includedFiles.lastIndex + 1
 
-        try {
-            vm.runVM()
-        } catch (e: ForthInterrupt) {
-            when (e) {
-                is IntQuitNonInteractive -> vm.ip = vm.memConfig.codeStart
-                is IntEOF -> vm.ip = vm.memConfig.codeStart
-                else -> throw e  // let outer interpreter handle
-            }
-        } finally {
-            vm.io = prevIO
-            vm.sourceId = prevSourceId
-            vm.verbosity = prevVerbosity
-        }
+        vm.sources.add(FFileSource(vm.sources.lastIndex + 1, path))
+//        try {
+//            vm.runVM()
+//        } catch (e: ForthInterrupt) {
+//            when (e) {
+//                is IntQuitNonInteractive -> vm.ip = vm.memConfig.codeStart
+//                is IntEOF -> vm.ip = vm.memConfig.codeStart
+//                else -> throw e  // let outer interpreter handle
+//            }
+//        } finally {
+//            vm.io = prevIO
+////            vm.sourceId = prevSourceId
+//            vm.verbosity = prevVerbosity
+//        }
     }
 
     /**  `include` `( in:"file" -- : read Forth file in )` */
