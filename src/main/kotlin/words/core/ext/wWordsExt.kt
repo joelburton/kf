@@ -28,7 +28,7 @@ object wWordsExt : IWordModule {
      */
     fun w_marker(vm: ForthVM) {
         val wCall = vm.dict["call"]
-        val newName: String =  vm.scanner.parseName().strFromAddrLen(vm)
+        val newName: String =  vm.source.scanner.parseName().strFromAddrLen(vm)
         val w = Word(
             newName,
             fn = wCall.fn,

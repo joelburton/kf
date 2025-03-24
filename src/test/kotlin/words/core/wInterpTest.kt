@@ -48,7 +48,7 @@ class wInterpTest : ForthTestCase() {
         vm.ip = 42
         vm.dstk.push(10)
         vm.rstk.push(20)
-        vm.scanner.fill("oh no\"")
+        vm.source.scanner.fill("oh no\"")
         mod.w_abortQuote(vm)
         assertEquals(vm.memConfig.codeStart, vm.ip)
         assertDStack()
@@ -63,7 +63,7 @@ class wInterpTest : ForthTestCase() {
         vm.ip = vm.memConfig.codeStart
         vm.dstk.push(10)
         vm.rstk.push(20)
-        vm.scanner.fill("oh no\"")
+        vm.source.scanner.fill("oh no\"")
         println("${vm.cstart}, ${vm.cend}")
         vm.interp.state = STATE_COMPILING
         mod.w_abortQuote(vm)

@@ -32,7 +32,7 @@ object wParsing : IWordModule {
 
     fun w_word(vm: ForthVM) {
         val char = vm.dstk.pop().toChar()
-        val (addr, len) = vm.scanner.wordParse(char)
+        val (addr, len) = vm.source.scanner.wordParse(char)
 
         val bufAddr = vm.memConfig.scratchStart
         var i = bufAddr
@@ -49,8 +49,8 @@ object wParsing : IWordModule {
     /** SOURCE ( -- c-addr u ) Address of # of chars in input buffer */
 
     fun w_source(vm: ForthVM) {
-        vm.dstk.push(vm.scanner.start)
-        vm.dstk.push(vm.scanner.nChars)
+        vm.dstk.push(vm.source.scanner.start)
+        vm.dstk.push(vm.source.scanner.nChars)
     }
 
     /** >IN ( -- a-addr ) a-addr is addr of cells with bufPtr - bufStart */

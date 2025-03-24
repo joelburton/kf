@@ -97,7 +97,7 @@ class FScanner(val vm: ForthVM) {
             vm.inPtr += 1
         tokLen = vm.inPtr - tokIdx
 
-        if (vm.inPtr < nChars) vm.inPtr += 1
+        vm.inPtr += 1
 
         return Pair(start + tokIdx, tokLen)
     }
@@ -126,7 +126,7 @@ class FScanner(val vm: ForthVM) {
         tokLen = vm.inPtr - tokIdx
 
         // skip the terminator, but don't require or skip space after it.
-        if (vm.inPtr < nChars) vm.inPtr += 1
+        vm.inPtr += 1
 
         return Pair(start + tokIdx, tokLen)
     }
@@ -155,7 +155,7 @@ class FScanner(val vm: ForthVM) {
             vm.inPtr += 1
 
         tokLen = vm.inPtr - tokIdx
-        if (vm.inPtr < nChars) vm.inPtr += 1
+        vm.inPtr += 1
 
         return Pair(start + tokIdx, tokLen)
     }

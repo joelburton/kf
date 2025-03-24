@@ -34,7 +34,7 @@ class wCompileExtTest : ForthTestCase() {
         vm.ip = 0x200
         vm.mem[0x200] = wn
         vm.cend = 0x100
-        vm.scanner.fill("msg)")
+        vm.source.scanner.fill("msg)")
         mod.w_bracketCompile(vm)
         assertEquals(0x00, vm.mem[0x100])
         assertPrinted("msg")
@@ -55,7 +55,7 @@ class wCompileExtTest : ForthTestCase() {
         wn = vm.dict[".("].wn
         vm.dstk.push(wn)
         vm.cend = 0x100
-        vm.scanner.fill("msg)")
+        vm.source.scanner.fill("msg)")
         mod.w_compileComma(vm)
         assertEquals(0x00, vm.mem[0x100])
         assertPrinted("msg")
@@ -63,7 +63,7 @@ class wCompileExtTest : ForthTestCase() {
 
     @Test
     fun w_dotParen() {
-        vm.scanner.fill("msg)")
+        vm.source.scanner.fill("msg)")
         mod.w_dotParen(vm)
         assertPrinted("msg")
     }

@@ -15,7 +15,7 @@ object wInterp : IWordModule {
 
             Word("QUIT", ::w_quit),
             Word("ABORT", ::w_abort),
-            Word("ABORT\"", ::w_abortQuote, imm=true),
+            Word("ABORT\"", ::w_abortQuote, imm = true),
             Word("(ABORT\")", ::w_parenAbortQuote),
 
             Word("STATE", ::w_state),
@@ -52,9 +52,9 @@ object wInterp : IWordModule {
      * Abort conditionally based on flag x1
      */
 
-     fun w_abortQuote(vm: ForthVM) {
+    fun w_abortQuote(vm: ForthVM) {
         if (vm.interp.isInterpreting) {
-            val s = vm.scanner.parse('"').strFromAddrLen(vm)
+            val s = vm.source.scanner.parse('"').strFromAddrLen(vm)
             val flag = vm.dstk.pop()
             if (flag != 0) {
                 vm.io.danger("ABORT: $s")
@@ -62,7 +62,7 @@ object wInterp : IWordModule {
                 w_quit(vm)
             }
         } else {
-            val s = vm.scanner.parse('"').strFromAddrLen(vm)
+            val s = vm.source.scanner.parse('"').strFromAddrLen(vm)
             vm.appendJump("0BRANCH", s.length + 4) // jaddr,lit-s,len,abort
             vm.appendStr(s)
             vm.appendWord("(ABORT\")")
@@ -95,25 +95,8 @@ object wInterp : IWordModule {
         val addr = vm.dstk.pop()
 
         if (vm.interp !is InterpEval) throw RuntimeException("not an eval!")
-
-        // fixme: verbosity & restore where we were in line/scanner;
-        //  right now this doesn't allow anything after "evaluate" on line
-        // - hide away current scanner (so we can restore it so that we can
-        //   later handle anything *after* "evaluate" on this line
-        // - make a new temporary scanner in a scratch space
-        // - evaluate this
-        // - restore the old scanner
-
         val s = Pair(addr, len).strFromAddrLen(vm)
-//        val curScanner = vm.scanner
-//        val prevSourceId = vm.inputSource.id
-//        vm.scanner = FScanner(vm) // fixme: needs a real home
-
-        vm.sources.add(EvalInputSource(s))
-//        (vm.interp as InterpEval).eval(s)
-//        vm.scanner = curScanner
-//        vm.sourceId = prevSourceId
-        vm.scanner.reset()
+        vm.source.push(EvalInputSource(vm, s))
     }
 
     /**

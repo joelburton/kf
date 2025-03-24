@@ -27,7 +27,7 @@ object wComments: IWordModule {
      */
 
     fun w_parenComment(vm: ForthVM) {
-        vm.scanner.parse(')')
+        vm.source.scanner.parse(')')
     }
 
 }

@@ -64,8 +64,7 @@ object wIO : IWordModule {
         val addr = vm.dstk.pop()
         val s = vm.source.readLineOrNull()
         if (s == null) {
-            // fixme: what to do?
-            return
+            throw ForthIOError("End of file reached")
         }
         if (s.length > maxLen)
             throw ForthBufferError("Input exceeded max length: $maxLen")

@@ -41,7 +41,7 @@ object wBload : IWordModule {
      * */
 
     fun w_bload(vm: ForthVM) {
-        val path =  vm.scanner.parseName().strFromAddrLen(vm)
+        val path =  vm.source.scanner.parseName().strFromAddrLen(vm)
         readPrimitiveClass(vm, path, reloadOk=false)
     }
 
@@ -51,7 +51,7 @@ object wBload : IWordModule {
      * */
 
     fun w_bloadAgain(vm: ForthVM) {
-        val path =  vm.scanner.parseName().strFromAddrLen(vm)
+        val path =  vm.source.scanner.parseName().strFromAddrLen(vm)
         readPrimitiveClass(vm, path, reloadOk=true)
     }
 }

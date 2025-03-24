@@ -23,35 +23,14 @@ object wFileAccessExt: IWordModule {
     // *************************************************************************
 
     fun include(vm: ForthVM, path: String) {
-//        val prevIO: Terminal = vm.io
-//        val prevVerbosity: Int = vm.verbosity
-//        val prevSourceId: Int = vm.sourceId
-
-//        vm.io = Terminal(terminalInterface = TerminalFileInterface(path))
-//        vm.verbosity = -2
-        vm.includedFiles.add(path)  // fixme: we prob won't need this w/inputSources avail
-//        vm.sourceId = vm.includedFiles.lastIndex + 1
-
-        vm.sources.add(FFileSource(vm.sources.lastIndex + 1, path))
-//        try {
-//            vm.runVM()
-//        } catch (e: ForthInterrupt) {
-//            when (e) {
-//                is IntQuitNonInteractive -> vm.ip = vm.memConfig.codeStart
-//                is IntEOF -> vm.ip = vm.memConfig.codeStart
-//                else -> throw e  // let outer interpreter handle
-//            }
-//        } finally {
-//            vm.io = prevIO
-////            vm.sourceId = prevSourceId
-//            vm.verbosity = prevVerbosity
-//        }
+        vm.includedFiles.add(path)
+        vm.source.push(FFileSource(vm, vm.sources.lastIndex + 1, path))
     }
 
     /**  `include` `( in:"file" -- : read Forth file in )` */
 
     fun w_include(vm: ForthVM) {
-        val path =  vm.scanner.parseName().strFromAddrLen(vm)
+        val path =  vm.source.scanner.parseName().strFromAddrLen(vm)
         include(vm, path)
     }
 }

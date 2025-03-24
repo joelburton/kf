@@ -15,6 +15,6 @@ object wCommentsExt : IWordModule {
     /**  ( -- : handles backslash comments )
      */
     fun w_backslashComment(vm: ForthVM) {
-        vm.scanner.nextLine()
+        vm.source.scanner.nextLine()
     }
 }

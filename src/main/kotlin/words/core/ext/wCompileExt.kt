@@ -57,7 +57,7 @@ object wCompileExt: IWordModule {
     /** `.(` IM CO ( -- ) Print message immediately */
 
     fun w_dotParen(vm: ForthVM) {
-        var msg = vm.scanner.parse(')').strFromAddrLen(vm)
+        var msg = vm.source.scanner.parse(')').strFromAddrLen(vm)
         vm.io.print(msg)
     }
 

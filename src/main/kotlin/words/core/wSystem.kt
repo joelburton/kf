@@ -39,7 +39,7 @@ object wSystem: IWordModule {
     //STACK-CELLS	n	yes	maximum size of the data stack, in cells
 
     fun w_environment(vm: ForthVM) {
-        val s = vm.scanner.parseName().strFromAddrLen(vm)
+        val s = vm.source.scanner.parseName().strFromAddrLen(vm)
 
         when (s.lowercase()) {
             "/counted-string" -> vm.dstk.push(

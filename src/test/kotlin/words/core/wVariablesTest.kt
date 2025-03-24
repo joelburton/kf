@@ -17,7 +17,7 @@ class wVariablesTest : ForthTestCase() {
     @Test
     fun w_constant() {
         vm.dstk.push(42)
-        vm.scanner.fill("life")
+        vm.source.scanner.fill("life")
         mod.w_constant(vm)
         assertNotNull(vm.dict["life"])
 
@@ -28,7 +28,7 @@ class wVariablesTest : ForthTestCase() {
 
     @Test
     fun w_variable() {
-        vm.scanner.fill("age")
+        vm.source.scanner.fill("age")
         mod.w_variable(vm)
         assertNotNull(vm.dict["age"])
     }

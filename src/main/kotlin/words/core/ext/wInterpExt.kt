@@ -5,7 +5,7 @@ import kf.ForthVM
 import kf.IWordModule
 import kf.Word
 
-object wInterpExt: IWordModule {
+object wInterpExt : IWordModule {
     override val name = "kf.words.core.ext.wInterpExt"
     override val description = "Interpreter extra words"
     override val words = arrayOf(
@@ -24,7 +24,7 @@ object wInterpExt: IWordModule {
      */
 
     fun w_parseName(vm: ForthVM) {
-        val (addr, len) = vm.scanner.parseName()
+        val (addr, len) = vm.source.scanner.parseName()
         if (D) vm.dbg(3, "w_parseName: addr=$addr len=$len")
         vm.dstk.push(addr, len)
     }
@@ -36,21 +36,30 @@ object wInterpExt: IWordModule {
      * buffer, set >IN to zero, and return true. Receipt of a line containing
      * no characters is considered successful. If there is no input available
      * from the current input source, return false.
-     *
-     * When the input source is a string from EVALUATE, return false and
-     * perform no other action.
      */
 
     fun w_refill(vm: ForthVM) {
-        // fixme: not handling the "if a string from evaluate" yet
+        val nChars = vm.source.scanner.nChars
 
-            val s = vm.source.readLineOrNull()
-            if (s == null) {
-                vm.dstk.push(0)
+        if (D) vm.dbg(3, "w_refill: $nChars at ${vm.inPtr} ")
 
-            } else {
-                vm.scanner.fill(s)
-                vm.dstk.push(1)
-            }
+        // Special case: a parser hadn't reached the end of the line, and
+        // nothing called nextLine. This is probably because eval or
+        // include ran to push a new input source on top. Rather than refilling
+        // and not finishing the interpretation of the line that called
+        // eval/include, simple report that a line was read and it can
+        // continue where it left off.
+        if (vm.inPtr <= nChars) {
+            vm.dstk.push(1)
+            return
+        }
+
+        val s = vm.source.readLineOrNull()
+        if (s == null) {
+            vm.dstk.push(0)
+        } else {
+            vm.source.scanner.fill(s)
+            vm.dstk.push(1)
+        }
     }
 }

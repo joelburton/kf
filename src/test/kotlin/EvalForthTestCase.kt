@@ -115,7 +115,7 @@ open class EvalForthTestCase : ForthTestCase() {
     fun eval(s: String): String {
         with(vm) {
 //            reset()
-            vm.scanner.fill(s)
+            vm.source.scanner.fill(s)
             ip = memConfig.scratchStart
             try {
                 while (true) {

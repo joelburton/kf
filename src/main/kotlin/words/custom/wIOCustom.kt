@@ -26,7 +26,8 @@ object wIOCustom : IWordModule {
     }
 
     fun w_dotInputSources(vm: ForthVM) {
-        print(vm.sources.joinToString("\n") { "${it.id}: ${it.path}" })
+        println("Input sources:")
+        println(vm.sources.joinToString("\n") { "${it.id}: ${it.path}" })
     }
 
 

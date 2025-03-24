@@ -27,7 +27,7 @@ object wStrings : IWordModule {
     /** `."` ( -- ) Display string */
 
      fun w_dotQuote(vm: ForthVM) {
-        val s = vm.scanner.parse('"').strFromAddrLen(vm)
+        val s = vm.source.scanner.parse('"').strFromAddrLen(vm)
 
         if (vm.interp.isInterpreting) {
             vm.io.print(s)
@@ -40,7 +40,7 @@ object wStrings : IWordModule {
     /** `S"` ( -- c-addr u ) Get address and length of string */
 
     fun w_sQuote(vm: ForthVM) {
-            val s = vm.scanner.parse('"').strFromAddrLen(vm)
+            val s = vm.source.scanner.parse('"').strFromAddrLen(vm)
 
         if (vm.interp.isInterpreting) {
             val strAddr: Int = vm.appendStrToData(s)

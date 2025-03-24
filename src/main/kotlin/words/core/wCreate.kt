@@ -28,7 +28,7 @@ object wCreate: IWordModule {
      */
 
     fun w_create(vm: ForthVM) {
-        val name =  vm.scanner.parseName().strFromAddrLen(vm)
+        val name =  vm.source.scanner.parseName().strFromAddrLen(vm)
         val w = Word(
             name,
             cpos = Word.NO_ADDR,

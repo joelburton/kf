@@ -9,7 +9,7 @@ class wSystemTest : ForthTestCase() {
 
     @Test
     fun w_environment() {
-        vm.scanner.fill("/PAD")
+        vm.source.scanner.fill("/PAD")
         mod.w_environment(vm)
         assertDStack(vm.memConfig.padEnd - vm.memConfig.padStart)
     }

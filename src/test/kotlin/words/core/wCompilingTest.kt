@@ -24,7 +24,7 @@ class wCompilingTest : ForthTestCase() {
     @Test
     fun w_colon() {
         assertNull(vm.dict.currentlyDefining)
-        vm.scanner.fill("test")
+        vm.source.scanner.fill("test")
         mod.w_colon(vm)
         val w = vm.dict.last
         assertEquals("test", w.name)
@@ -65,7 +65,7 @@ class wCompilingTest : ForthTestCase() {
     fun w_postpone() {
         val w = Word("test", ::w_notImpl, hidden = true)
         vm.dict.add(w)
-        vm.scanner.fill("test")
+        vm.source.scanner.fill("test")
         mod.w_postpone(vm)
         assertEquals(vm.dict["[COMPILE]"].wn, vm.mem[vm.cend - 2])
         assertEquals(w.wn, vm.mem[vm.cend - 1])

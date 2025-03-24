@@ -116,7 +116,7 @@ object wTools: IWordModule {
      */
 
     fun w_see(vm: ForthVM) {
-        val w: Word = vm.dict[ vm.scanner.parseName().strFromAddrLen(vm)]
+        val w: Word = vm.dict[ vm.source.scanner.parseName().strFromAddrLen(vm)]
         wToolsCustom._see(vm, w, false)
     }
 

@@ -12,6 +12,7 @@ import kf.words.mEvalInterp
 open class InterpEval(vm: ForthVM) : InterpBase(vm) {
     override val name = "Eval"
     override val module: IMetaWordModule = mEvalInterp
+
     // This isn't a real interpreter; just a test program that shows that this
     // can succeed at compiling the interpreter with the mini-interpreter.
     // Since there's nothing after this, expect it to break:
@@ -109,21 +110,21 @@ open class InterpEval(vm: ForthVM) : InterpBase(vm) {
 
     /** Evaluate a line: simple one-line for bootstrapping. */
 
-    override fun eval(line: String) {
-        vm.scanner.fill(line)
-        try {
-            while (true) {
-                val wn = vm.mem[vm.ip++]
-                val w = vm.dict[wn]
-                w(vm)
-            }
-        } catch (e: ForthInterrupt) {
-            when (e) {
-                is IntEOF -> return
-                else -> throw e
-            }
-        }
-    }
+//    override fun eval(line: String) {
+//        vm.source.scanner.fill(line)
+//        try {
+//            while (true) {
+//                val wn = vm.mem[vm.ip++]
+//                val w = vm.dict[wn]
+//                w(vm)
+//            }
+//        } catch (e: ForthInterrupt) {
+//            when (e) {
+//                is IntEOF -> return
+//                else -> throw e
+//            }
+//        }
+//    }
 
     /** Evaluate a line during bootstrapping.
      *
@@ -133,10 +134,11 @@ open class InterpEval(vm: ForthVM) : InterpBase(vm) {
      *
      * */
 
-     fun bootstrapEval(line: String) {
+    fun bootstrapEval(line: String) {
         // the "mini-interpreter" is located in scratch space here
+        vm.sources.add(EvalInputSource(vm, line))
         vm.ip = vm.memConfig.scratchStart
-        vm.scanner.fill(line)
+        vm.source.scanner.fill(line)
         try {
             while (true) {
                 val wn = vm.mem[vm.ip++]

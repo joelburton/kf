@@ -19,14 +19,14 @@ class wDeferExtTest : ForthTestCase() {
 
     @Test
     fun w_defer() {
-        vm.scanner.fill("new-word")
+        vm.source.scanner.fill("new-word")
         mod.w_defer(vm)
         assertEquals("new-word", vm.dict.last.name)
     }
 
     @Test
     fun w_is() {
-        vm.scanner.fill("new-word")
+        vm.source.scanner.fill("new-word")
         mod.w_defer(vm)
         val deferW = vm.dict.last
 
@@ -38,7 +38,7 @@ class wDeferExtTest : ForthTestCase() {
         )
         vm.dict.add(srcW)
 
-        vm.scanner.fill("new-word")
+        vm.source.scanner.fill("new-word")
         vm.dstk.push(srcW.wn)
         mod.w_is(vm)
 
@@ -50,7 +50,7 @@ class wDeferExtTest : ForthTestCase() {
 
     @Test
     fun w_deferStore() {
-        vm.scanner.fill("new-word")
+        vm.source.scanner.fill("new-word")
         mod.w_defer(vm)
         val deferW = vm.dict.last
 
@@ -73,7 +73,7 @@ class wDeferExtTest : ForthTestCase() {
 
     @Test
     fun w_deferFetch() {
-        vm.scanner.fill("new-word")
+        vm.source.scanner.fill("new-word")
         mod.w_defer(vm)
         val deferW = vm.dict.last
 
@@ -94,7 +94,7 @@ class wDeferExtTest : ForthTestCase() {
 
     @Test
     fun w_actionOf() {
-        vm.scanner.fill("new-word")
+        vm.source.scanner.fill("new-word")
         mod.w_defer(vm)
         val deferW = vm.dict.last
 
@@ -108,7 +108,7 @@ class wDeferExtTest : ForthTestCase() {
         vm.dstk.push(srcW.wn, deferW.wn)
         mod.w_deferStore(vm)
 
-        vm.scanner.fill("new-word")
+        vm.source.scanner.fill("new-word")
         mod.w_actionOf(vm)
         assertDStack(srcW.wn)
     }

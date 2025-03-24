@@ -10,15 +10,15 @@ class wInterpExtTest : ForthTestCase() {
 
     @Test
     fun w_parseName() {
-        vm.scanner.fill(" abc 123 ")
+        vm.source.scanner.fill(" abc 123 ")
         mod.w_parseName(vm)
-        assertDStack(vm.scanner.start + 1, 3)
+        assertDStack(vm.source.scanner.start + 1, 3)
     }
 
     @Test
     fun w_refill() {
         setInput("abc 123")
         mod.w_refill(vm)
-        assertEquals("abc 123", vm.scanner.toString())
+        assertEquals("abc 123", vm.source.scanner.toString())
     }
 }

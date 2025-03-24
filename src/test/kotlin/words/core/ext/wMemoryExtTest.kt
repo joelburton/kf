@@ -15,7 +15,7 @@ class wMemoryExtTest : ForthTestCase() {
 
     @Test
     fun w_bufferColon() {
-        vm.scanner.fill("foo")
+        vm.source.scanner.fill("foo")
         vm.dstk.push(5)
         val dend = vm.dend
         mod.w_bufferColon(vm)

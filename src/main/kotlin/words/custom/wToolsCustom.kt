@@ -109,7 +109,7 @@ object wToolsCustom : IWordModule {
     }
 
     fun w_dotSeeSimple(vm: ForthVM) {
-        val w = vm.dict[vm.scanner.parseName().strFromAddrLen(vm)]
+        val w = vm.dict[vm.source.scanner.parseName().strFromAddrLen(vm)]
         _see(vm, w, true)
     }
 
@@ -146,7 +146,7 @@ object wToolsCustom : IWordModule {
     /** `.SIMILAR` ( -- ) Find similar words */
 
     fun w_dotSimilar(vm: ForthVM) {
-        val term = vm.scanner.parseName().strFromAddrLen(vm).lowercase()
+        val term = vm.source.scanner.parseName().strFromAddrLen(vm).lowercase()
 
         vm.io.println(
             vm.dict.words

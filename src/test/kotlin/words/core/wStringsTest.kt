@@ -20,7 +20,7 @@ class wStringsTest : ForthTestCase() {
 
     @Test
     fun w_dotQuote() {
-        vm.scanner.fill(" hello\"")
+        vm.source.scanner.fill(" hello\"")
         wStrings.w_dotQuote(vm)
         assertPrinted(" hello")
     }
@@ -28,7 +28,7 @@ class wStringsTest : ForthTestCase() {
     @Test
     fun w_sQuote() {
         vm.dend = 0x200
-        vm.scanner.fill(" hello\"")
+        vm.source.scanner.fill(" hello\"")
         wStrings.w_sQuote(vm)
         assertDStack(0x201, 6)
     }
@@ -36,7 +36,7 @@ class wStringsTest : ForthTestCase() {
     @Test
     fun w_type() {
         vm.dend = 0x200
-        vm.scanner.fill(" hello\"")
+        vm.source.scanner.fill(" hello\"")
         wStrings.w_sQuote(vm)
         mod.w_type(vm)
         assertPrinted(" hello")

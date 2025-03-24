@@ -11,14 +11,14 @@ class wWordsTest : ForthTestCase() {
 
     @Test
     fun w_bracketTick() {
-        vm.scanner.fill("BRK")
+        vm.source.scanner.fill("BRK")
         mod.w_tick(vm)
         assertDStack(0)
     }
 
     @Test
     fun w_tick() {
-        vm.scanner.fill("BRK")
+        vm.source.scanner.fill("BRK")
         mod.w_tick(vm)
         assertDStack(0)
     }

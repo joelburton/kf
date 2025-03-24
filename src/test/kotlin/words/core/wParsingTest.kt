@@ -13,7 +13,7 @@ class wParsingTest : ForthTestCase() {
     @Test
     fun w_word() {
         vm.dstk.push('"'.code)
-        vm.scanner.fill("  AB\"")
+        vm.source.scanner.fill("  AB\"")
         mod.w_word(vm)
         val addr = vm.dstk.pop()
         assertDStack()
@@ -27,9 +27,9 @@ class wParsingTest : ForthTestCase() {
 
     @Test
     fun w_source() {
-        vm.scanner.fill("ABC")
+        vm.source.scanner.fill("ABC")
         mod.w_source(vm)
-        assertDStack(vm.scanner.start, 3)
+        assertDStack(vm.source.scanner.start, 3)
     }
 
     @Test
@@ -41,16 +41,16 @@ class wParsingTest : ForthTestCase() {
     @Test
     fun w_toNumber() {
         vm.base = 10
-        vm.scanner.fill("123")
+        vm.source.scanner.fill("123")
         vm.dstk.dblPush(0) // doesn't really matter; currently ignored
-        vm.dstk.push(vm.scanner.start, 3)
+        vm.dstk.push(vm.source.scanner.start, 3)
         mod.w_toNumber(vm)
         assertDStack(123, 0, 0, 0)
 
         vm.base = 16
-        vm.scanner.fill("0xFF")
+        vm.source.scanner.fill("0xFF")
         vm.dstk.dblPush(0) // doesn't really matter; currently ignored
-        vm.dstk.push(vm.scanner.start, 4)
+        vm.dstk.push(vm.source.scanner.start, 4)
         mod.w_toNumber(vm)
         assertDStack(255, 0, 0, 0)
 

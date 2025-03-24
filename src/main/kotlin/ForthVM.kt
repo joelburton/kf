@@ -137,7 +137,7 @@ class ForthVM(
     val includedFiles: ArrayList<String> = ArrayList()
 
     /** Source ID (-1 = evaluate, 0 = stdin, # = fileId */
-    val sources = arrayListOf<InputSource>(StdInInputSource())
+    val sources = arrayListOf<InputSource>()
     val source get() = sources.last()
 
     /** Time mark for when VM started (the `millis` word reports # of millis
@@ -145,11 +145,6 @@ class ForthVM(
      * 1970 epoch on a 32-bit machine.
      */
     val timeMarkCreated = TimeSource.Monotonic.markNow()
-
-    /**  Scanner for reading and tokenizing input line. */
-
-    var scanner: FScanner = FScanner(this)
-
 
     init {
         // THere needs to be a verbosity set, so setting it to mildly-chatty.
@@ -187,6 +182,7 @@ class ForthVM(
 
         interp.reboot()
         reset()
+        sources.add(StdInInputSource(this))
     }
 
     /** Reset: this what `abort` does */
@@ -310,17 +306,6 @@ class ForthVM(
                 io.danger("$source ERROR: " + e.message)
                 if (verbosity >= 3) io.print(gray(e.stackTraceToString()))
                 reset()
-            } catch (e: ForthInterrupt) {
-                when (e) {
-                    is IntEOF -> {
-                        sources.removeLast()
-                        if (sources.isEmpty()) throw e
-                        ip = cstart
-                    }
-
-                    is IntQuit -> throw e
-                    else -> throw e
-                }
             }
         }
     }
