@@ -26,7 +26,7 @@ class wInterpTest : ForthTestCase() {
         vm.dstk.push(10)
         vm.rstk.push(20)
         mod.w_quit(vm)
-        assertEquals(vm.memConfig.codeStart, vm.ip)
+        assertEquals(vm.cstart, vm.ip)
         assertDStack(10)
         assertRStack()
     }
@@ -37,10 +37,10 @@ class wInterpTest : ForthTestCase() {
         vm.dstk.push(10)
         vm.rstk.push(20)
         mod.w_abort(vm)
-        assertEquals(vm.memConfig.codeStart, vm.ip)
+        assertEquals(vm.cstart, vm.ip)
         assertDStack()
         assertRStack()
-        assertPrinted("ABORT\n")
+        assertPrinted("0:<stdin>:0 ABORT\n")
     }
 
     @Test
@@ -50,10 +50,10 @@ class wInterpTest : ForthTestCase() {
         vm.rstk.push(20)
         vm.source.scanner.fill("oh no\"")
         mod.w_abortQuote(vm)
-        assertEquals(vm.memConfig.codeStart, vm.ip)
+        assertEquals(vm.cstart, vm.ip)
         assertDStack()
         assertRStack()
-        assertPrinted("ABORT: oh no\n")
+        assertPrinted("0:<stdin>:0 ABORT: oh no\n")
     }
 
     @Test
@@ -114,13 +114,13 @@ class wInterpFuncTest : EvalForthTestCase() {
         vm.dstk.push(10)
         eval("abort\" oh no\"")
         assertDStack()
-        assertPrinted("ABORT: oh no\n")
+        assertPrinted("-1:<eval>:1 ABORT: oh no\n")
     }
 
     @Test
     fun abortStrCompile() {
         eval(": test 10 abort\" oh no\" 20 ; test")
         assertDStack()
-        assertPrinted("ABORT: oh no\n")
+        assertPrinted("-1:<eval>:1 ABORT: oh no\n")
     }
 }

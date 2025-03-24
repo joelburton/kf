@@ -86,16 +86,6 @@ class IntBrk(m: String="BRK") : ForthInterrupt(m) {
     }
 }
 
-/** Reset interpreter and return to interactive mode.
- *
- * - EVALUATE: done eval-ing, just return to interactive
- *     (caught by EVALUATE)
- * - interactive mode: just return to start of interp routine
- * - file mode: stop reading ALL files, return to interactive
- * - gateway/test: treat like as in interactive mode
- */
-class IntQuit(m: String="QUIT") : ForthInterrupt(m)
-
 /** Quit the program.
  *
  * - except gateway/test: finish the cmds but don't stop server

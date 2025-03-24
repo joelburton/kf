@@ -60,6 +60,7 @@ class IfThenFuncTest : EvalForthTestCase() {
     fun ifThenElse() {
         eval(": test if 20 else 30 then 40 ;")
         see("test")
+        println("DONE FIRST")
 
         eval("10 test")
         assertDStack(20, 40)

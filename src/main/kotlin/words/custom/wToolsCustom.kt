@@ -27,6 +27,7 @@ object wToolsCustom : IWordModule {
             Word(".STACK-TRACE", ::w_dotStackTrace),
             Word(".SIMILAR", ::w_dotSimilar),
             Word("./WORDS", ::w_dotSlashWords),
+            Word(".CS", ::w_dotCS),
 
 
             // ~~  *terminal*:lineno:char:<2> 20 10
@@ -161,5 +162,12 @@ object wToolsCustom : IWordModule {
 
     fun w_dotSlashWords(vm: ForthVM) {
         vm.dstk.push(vm.dict.size)
+    }
+
+    /** `.CS` ( ??? --- ) show and clear data stack */
+
+    fun w_dotCS(vm: ForthVM) {
+        vm.dstk.simpleDump()
+        vm.dstk.reset()
     }
 }

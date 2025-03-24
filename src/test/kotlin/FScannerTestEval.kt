@@ -48,25 +48,25 @@ class FScannerTestEval : ForthTestCase() {
         val (addr2, len2) = sc.parseName()
         assertEquals(start + 2, addr2)
         assertEquals(3, len2)
-        assertEquals(5, vm.inPtr)
+        assertEquals(6, vm.inPtr)
 
         sc.fill("ABC")
         val (addr3, len3) = sc.parseName()
         assertEquals(start, addr3)
         assertEquals(3, len3)
-        assertEquals(3, vm.inPtr)
+        assertEquals(4, vm.inPtr)
 
         sc.fill("  ")
         val (addr4, len4) = sc.parseName()
         assertEquals(start + 2, addr4)
         assertEquals(0, len4)
-        assertEquals(2, vm.inPtr)
+        assertEquals(3, vm.inPtr)
 
         sc.fill("")
         val (addr5, len5) = sc.parseName()
         assertEquals(start, addr5)
         assertEquals(0, len5)
-        assertEquals(0, vm.inPtr)
+        assertEquals(1, vm.inPtr)
     }
 
     @Test
@@ -88,19 +88,19 @@ class FScannerTestEval : ForthTestCase() {
         val (addr3, len3) = sc.parse('x')
         assertEquals(start, addr3)
         assertEquals(3, len3)
-        assertEquals(3, vm.inPtr)
+        assertEquals(4, vm.inPtr)
 
         sc.fill("  ")
         val (addr4, len4) = sc.parse('x')
         assertEquals(start, addr4)
         assertEquals(2, len4)
-        assertEquals(2, vm.inPtr)
+        assertEquals(3, vm.inPtr)
 
         sc.fill("")
         val (addr5, len5) = sc.parse('x')
         assertEquals(start, addr5)
         assertEquals(0, len5)
-        assertEquals(0, vm.inPtr)
+        assertEquals(1, vm.inPtr)
     }
 
     @Test
@@ -122,19 +122,19 @@ class FScannerTestEval : ForthTestCase() {
         val (addr3, len3) = sc.wordParse('x')
         assertEquals(start, addr3)
         assertEquals(3, len3)
-        assertEquals(3, vm.inPtr)
+        assertEquals(4, vm.inPtr)
 
         sc.fill("  ")
         val (addr4, len4) = sc.wordParse('x')
         assertEquals(start, addr4)
         assertEquals(2, len4)
-        assertEquals(2, vm.inPtr)
+        assertEquals(3, vm.inPtr)
 
         sc.fill("")
         val (addr5, len5) = sc.wordParse('x')
         assertEquals(start, addr5)
         assertEquals(0, len5)
-        assertEquals(0, vm.inPtr)
+        assertEquals(1, vm.inPtr)
 
         // it skips the term character at the start, unlike other parsers
         sc.fill("xxABCx")
@@ -148,7 +148,7 @@ class FScannerTestEval : ForthTestCase() {
         val (addr7, len7) = sc.wordParse('x')
         assertEquals(start + 2, addr7)
         assertEquals(3, len7)
-        assertEquals(5, vm.inPtr)
+        assertEquals(6, vm.inPtr)
 
         // if the term is a space, all whitespace are terms
         sc.fill(" \t ABC ")

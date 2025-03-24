@@ -1,14 +1,19 @@
 import com.github.ajalt.mordant.rendering.AnsiLevel
 import com.github.ajalt.mordant.terminal.Terminal
+import kf.EvalInputSource
 import kf.ForthError
 import kf.IntEOF
 import kf.ForthVM
+import kf.InputSource
+import kf.StdInInputSource
 import kf.TerminalTestInterface
 import kf.interps.InterpBase
 import kf.interps.InterpFast
 import kf.words.custom.wToolsCustom._see
 import kf.recorder
 import kf.words.machine.wMachine
+import org.junit.jupiter.api.BeforeAll
+import org.junit.jupiter.api.TestInstance
 import org.junit.jupiter.api.BeforeEach
 import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
@@ -32,6 +37,12 @@ open class ForthTestCase() {
         vm.interp = InterpBase(vm)
         vm.verbosity = -2
         vm.dict.addModule(wMachine)
+        vm.sources.add(StdInInputSource(vm))
+    }
+
+    @BeforeEach
+    fun beforeEach() {
+        recorder.clearOutput()
     }
 
     fun assertDStack(vararg items: Int) {
@@ -83,6 +94,7 @@ open class ForthTestCase() {
 
 /** Test case that relies on a full Forth VM w/eval and other mods. */
 
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 open class EvalForthTestCase : ForthTestCase() {
 
     init {
@@ -90,33 +102,15 @@ open class EvalForthTestCase : ForthTestCase() {
         vm.verbosity = -2
     }
 
-    @BeforeEach
-    fun beforeEach() {
-        vm.reboot(true)
+    @BeforeAll
+    fun beforeEachEval() {
+        vm.reboot(includePrimitives = true)
     }
-
-//    fun evalx(s: String): String {
-//        val io = vm.io.terminalInterface as TerminalTestInterface
-//        io.addInputs(s)
-//        with(vm) {
-//            ip = memConfig.codeStart
-//            try {
-//                while (true) {
-//                    val wn = mem[ip++]
-//                    val w = dict[wn]
-//                    w(this)
-//                }
-//            } catch (_: IntEOF) {
-//                return recorder.output()
-//            }
-//        }
-//    }
 
     fun eval(s: String): String {
         with(vm) {
-//            reset()
-            vm.source.scanner.fill(s)
-            ip = memConfig.scratchStart
+            vm.sources.add(EvalInputSource(vm, s))
+            ip = cstart
             try {
                 while (true) {
                     val wn = mem[ip++]
@@ -126,7 +120,7 @@ open class EvalForthTestCase : ForthTestCase() {
             } catch (_: IntEOF) {
                 return recorder.output()
             } catch (e: ForthError) {
-                reset()
+                quit()
                 throw e
             }
         }

@@ -106,16 +106,18 @@ class Dict(val vm: ForthVM, val capacity: Int = 1024)  {
         if (D) vm.dbg(3, "dict.addModule: ${mod.name}")
 
         if (!reloadOk && mod.name in vm.modulesLoaded) {
-            vm.io.muted("Skipping already-loaded module: ${mod.name}")
+            if (vm.verbosity >= 2)
+                vm.io.muted("Skipping already-loaded module: ${mod.name}")
+            return
         }
 
-        if (vm.verbosity >= 1) vm.io.println(bold(yellow("${mod.name}:")))
+        if (vm.verbosity >= 2) vm.io.println(bold(yellow("${mod.name}:")))
         val sb = StringBuilder()
         for (w in mod.words) {
             add(w)
-            if (vm.verbosity >= 1) sb.append("${w.name} ")
+            if (vm.verbosity >= 2) sb.append("${w.name} ")
         }
-        if (vm.verbosity >= 1)
+        if (vm.verbosity >= 2)
             vm.io.println(Text("    $sb", whitespace= Whitespace.PRE_WRAP))
 
         vm.modulesLoaded.put(mod.name, mod)
@@ -123,8 +125,8 @@ class Dict(val vm: ForthVM, val capacity: Int = 1024)  {
 
     fun addMetaModule(mod: IMetaWordModule) {
         if (D) vm.dbg(3, "dict.addMetaModule: ${mod.name}")
-        if (vm.verbosity >= 1) vm.io.println(bold(blue("${mod.name}:")))
-        for (m in mod.modules) addModule(m, true)
+        if (vm.verbosity >= 2) vm.io.println(bold(blue("${mod.name}:")))
+        for (m in mod.modules) addModule(m, false)
     }
 
     // ******************************************************* manipulating dict

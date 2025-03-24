@@ -64,7 +64,6 @@ open class InterpBase(val vm: ForthVM) : IInterp {
         if (D) vm.dbg(3, "InterpBase.resetInterpreter")
 
         state = STATE_INTERPRETING
-        vm.source.scanner.reset()
     }
 
     override fun addInterpreterCode() {

@@ -78,8 +78,8 @@ object wIO : IWordModule {
         // todo: much of this should probably move down into the IO layer
 
         val ti = vm.io.terminalInterface
-        if (ti is TerminalFileInterface || ti is TerminalTestInterface)
-            throw ForthIOError("Cannot use `key` from file input")
+        if (ti is TerminalTestInterface)
+            throw ForthIOError("Cannot use `key` from test input")
 
         val rawMode = vm.io.enterRawModeOrNull()
         if (rawMode == null) {

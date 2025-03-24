@@ -12,7 +12,6 @@ import kf.interps.InterpBase
 import kf.interps.InterpEval
 import kf.interps.InterpFast
 import kf.interps.InterpForth
-import kf.words.core.ext.wInterpExt
 import kf.words.fileaccess.wFileAccessExt
 
 class ForthCLI : CliktCommand("PupForth") {
@@ -69,25 +68,6 @@ class ForthCLI : CliktCommand("PupForth") {
         .flag(default = false)
         .help("Load only required modules for interp")
 
-    fun runFiles(vm: ForthVM) {
-        for (path in paths) {
-//            print("Running $path ... ")
-//            vm.io = Terminal(terminalInterface = TerminalFileInterface(path))
-//            vm.verbosity = -2
-//            vm.sources.clear()
-            wFileAccessExt.include(vm, path)
-//            try {
-//                vm.runVM()
-//            } catch (e: ForthInterrupt) {
-//                when (e) {
-//                    is IntEOF -> continue  // next file
-//                    is IntQuit -> break  // move to interactive
-//                    else -> throw e
-//                }
-//            }
-        }
-    }
-
     fun wrappedRun() {
         if (version) {
             println(VERSION_STRING)
@@ -103,20 +83,19 @@ class ForthCLI : CliktCommand("PupForth") {
         }
 
         val vm = ForthVM(memConfig = size)
-        val theInterp = when (interp) {
+        vm.interp = when (interp) {
             "base" -> InterpBase(vm)
             "eval" -> InterpEval(vm)
             "fast" -> InterpFast(vm)
             "forth" -> InterpForth(vm)
-            else -> throw RuntimeException("Unknown interpreter: $interp")
+            else -> throw RuntimeException("Unknown interpreter: ${interp}")
         }
-        vm.interp = theInterp
 
         vm.verbosity = verbosity
         vm.reboot(!raw)
 
         // first, process any files passed in on cmd line
-        runFiles(vm)
+        for (path in paths.asReversed()) wFileAccessExt.include(vm, path)
 
         // start a gateway if one given
         if (gateway != null) {
@@ -129,7 +108,7 @@ class ForthCLI : CliktCommand("PupForth") {
         }
 
         vm.io = Terminal(ansiLevel = ansiLevel)
-        vm.verbosity = verbosity
+
         vm.runVM()
     }
 

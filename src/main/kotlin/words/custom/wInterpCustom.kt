@@ -2,11 +2,9 @@ package kf.words.custom
 
 import com.github.ajalt.mordant.rendering.TextColors
 import com.github.ajalt.mordant.rendering.TextStyles
-import kf.IntEOF
 import kf.IntQuitNonInteractive
 import kf.ForthVM
 import kf.IWordModule
-import kf.TerminalFileInterface
 import kf.Word
 
 /** The interpreter primitives.
@@ -50,10 +48,11 @@ object wInterpCustom : IWordModule {
      * This doesn't do anything useful when already in console io (though it
      * does push 0 to stack, because that's what GForth does :) ). */
     private fun w_tripleBackSlash(vm: ForthVM) {
-        if (vm.io.terminalInterface is TerminalFileInterface) {
-            throw IntQuitNonInteractive()
+        if (vm.source.id > 0) {
+            vm.source.pop()
+            if (vm.sources.isEmpty()) throw IntQuitNonInteractive()
         } else {
-            vm.dstk.push(0)
+            vm.dstk.push(vm.source.id)
         }
     }
 

@@ -42,6 +42,7 @@ class ForthVM(
     val mem: IntArray = IntArray(memConfig.upperBound + 1),
 ) {
 
+
     /** Which interpreter is active?
      *
      * The VM needs to point to the interp, and the interp needs to point to the
@@ -137,7 +138,7 @@ class ForthVM(
     val includedFiles: ArrayList<String> = ArrayList()
 
     /** Source ID (-1 = evaluate, 0 = stdin, # = fileId */
-    val sources = arrayListOf<InputSource>()
+    var sources = arrayListOf<InputSource>()
     val source get() = sources.last()
 
     /** Time mark for when VM started (the `millis` word reports # of millis
@@ -158,11 +159,12 @@ class ForthVM(
     /** Boot or reboot the machine. This should clear everything. */
 
     fun reboot(includePrimitives: Boolean = true) {
-        if (D) dbg(1, "vm.reboot")
+        if (D) dbg(2, "vm.reboot")
         if (verbosity > 0) io.info("Rebooting...")
 
         val curVerbosity = verbosity  // restore to current after reboot
 
+        sources = arrayListOf()
         mem.fill(0)  // keep this above register setting, since it clears them
         cellMeta.fill(CellMeta.Unknown)
 
@@ -177,23 +179,39 @@ class ForthVM(
         currentWord = Word.noWord
 
         dict.reset()
+        modulesLoaded.clear()
         dict.addMetaModule(interp.module)
         if (includePrimitives) addCoreWords()
 
         interp.reboot()
-        reset()
         sources.add(StdInInputSource(this))
+        quit()
     }
 
-    /** Reset: this what `abort` does */
+    /** Quit: what `QUIT` calls --- go to interactive interp and reset */
 
-    fun reset() {
-        if (D) dbg(1, "vm.reset")
-        dstk.reset()
+    fun quit() {
+        if (D) dbg(2, "vm.quit")
+
+        // go to interp ancestor, then
+        while (source.id != 0) {
+            source.pop()
+            if (sources.isEmpty()) throw IntBye()
+        }
+
+        source.scanner.nextLine()
         rstk.reset()
         ip = cstart
-
         interp.reset()
+    }
+
+    /** Abort: this what `abort` does as well as any forth error */
+
+    fun abort() {
+        if (D) dbg(2, "vm.abort")
+
+        quit()
+        dstk.reset()
     }
 
 
@@ -305,7 +323,7 @@ class ForthVM(
             } catch (e: ForthError) {
                 io.danger("$source ERROR: " + e.message)
                 if (verbosity >= 3) io.print(gray(e.stackTraceToString()))
-                reset()
+                abort()
             }
         }
     }

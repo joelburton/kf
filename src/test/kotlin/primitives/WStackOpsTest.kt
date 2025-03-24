@@ -1,10 +1,11 @@
 package primitives
 
 import EvalForthTestCase
+import ForthTestCase
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 
-class WStackOpsTest : EvalForthTestCase() {
+class WStackOpsTest : ForthTestCase() {
      val mod = kf.words.core.wStackOps
     val ext = kf.words.core.ext.wStackOpsExt
     val rstack = kf.words.core.wRStack
@@ -56,9 +57,10 @@ class WStackOpsTest : EvalForthTestCase() {
     fun w_dotS() {
         vm.dstk.push(10)
         vm.dstk.push(20)
+        vm.base = 10
         kf.words.tools.wTools.w_dotS(vm)
         assertDStack(10, 20)
-        assertPrinted("<2> 10 20")
+        assertPrinted("<2> 10 20 ")
     }
 
 }

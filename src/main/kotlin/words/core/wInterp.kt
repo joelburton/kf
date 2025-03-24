@@ -29,8 +29,7 @@ object wInterp : IWordModule {
     /** QUIT ( -- ) ( R: i * x -- ) Empty rstk and restart interp loop. */
 
     fun w_quit(vm: ForthVM) {
-        vm.ip = vm.memConfig.codeStart
-        vm.rstk.reset()
+        vm.quit()
     }
 
     /** ABORT ( i * x -- ) ( R: j * x -- ) Do QUIT & empty data stack
@@ -41,9 +40,8 @@ object wInterp : IWordModule {
      */
 
     fun w_abort(vm: ForthVM) {
-        vm.io.danger("ABORT")
-        vm.dstk.reset()
-        w_quit(vm)
+        vm.io.danger("${vm.source} ABORT")
+        vm.abort()
     }
 
     /**
@@ -57,9 +55,8 @@ object wInterp : IWordModule {
             val s = vm.source.scanner.parse('"').strFromAddrLen(vm)
             val flag = vm.dstk.pop()
             if (flag != 0) {
-                vm.io.danger("ABORT: $s")
-                vm.dstk.reset()
-                w_quit(vm)
+                vm.io.danger("${vm.source} ABORT: $s")
+                vm.abort()
             }
         } else {
             val s = vm.source.scanner.parse('"').strFromAddrLen(vm)
@@ -73,7 +70,7 @@ object wInterp : IWordModule {
 
     fun w_parenAbortQuote(vm: ForthVM) {
         val s = Pair(vm.dstk.pop(), vm.dstk.pop()).strFromLenAddr(vm)
-        vm.io.danger("ABORT: $s")
+        vm.io.danger("${vm.source} ABORT: $s")
         vm.dstk.reset()
         w_quit(vm)
     }

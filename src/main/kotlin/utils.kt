@@ -85,6 +85,15 @@ val Int.charRepr get() =
     if (this in ' '.code..'~'.code) "'${this.toChar()}'" else ""
 
 fun Int.numToStr(base: Int): String = this.toString(base.coerceIn(2, 36))
+fun Int.numToStrPrefixed(base: Int) =
+     when(base) {
+        2 -> "%${toString(2)}"
+        10 -> this.toString(10)
+        16 -> "$${toString(16)}"
+        else -> "$base#${toString(base)}"
+    }
+
+
 
 val String.isCharLit get() = (get(0) == '\'')
         && (length == 2 || (length == 3 && get(2) == '\''))

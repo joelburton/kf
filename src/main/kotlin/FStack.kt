@@ -127,8 +127,8 @@ class FStack(
 
     /** Dump a single line for the stack; this is used by w_dotS */
     fun simpleDump() {
-        val str = (endAt downTo sp).joinToString(separator = " ") {
-            vm.mem[it].toString()
+        val str = (endAt downTo sp).joinToString("") {
+            "${vm.mem[it].numToStrPrefixed(vm.base)} "
         }
         vm.io.print("<${size}> $str")
     }

@@ -4,7 +4,8 @@ import kf.ForthVM
 import kf.IMetaWordModule
 import kf.words.mForthInterp
 
-class InterpForth(vm: ForthVM) : InterpEval(vm) {
+class
+InterpForth(vm: ForthVM) : InterpEval(vm) {
     override val name = "Forth"
     override val module: IMetaWordModule = mForthInterp
     override val code =  """

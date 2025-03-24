@@ -59,13 +59,14 @@ open class InterpEval(vm: ForthVM) : InterpBase(vm) {
     override fun reset() {
         if (D) vm.dbg(3, "InterpEval.resetInterpreter")
 
+        super.reset()
+
         // If error happens while defining word, roll back this word.
         vm.dict.currentlyDefining?.let { w ->
             vm.cend = w.cpos
             vm.dict.removeLast()
             vm.dict.currentlyDefining = null
         }
-        state = STATE_INTERPRETING
     }
 
     /** Compile a token.

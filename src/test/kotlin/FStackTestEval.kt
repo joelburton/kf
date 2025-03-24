@@ -3,7 +3,7 @@ import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 
-class FStackTestEval : EvalForthTestCase() {
+class FStackTestEval : ForthTestCase() {
     var stk = FStack(vm, "myStack", 100, 103)
 
     @Test
@@ -106,8 +106,9 @@ class FStackTestEval : EvalForthTestCase() {
     fun simpleDump() {
         stk.push(1)
         stk.push(2)
+        vm.base = 10
         stk.simpleDump()
-        assertEquals("<2> 1 2", getOutput())
+        assertEquals("<2> 1 2 ", getOutput())
     }
 
     @Test
