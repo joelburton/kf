@@ -4,10 +4,15 @@ import ForthTestCase
 import dummyFn
 import kf.Word
 import kf.words.core.wWords
+import kf.words.machine.wMachine
 import org.junit.jupiter.api.Test
 
 class wWordsTest : ForthTestCase() {
     val mod = wWords
+
+    init {
+        vm.dict.addModule(wMachine)
+    }
 
     @Test
     fun w_bracketTick() {

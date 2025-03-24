@@ -3,22 +3,27 @@ package words.core
 import EvalForthTestCase
 import ForthTestCase
 import kf.words.core.wLoops
+import kf.words.machine.wMachine
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
 
 class wLoopsTest : ForthTestCase() {
     val mod = wLoops
 
+    init {
+        vm.dict.addModule(wMachine)
+    }
+
     @Test
     fun w_begin() {
-        vm.cend = vm.memConfig.codeStart
+        vm.cend = vm.cstart
         mod.w_begin(vm)
-        assertRStack(vm.memConfig.codeStart)
+        assertRStack(vm.cstart)
     }
 
     @Test
     fun w_until() {
-        vm.cend = vm.memConfig.codeStart
+        vm.cend = vm.cstart
         mod.w_begin(vm)
         mod.w_until(vm)
         assertEquals(vm.dict["0BRANCH"].wn, vm.mem[vm.cend - 2])
@@ -28,17 +33,17 @@ class wLoopsTest : ForthTestCase() {
 
     @Test
     fun w_while() {
-        vm.cend = vm.memConfig.codeStart
+        vm.cend = vm.cstart
         mod.w_begin(vm)
         mod.w_while(vm)
         assertEquals(vm.dict["0BRANCH"].wn, vm.mem[vm.cend - 2])
         assertEquals(0xffff, vm.mem[vm.cend - 1])
-        assertRStack(vm.memConfig.codeStart, vm.memConfig.codeStart + 2)
+        assertRStack(vm.cstart, vm.cstart + 2)
     }
 
     @Test
     fun w_repeat() {
-        vm.cend = vm.memConfig.codeStart
+        vm.cend = vm.cstart
         mod.w_begin(vm)
         mod.w_until(vm)
         assertEquals(vm.dict["0BRANCH"].wn, vm.mem[vm.cend - 2])

@@ -8,6 +8,7 @@ import kf.interps.InterpBase.Companion.STATE_INTERPRETING
 import kf.words.core.wIfThen
 import kf.words.core.wInterp
 import kf.words.custom.wToolsCustom.w_dotCode
+import kf.words.machine.wMachine
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
@@ -16,6 +17,7 @@ class wInterpTest : ForthTestCase() {
     val mod = wInterp
 
     init {
+        vm.dict.addModule(wMachine)
         vm.dict.addModule(wIfThen)
         vm.dict.addModule(wInterp)
     }
@@ -60,7 +62,7 @@ class wInterpTest : ForthTestCase() {
     fun w_abortQuoteCompile() {
         vm.cstart = 0x100
         vm.cend = 0x100
-        vm.ip = vm.memConfig.codeStart
+        vm.ip = vm.cstart
         vm.dstk.push(10)
         vm.rstk.push(20)
         vm.source.scanner.fill("oh no\"")
@@ -71,7 +73,7 @@ class wInterpTest : ForthTestCase() {
         println("${vm.cstart}, ${vm.cend}")
         w_dotCode(vm)
         println(getOutput())
-        assertEquals(vm.memConfig.codeStart, vm.ip)
+        assertEquals(vm.cstart, vm.ip)
         assertDStack(10)
         assertRStack(20)
     }

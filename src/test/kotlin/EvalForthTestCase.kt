@@ -34,9 +34,8 @@ open class ForthTestCase() {
     )
 
     init {
-        vm.interp = InterpBase(vm)
+        vm.interp = InterpFast(vm)
         vm.verbosity = -2
-        vm.dict.addModule(wMachine)
         vm.sources.add(StdInInputSource(vm))
     }
 
@@ -94,15 +93,9 @@ open class ForthTestCase() {
 
 /** Test case that relies on a full Forth VM w/eval and other mods. */
 
-@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 open class EvalForthTestCase : ForthTestCase() {
 
-    init {
-        vm.interp = InterpFast(vm)
-        vm.verbosity = -2
-    }
-
-    @BeforeAll
+    @BeforeEach
     fun beforeEachEval() {
         vm.reboot(includePrimitives = true)
     }
@@ -125,5 +118,4 @@ open class EvalForthTestCase : ForthTestCase() {
             }
         }
     }
-
 }

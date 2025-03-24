@@ -5,10 +5,9 @@ import ForthTestCase
 import kf.*
 import kf.interps.InterpBase.Companion.STATE_INTERPRETING
 import kf.words.core.ext.wCompileExt
-import kf.words.core.ext.wInterpExt
 import kf.words.core.wCompiling
+import kf.words.machine.wMachine
 import org.junit.jupiter.api.Assertions.*
-import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import kotlin.test.assertFailsWith
 
@@ -17,6 +16,7 @@ class wCompilingTest : ForthTestCase() {
     val mod = wCompiling
 
     init {
+        vm.dict.addModule(wMachine)
         vm.dict.addModule(wCompiling)
         vm.dict.addModule(wCompileExt)
     }

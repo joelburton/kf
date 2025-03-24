@@ -5,13 +5,15 @@ import ForthTestCase
 import kf.words.core.ext.wLoopsExt
 import kf.words.core.wLoops
 import kf.words.core.wLoops.w_begin
-import org.junit.jupiter.api.Assertions.*
+import kf.words.machine.wMachine
+import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 
 class wLoopsExtTest : ForthTestCase() {
     val mod = wLoopsExt
 
     init {
+        vm.dict.addModule(wMachine)
         vm.dict.addModule(wLoops)
     }
 

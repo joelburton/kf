@@ -131,7 +131,7 @@ open class InterpEval(vm: ForthVM) : InterpBase(vm) {
      *
      * This is during the bootstrapping; it doesn't use the "real" interpreter;
      * this is needed to compile the real interpreter and put it at the start
-     * of codeStart.
+     * of cstart.
      *
      * */
 
@@ -152,7 +152,7 @@ open class InterpEval(vm: ForthVM) : InterpBase(vm) {
                 else -> throw e
             }
         }
-        vm.ip = vm.memConfig.codeStart
+        vm.ip = vm.cstart
     }
 
     /** Set up bootstrap evaluator. */
@@ -169,7 +169,7 @@ open class InterpEval(vm: ForthVM) : InterpBase(vm) {
         vm.appendWord("2DROP")
         vm.appendWord("EOF")
 
-        vm.cend = vm.memConfig.codeStart
+        vm.cend = vm.cstart
     }
 
     /** Compiles the "real" interpreter (depends on which subclass this is).

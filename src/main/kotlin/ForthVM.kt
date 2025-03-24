@@ -171,11 +171,11 @@ class ForthVM(
         base = 10
         verbosity = curVerbosity
         cstart = memConfig.codeStart
-        cend = memConfig.codeStart
+        cend = cstart
         dstart = memConfig.dataStart
         dend = memConfig.dataStart
 
-        ip = memConfig.codeStart
+        ip = cstart
         currentWord = Word.noWord
 
         dict.reset()

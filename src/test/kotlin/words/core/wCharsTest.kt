@@ -3,6 +3,7 @@ package words.core
 import ForthTestCase
 import kf.CharLitError
 import kf.words.core.wChars
+import kf.words.machine.wMachine
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
@@ -10,6 +11,10 @@ import kotlin.test.assertFailsWith
 
 class wCharsTest : ForthTestCase() {
     val mod = wChars
+
+    init {
+        vm.dict.addModule(wMachine) // need loops
+    }
 
     @Test
     fun w_cStore() {
