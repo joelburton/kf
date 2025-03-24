@@ -89,7 +89,8 @@ class wCompilingFuncTest : EvalForthTestCase() {
         assertNotNull(vm.dict["test"])
         eval("test")
         assertDStack(123)
-        assertFailsWith<InvalidState> { eval(": a : test1 123 ;") }
+        assertFailsWith<InvalidState> {
+            eval(": a : test1 123 ;") }
         assertFailsWith<InvalidState> { eval(": test2 123 ; ;") }
     }
 
@@ -159,7 +160,9 @@ class wCompilingFuncTest : EvalForthTestCase() {
         assertRStack()
 
         eval(": do_ immediate postpone do ;")
-        eval(": test 3 0 do_ 10 loop ; test")
+        eval(": test 3 0 do_ brk-imm 10 loop ;")
+        println(getOutput())
+        see("testx")
         assertDStack(10, 10, 10)
         assertRStack()
     }

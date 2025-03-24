@@ -9,6 +9,7 @@ object wMachine : IWordModule {
 
     override val words = arrayOf<Word>(
         Word("BRK", ::w_brk),
+        Word("BRK-IMM", ::w_brk, imm = true),
         Word("NOP", ::w_nop),
         Word("LIT", ::w_lit, compO = true),
         Word("0BRANCH-ABS", ::w_0branchAbs),
@@ -43,8 +44,8 @@ object wMachine : IWordModule {
      */
     fun w_brk(vm: ForthVM) {
         val ipOfBrk = vm.ip - 1
-        val callerOfBrk = vm.dict[vm.mem[ipOfBrk]].name
-        throw IntBrk("$callerOfBrk at ${ipOfBrk.addr} ($ipOfBrk)")
+//        val callerOfBrk = vm.dict[vm.mem[ipOfBrk]].name
+//        throw IntBrk("$callerOfBrk at ${ipOfBrk.addr} ($ipOfBrk)")
     }
 
     /** `nop` ( -- : Does nothing )

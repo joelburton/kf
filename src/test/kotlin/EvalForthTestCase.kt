@@ -1,6 +1,7 @@
 import com.github.ajalt.mordant.rendering.AnsiLevel
 import com.github.ajalt.mordant.terminal.Terminal
 import kf.EvalInputSource
+import kf.FakeStdInInputSource
 import kf.ForthError
 import kf.IntEOF
 import kf.ForthVM
@@ -36,7 +37,7 @@ open class ForthTestCase() {
     init {
         vm.interp = InterpFast(vm)
         vm.verbosity = -2
-        vm.sources.add(StdInInputSource(vm))
+        vm.sources.add(FakeStdInInputSource(vm, ""))
     }
 
     @BeforeEach
@@ -79,7 +80,8 @@ open class ForthTestCase() {
     }
 
     fun setInput(s: String) {
-        (vm.io.terminalInterface as TerminalTestInterface).addInputs(s)
+//        (vm.io.terminalInterface as TerminalTestInterface).addInputs(s)
+        (vm.source as FakeStdInInputSource).content += s
     }
 
     fun dump(start: Int, len: Int) {
@@ -102,7 +104,7 @@ open class EvalForthTestCase : ForthTestCase() {
 
     fun eval(s: String): String {
         with(vm) {
-            vm.sources.add(EvalInputSource(vm, s))
+            vm.sources = arrayListOf(FakeStdInInputSource(vm, s))
             ip = cstart
             try {
                 while (true) {
@@ -113,7 +115,10 @@ open class EvalForthTestCase : ForthTestCase() {
             } catch (_: IntEOF) {
                 return recorder.output()
             } catch (e: ForthError) {
-                quit()
+                source.scanner.nextLine()
+                rstk.reset()
+                ip = cstart
+                interp.reset()
                 throw e
             }
         }

@@ -36,7 +36,7 @@ open class InterpEval(vm: ForthVM) : InterpBase(vm) {
         val len = vm.dstk.pop()
         val addr = vm.dstk.pop()
         var token = Pair(addr, len).strFromAddrLen(vm)
-        if (D) vm.dbg(3, "vm.w_processToken")
+        if (D) vm.dbg(3, "vm.w_processToken: $token")
         if (isInterpreting) interpret(token)
         else compile(token)
     }

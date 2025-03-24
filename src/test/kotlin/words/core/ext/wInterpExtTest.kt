@@ -17,6 +17,7 @@ class wInterpExtTest : ForthTestCase() {
 
     @Test
     fun w_refill() {
+        vm.source.scanner.nextLine()
         setInput("abc 123")
         mod.w_refill(vm)
         assertEquals("abc 123", vm.source.scanner.toString())

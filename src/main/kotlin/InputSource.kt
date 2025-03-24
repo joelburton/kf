@@ -31,7 +31,8 @@ abstract class InputSource(val vm: ForthVM, val id: Int, val path: String) {
 }
 
 open class FFileSource(
-    vm: ForthVM, id: Int, path: String) : InputSource(vm, id, path) {
+    vm: ForthVM, id: Int, path: String
+) : InputSource(vm, id, path) {
     open val content: String =
         MultiplatformSystem.readFileAsUtf8(path).toString()
 
@@ -54,5 +55,10 @@ class StdInInputSource(vm: ForthVM) : InputSource(vm, 0, "<stdin>") {
 }
 
 class EvalInputSource(
-    vm: ForthVM, override val content: String) : FFileSource(vm, -1, "<eval>")
+    vm: ForthVM, override val content: String
+) : FFileSource(vm, -1, "<eval>")
 
+
+class FakeStdInInputSource(
+    vm: ForthVM, override var content: String
+) : FFileSource(vm, 0, "<fake>")

@@ -85,6 +85,7 @@ class wIOTest : ForthTestCase() {
         vm.dstk.push(vm.memConfig.padStart)
         vm.dstk.push(5)
         setInput("ABCDEFGH")
-        assertFailsWith<ForthBufferError> {  mod.w_accept(vm) }
+        assertFailsWith<ForthBufferError> {
+            mod.w_accept(vm) }
     }
 }

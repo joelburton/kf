@@ -42,7 +42,7 @@ class wInterpTest : ForthTestCase() {
         assertEquals(vm.cstart, vm.ip)
         assertDStack()
         assertRStack()
-        assertPrinted("0:<stdin>:0 ABORT\n")
+        assertPrinted("0:<fake>:0 ABORT\n")
     }
 
     @Test
@@ -55,7 +55,7 @@ class wInterpTest : ForthTestCase() {
         assertEquals(vm.cstart, vm.ip)
         assertDStack()
         assertRStack()
-        assertPrinted("0:<stdin>:0 ABORT: oh no\n")
+        assertPrinted("0:<fake>:0 ABORT: oh no\n")
     }
 
     @Test
@@ -116,13 +116,13 @@ class wInterpFuncTest : EvalForthTestCase() {
         vm.dstk.push(10)
         eval("abort\" oh no\"")
         assertDStack()
-        assertPrinted("-1:<eval>:1 ABORT: oh no\n")
+        assertPrinted("0:<fake>:1 ABORT: oh no\n")
     }
 
     @Test
     fun abortStrCompile() {
         eval(": test 10 abort\" oh no\" 20 ; test")
         assertDStack()
-        assertPrinted("-1:<eval>:1 ABORT: oh no\n")
+        assertPrinted("0:<fake>:1 ABORT: oh no\n")
     }
 }

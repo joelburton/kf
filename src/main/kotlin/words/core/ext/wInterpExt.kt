@@ -49,7 +49,7 @@ object wInterpExt : IWordModule {
         // and not finishing the interpretation of the line that called
         // eval/include, simple report that a line was read and it can
         // continue where it left off.
-        if (vm.inPtr <= nChars) {
+        if (vm.inPtr < nChars) {
             vm.dstk.push(1)
             return
         }
