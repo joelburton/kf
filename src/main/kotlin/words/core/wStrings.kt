@@ -43,7 +43,7 @@ object wStrings : IWordModule {
             val s = vm.source.scanner.parse('"').strFromAddrLen(vm)
 
         if (vm.interp.isInterpreting) {
-            val strAddr: Int = vm.appendStrToData(s)
+            val strAddr = vm.appendStrToData(s)
             vm.dstk.push(strAddr, s.length)
         } else {
             vm.appendStr(s)

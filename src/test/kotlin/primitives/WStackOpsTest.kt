@@ -1,6 +1,5 @@
 package primitives
 
-import EvalForthTestCase
 import ForthTestCase
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
@@ -8,16 +7,8 @@ import org.junit.jupiter.api.Test
 class WStackOpsTest : ForthTestCase() {
      val mod = kf.words.core.wStackOps
     val ext = kf.words.core.ext.wStackOpsExt
-    val rstack = kf.words.core.wRStack
+    val rstack = kf.words.core.wStacks
     val custom = kf.words.custom.wStacksCustom
-
-    @Test
-    fun w_nip() {
-        vm.dstk.push(10)
-        vm.dstk.push(20)
-        ext.w_nip(vm)
-        assertDStack(20)
-    }
 
     @Test
     fun w_spFetch() {

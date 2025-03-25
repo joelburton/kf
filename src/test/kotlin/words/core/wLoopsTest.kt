@@ -116,6 +116,15 @@ class wLoopsFuncTest : EvalForthTestCase() {
         eval(": t 3 0 do i 3 = if leave then i 2 = if leave then i 1 + loop ;")
         eval("t")
         assertDStack(1, 2)
+
+        eval(": test 3 0 do i 2 = if leave then i 1 + 1 +loop ;")
+        eval("test")
+        assertDStack(1, 2)
+
+        eval(
+            ": t 3 0 do i 3 = if leave then i 2 = if leave then i 1 + 1 +loop ;")
+        eval("t")
+        assertDStack(1, 2)
     }
 
     @Test

@@ -9,7 +9,7 @@ object wWordsCustom : IWordModule {
     override val name = "kf.words.custom.wWordsCustom"
     override val description = "Words Extension"
     override val words get() = arrayOf(
-        Word("WN-FORGET", ::w_wnForget ) ,
+        Word(".WN-FORGET", ::w_wnForget ) ,
         Word(".WN-HIDE", ::w_hideWord ) ,
         Word(".WN-UNHIDE", ::w_unhideWord ) ,
         Word("ID.", ::w_IDDot ) ,

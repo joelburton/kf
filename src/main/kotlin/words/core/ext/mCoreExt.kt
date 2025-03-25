@@ -18,7 +18,7 @@ object mCoreExt: IMetaWordModule {
         wMemoryExt,
         wNumIOExt,
         wParseExt,
-        wRStackExt,
+        wStacksExt,
         wStackOpsExt,
         wStringsExt,
         wUnsignedExt,

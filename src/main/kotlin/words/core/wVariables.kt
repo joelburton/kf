@@ -33,7 +33,6 @@ object wVariables: IWordModule {
         vm.dict.add(w)
         vm.cellMeta[vm.dend] = CellMeta.NumLit
         vm.mem[vm.dend++] = data
-
     }
 
     /** Return the data for the constant at currentWord */

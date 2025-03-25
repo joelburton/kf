@@ -5,7 +5,7 @@ import kf.IWordModule
 import kf.Word
 
 
-object wRStack: IWordModule {
+object wStacks: IWordModule {
     override val name = "kf.words.core.RStack"
     override val description = "Working with the return stack."
 

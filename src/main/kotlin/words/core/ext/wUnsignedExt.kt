@@ -2,7 +2,8 @@ package kf.words.core.ext
 
 import kf.IWordModule
 import kf.Word
-import kf.w_notImpl
+import kf.words.core.ext.wNumIOExt.w_dotR
+import kf.words.core.wLogic.w_greaterThan
 
 object wUnsignedExt: IWordModule {
     override val name = "kf.words.core.ext.wUnsignedExt"
@@ -10,7 +11,7 @@ object wUnsignedExt: IWordModule {
 
     override val words
         get() = arrayOf(
-            Word("U.R", ::w_notImpl),
-            Word("U>", ::w_notImpl),
+            Word("U.R", ::w_dotR),
+            Word("U>", ::w_greaterThan),
         )
 }

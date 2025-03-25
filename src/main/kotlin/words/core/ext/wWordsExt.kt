@@ -4,6 +4,7 @@ import kf.ForthVM
 import kf.IWordModule
 import kf.Word
 import kf.strFromAddrLen
+import kf.words.core.wFunctions
 
 object wWordsExt : IWordModule {
     override val name = "kf.words.core.ext.wWordsExt"
@@ -27,18 +28,17 @@ object wWordsExt : IWordModule {
      * Will forget back to (and including) when the "foo" marker was made.
      */
     fun w_marker(vm: ForthVM) {
-        val wCall = vm.dict["call"]
         val newName: String =  vm.source.scanner.parseName().strFromAddrLen(vm)
         val w = Word(
             newName,
-            fn = wCall.fn,
+            fn = wFunctions::w_call,
             cpos = vm.cend,
             dpos = Word.Companion.NO_ADDR
         )
         vm.dict.add(w)
         vm.appendLit(w.wn)
-        vm.appendWord("wn-forget")
-        vm.appendWord(";s")
+        vm.appendWord(".WN-FORGET")
+        vm.appendWord(";S")
     }
 
 }

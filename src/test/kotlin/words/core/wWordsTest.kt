@@ -5,6 +5,7 @@ import dummyFn
 import kf.Word
 import kf.words.core.wWords
 import kf.words.machine.wMachine
+import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 
 class wWordsTest : ForthTestCase() {
@@ -17,8 +18,10 @@ class wWordsTest : ForthTestCase() {
     @Test
     fun w_bracketTick() {
         vm.source.scanner.fill("BRK")
-        mod.w_tick(vm)
-        assertDStack(0)
+        vm.cend = 0x100
+        mod.w_bracketTick(vm)
+        assertDStack()
+        assertEquals(0x102, vm.cend)
     }
 
     @Test

@@ -276,6 +276,11 @@ class ForthVM(
         return startAddr + 1
     }
 
+    /** Append counted strin to the data section */
+    fun appendCStrToData(s: String) : Int {
+        return appendStrToData(s) - 1
+    }
+
     /**  Append lit string to the code section
      */
     fun appendStr(s: String) {
@@ -283,6 +288,15 @@ class ForthVM(
 
         appendWord("lit-string")
         appendCode(s.length, CellMeta.StringLen)
+        for (c in s) mem[cend++] = c.code
+    }
+
+    /**  Append lit counted string to the code section
+     */
+    fun appendCStr(s: String) {
+        if (D) dbg(3, "vm.appendCStr: $s")
+
+        appendWord("lit-string")
         for (c in s) mem[cend++] = c.code
     }
 

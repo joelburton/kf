@@ -68,7 +68,7 @@ class wCharsTest : ForthTestCase() {
         assertEquals(0, len)
 
         vm.source.scanner.fill("")
-        assertFailsWith<CharLitError> { mod.w_char(vm) }
+        assertFailsWith<CharLitError> { mod.w_bracketChar(vm) }
     }
 
     @Test

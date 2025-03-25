@@ -22,7 +22,7 @@ object mCore: IMetaWordModule {
         wMemory,
         wNumIO,
         wParsing,
-        wRStack,
+        wStacks,
         wStackOps,
         wStrings,
         wSystem,

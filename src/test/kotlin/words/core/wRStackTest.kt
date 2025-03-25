@@ -1,11 +1,11 @@
 package words.core
 
 import ForthTestCase
-import kf.words.core.wRStack
+import kf.words.core.wStacks
 import org.junit.jupiter.api.Test
 
 class wRStackTest : ForthTestCase() {
-    val mod = wRStack
+    val mod = wStacks
 
     @Test
     fun w_toR() {

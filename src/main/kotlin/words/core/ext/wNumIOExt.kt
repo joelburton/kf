@@ -13,16 +13,17 @@ object wNumIOExt : IWordModule {
         Word(".R", ::w_dotR),
     )
 
-    /** `hex` `( -- : set base to 16 )` */
+    /** `HEX` `( -- : set base to 16 )` */
 
     fun w_hex(vm: ForthVM) {
         vm.base = 16
     }
 
+    /** `.R` ( n1 n2 -- ) Display n1 right-aligned in a n2-wide field */
 
     fun w_dotR(vm: ForthVM) {
         val width: Int = vm.dstk.pop()
         val v: Int = vm.dstk.pop()
-        vm.io.print("${v.toString().padStart(width)} ")
+        vm.io.print(v.toString(vm.base).padStart(width))
     }
 }

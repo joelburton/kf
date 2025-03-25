@@ -1,9 +1,11 @@
 package words.core
 
 import ForthTestCase
+import kf.DivisionByZero
 import kf.words.core.wMath
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
+import kotlin.test.assertFailsWith
 
 class wMathTest : ForthTestCase() {
     val mod = wMath
@@ -34,6 +36,9 @@ class wMathTest : ForthTestCase() {
         vm.dstk.push(10, 2)
         mod.w_slash(vm)
         assertDStack(5)
+
+        vm.dstk.push(10, 0)
+        assertFailsWith<DivisionByZero> { mod.w_slash(vm) }
     }
 
     @Test
@@ -87,6 +92,10 @@ class wMathTest : ForthTestCase() {
         vm.dstk.push(10, 2, 5)
         mod.w_starSlash(vm)
         assertDStack(4)
+
+        vm.dstk.push(10, 2, 0)
+        assertFailsWith<DivisionByZero> { mod.w_starSlash(vm) }
+
     }
 
     @Test
@@ -98,6 +107,9 @@ class wMathTest : ForthTestCase() {
         vm.dstk.push(11, 2)
         mod.w_mod(vm)
         assertDStack(1)
+
+        vm.dstk.push(11, 0)
+        assertFailsWith<DivisionByZero> { mod.w_mod(vm) }
     }
 
     @Test
@@ -105,6 +117,9 @@ class wMathTest : ForthTestCase() {
         vm.dstk.push(21, 10)
         mod.w_slashMod(vm)
         assertDStack(1, 2)
+
+        vm.dstk.push(21, 0)
+        assertFailsWith<DivisionByZero> { mod.w_slashMod(vm) }
     }
 
     @Test
@@ -112,6 +127,9 @@ class wMathTest : ForthTestCase() {
         vm.dstk.push(10, 2, 3)
         mod.w_starSlashMod(vm)
         assertDStack(2, 6)
+
+        vm.dstk.push(10, 2, 0)
+        assertFailsWith<DivisionByZero> { mod.w_starSlashMod(vm) }
     }
 
     @Test
@@ -120,6 +138,9 @@ class wMathTest : ForthTestCase() {
         vm.dstk.push(3)
         mod.w_fmSlashMod(vm)
         assertDStack(-3, 2)
+
+        vm.dstk.push(21, 0)
+        assertFailsWith<DivisionByZero> { mod.w_fmSlashMod(vm) }
     }
 
     @Test
@@ -128,6 +149,9 @@ class wMathTest : ForthTestCase() {
         vm.dstk.push(3)
         mod.w_smSlashRem(vm)
         assertDStack(-2, -1)
+
+        vm.dstk.push(21, 0)
+        assertFailsWith<DivisionByZero> { mod.w_smSlashRem(vm) }
     }
 
     @Test

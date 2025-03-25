@@ -9,6 +9,13 @@ class wStackOpsTest : ForthTestCase() {
 
     @Test
     fun w_questionDup() {
+        vm.dstk.push(10)
+        mod.w_questionDup(vm)
+        assertDStack(10, 10)
+
+        vm.dstk.push(0)
+        mod.w_questionDup(vm)
+        assertDStack(0)
     }
 
     @Test

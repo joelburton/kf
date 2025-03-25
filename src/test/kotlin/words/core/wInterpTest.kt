@@ -79,11 +79,6 @@ class wInterpTest : ForthTestCase() {
     }
 
     @Test
-    fun w_evaluate() {
-        TODO()
-    }
-
-    @Test
     fun w_state() {
         mod.w_state(vm)
         assertDStack(REG_STATE)
@@ -125,4 +120,11 @@ class wInterpFuncTest : EvalForthTestCase() {
         assertDStack()
         assertPrinted("0:<fake>:1 ABORT: oh no\n")
     }
+
+    @Test
+    fun state() {
+        eval(": test state ; test")
+        assertDStack(REG_STATE)
+    }
+
 }

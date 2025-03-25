@@ -89,11 +89,19 @@ class wLogicTest : ForthTestCase() {
         vm.dstk.push(10, 20)
         mod.w_max(vm)
         assertDStack(20)
+
+        vm.dstk.push(20, 10)
+        mod.w_max(vm)
+        assertDStack(20)
     }
 
     @Test
     fun w_min() {
         vm.dstk.push(10, 20)
+        mod.w_min(vm)
+        assertDStack(10)
+
+        vm.dstk.push(20, 10)
         mod.w_min(vm)
         assertDStack(10)
     }
