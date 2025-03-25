@@ -55,6 +55,7 @@ object wMachine : IWordModule {
      * and that's always fun.
      */
     fun w_nop(vm: ForthVM) {
+        if (D) vm.dbg(3, "w_nop reached")
     }
 
     // *************************************************************** branching
@@ -101,7 +102,7 @@ object wMachine : IWordModule {
     /** `dolit` ( -- 'lit : push wn for 'lit' onto stack )
      */
     fun w_doLit(vm: ForthVM) {
-        val wn: Int = vm.dict.getNum("lit")
+        val wn: Int = vm.dict["lit"].wn
         vm.dstk.push(wn)
     }
 

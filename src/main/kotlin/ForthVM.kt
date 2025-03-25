@@ -71,13 +71,14 @@ class ForthVM(
     var base: Int by RegisterDelegate(REG_BASE)
 
     /** Verbosity of system:
-     *     4 - very low-level debugging
-     *     3 - show internal msgs
-     *     2 - show all words
-     *     1 - welcome messages, user warnings, etc (default)
-     *     0 - no banner or unimportant warnings
-     *     -1 - quiet: no warnings
-     *     -2 - very no prompt, no output except direct (like .)
+     *
+     * -  4  very low-level debugging
+     * -  3  show internal msgs
+     * -  2  show all words
+     * -  1  welcome messages, user warnings, etc (default)
+     * -  0  no banner or unimportant warnings
+     * - -1  quiet: no warnings
+     * - -2  very no prompt, no output except direct (like .)
      *
      *  To see any dev-debugging messages, the global variable [D] needs to
      *  be true.
@@ -249,7 +250,7 @@ class ForthVM(
      */
     fun appendWord(s: String) {
         if (D) dbg(3, "vm.appendWord: $s")
-        val wn = dict.getNum(s)
+        val wn = dict[s].wn
         appendCode(wn, CellMeta.WordNum)
     }
 

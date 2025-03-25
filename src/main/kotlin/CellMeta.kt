@@ -1,6 +1,12 @@
 package kf
 
 
+/** What sort of information does this cell in memory hold?
+ *
+ * This isn't used by the VM itself at all, and isn't required to be filled in.
+ * However, it helps the smart disassembler (`SEE`) to show more useful info.
+ *
+ */
 enum class CellMeta {
     Unknown,
     WordNum,

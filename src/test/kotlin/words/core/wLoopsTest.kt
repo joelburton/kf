@@ -51,46 +51,6 @@ class wLoopsTest : ForthTestCase() {
         assertRStack()
     }
 
-
-    @Test
-    fun w_do() {
-    }
-
-    @Test
-    fun w_parenDo() {
-    }
-
-    @Test
-    fun w_loop() {
-    }
-
-    @Test
-    fun w_parenLoop() {
-    }
-
-    @Test
-    fun w_plusLoop() {
-    }
-
-    @Test
-    fun w_parenPlusLoop() {
-    }
-
-    @Test
-    fun w_i() {
-    }
-
-    @Test
-    fun w_j() {
-    }
-
-    @Test
-    fun w_leave() {
-    }
-
-    @Test
-    fun w_unloop() {
-    }
 }
 
 

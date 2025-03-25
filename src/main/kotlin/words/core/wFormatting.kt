@@ -1,5 +1,6 @@
 package kf.words.core
 
+import kf.ForthVM
 import kf.IWordModule
 import kf.Word
 import kf.w_notImpl
@@ -10,12 +11,12 @@ object wFormatting: IWordModule {
 
     override val words
         get() = arrayOf(
-            Word("#", ::w_notImpl),
-            Word("#>", ::w_notImpl),
-            Word("#S", ::w_notImpl),
-            Word("<#", ::w_notImpl),
-            Word("HOLD", ::w_notImpl),
-            Word("SIGN", ::w_notImpl),
+            Word("#", ::w_numberSign),
+            Word("#>", ::w_numberSignGreater),
+            Word("#S", ::w_numberSignS),
+            Word("<#", ::w_lessNumberSign),
+            Word("HOLD", ::w_hold),
+            Word("SIGN", ::w_sign),
         )
 
     /**
@@ -27,5 +28,10 @@ object wFormatting: IWordModule {
      *
      */
 
-
+    fun w_numberSign(vm: ForthVM) {}
+    fun w_numberSignGreater(vm: ForthVM) {}
+    fun w_numberSignS(vm: ForthVM) {}
+    fun w_lessNumberSign(vm: ForthVM) {}
+    fun w_hold(vm: ForthVM) {}
+    fun w_sign(vm: ForthVM) {}
 }

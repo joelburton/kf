@@ -10,11 +10,19 @@ import com.github.ajalt.mordant.widgets.Text
 class WordNotFoundError(m: String) : ForthError("Word not found: $m")
 class DictFullError() : ForthError("Dictionary full")
 
+/** A class that contains the thematically-related words. */
+
 interface IWordModule {
     val name: String
     val description: String
     val words: Array<Word>
 }
+
+/** A class that brings together several modules.
+ *
+ * For example, the ANS core words are divided into many files (wLoops,
+ * wIfThen, etc); however, there is mCore that itself includes all of those.
+ */
 
 interface IMetaWordModule {
     val name: String
@@ -28,10 +36,27 @@ interface IMetaWordModule {
 
 //     words.first { it.name.equals(name, ignoreCash }
 
-class Dict(val vm: ForthVM, val capacity: Int = 1024)  {
+/** The dictionary of Forth words (sometimes called the "glossary".
+ *
+ * Every word is here, even though some words are very internal-facing and
+ * generally hidden from users of the system. Words that are in the process
+ * of being made are also added here.
+ *
+ * TODO: could we just not add a word until its complete?
+ */
+
+class Dict(val vm: ForthVM, val capacity: Int = 1024) {
     private val _words = arrayListOf<Word>()
     val words: List<Word> = _words
     var currentlyDefining: Word? = null
+
+    val size: Int get() = _words.size
+    val last: Word get() = _words.last()
+
+    /** Reset the entire dictionary after a system restart.
+     *
+     * Any new state added to the dictionary itself should be added here.
+     * */
 
     fun reset() {
         if (D) vm.dbg(3, "dict.reset")
@@ -39,21 +64,27 @@ class Dict(val vm: ForthVM, val capacity: Int = 1024)  {
         currentlyDefining = null
     }
 
-    val size: Int get() = _words.size
-    val last: Word get() = _words.last()
+    /** Get word by wn, like ```dict[wn]```. Throws error if not found. */
 
     operator fun get(wn: Int): Word {
-        if (wn < 0 || wn >= _words.size) throw WordNotFoundError("$wn")
+        if (wn < 0 || wn > _words.lastIndex) throw WordNotFoundError("$wn")
         return _words[wn]
     }
 
-    operator fun get(name: String): Word {
-        for (w in _words.asReversed()) {
-            if (w.name.equals(name, ignoreCase = true)) return w
-        }
-        throw WordNotFoundError(name)
-    }
+    /** Get word by name, like ```dict["dup"]```. Throws err if not found. */
 
+    operator fun get(name: String): Word =
+        _words.asReversed()
+            .firstOrNull { it.name.equals(name, ignoreCase = true) }
+            ?: throw WordNotFoundError(name)
+
+    /** Get word by name, but returns null if word-not-found.
+     * 
+     * Almost always, trying to refer to a non-existant word should be an error,
+     * but there are specific use cases, like `FIND`, etc, where a missing word
+     * shouldn't be an error.
+     */
+    
     fun getSafe(name: String): Word? =
         _words.asReversed().find { it.name.equals(name, ignoreCase = true) }
 
@@ -66,34 +97,36 @@ class Dict(val vm: ForthVM, val capacity: Int = 1024)  {
      * This is useful for w_see and w_simple-see, to show what word a memory
      * location might be linked to.
      */
-    fun getByMem(n: Int): Word? {
-        for (w in _words.reversed()) {
-            if (w.dpos == n || w.cpos == n) return w
-        }
-        return null
-    }
+    fun getByMem(n: Int): Word? =
+        _words.asReversed().find { it.dpos == n || it.cpos == n }
 
-    /**  Get Word by name (null for not found)
-     */
+    /**  Get word by name (null for not found) 
+     * 
+     * Normally, words cannot call themselves until they've finished
+     * being added to the system. 
+     * 
+     * This is handled in the typical cases by ignoring the currently-def word
+     * until it is completed and then using this method for the compilation
+     * code.
+     * 
+     * It will skip the currently-defined word unless it is marked as recursive
+     * with the `RECURSIVE` extension.
+     ** 
+     * */
+
     fun getSafeChkRecursion(name: String?): Word? {
-        for (w in _words.asReversed()) {
-            if (w.name.equals(name, ignoreCase = true)) {
-                if (currentlyDefining !== w || w.recursive) return w
-                else vm.io.muted(
-                    "Skipping currently-defining word because it isn't"
-                            + " recursive"
-                )
+        return _words.asReversed().firstOrNull {
+            it.name.equals(name, ignoreCase = true) &&
+                    (currentlyDefining !== it || it.recursive)
+        }?.also {
+            if (currentlyDefining === it && !it.recursive) {
+                vm.io.muted(
+                    "Skipping currently-defining word because it isn't recursive")
             }
         }
-        return null
     }
 
-    fun getNum(name: String): Int {
-        for (i in _words.indices.reversed()) {
-            if (_words[i].name.equals(name, ignoreCase = true)) return i
-        }
-        throw WordNotFoundError(name)
-    }
+    /** Add a word to the dictionary. */
 
     fun add(word: Word) {
         if (D) vm.dbg(3, "dict.add: ${word.name}")
@@ -101,6 +134,11 @@ class Dict(val vm: ForthVM, val capacity: Int = 1024)  {
         _words.add(word)
         word.wn = _words.lastIndex
     }
+
+    /** Add an entire module of words (like wMemory)
+     *
+     * Already-loaded modules are skipped unless `reloadOk` is true.
+     */
 
     fun addModule(mod: IWordModule, reloadOk: Boolean = false) {
         if (D) vm.dbg(3, "dict.addModule: ${mod.name}")
@@ -112,16 +150,17 @@ class Dict(val vm: ForthVM, val capacity: Int = 1024)  {
         }
 
         if (vm.verbosity >= 2) vm.io.println(bold(yellow("${mod.name}:")))
-        val sb = StringBuilder()
-        for (w in mod.words) {
-            add(w)
-            if (vm.verbosity >= 2) sb.append("${w.name} ")
+        val sb = mod.words.joinToString(" ") {
+            add(it)
+            it.name
         }
         if (vm.verbosity >= 2)
-            vm.io.println(Text("    $sb", whitespace= Whitespace.PRE_WRAP))
+            vm.io.println(Text("    $sb", whitespace = Whitespace.PRE_WRAP))
 
         vm.modulesLoaded.put(mod.name, mod)
     }
+
+    /** Add a "meta-module", a module that just contains other modules. */
 
     fun addMetaModule(mod: IMetaWordModule) {
         if (D) vm.dbg(3, "dict.addMetaModule: ${mod.name}")
@@ -129,11 +168,11 @@ class Dict(val vm: ForthVM, val capacity: Int = 1024)  {
         for (m in mod.modules) addModule(m, false)
     }
 
-    // ******************************************************* manipulating dict
-
     /**  Gets rid of all words at 'n' and after (including n).
+     *
      * Used for "w_forget"
      */
+
     fun truncateAt(n: Int) {
         if (D) vm.dbg(3, "dict.truncateAt $n")
         if (_words.size > n) {
@@ -141,14 +180,9 @@ class Dict(val vm: ForthVM, val capacity: Int = 1024)  {
         }
     }
 
-    /**  Remove last word (being defined or already defined)
-     */
+    /**  Remove last word (being defined or already defined) */
     fun removeLast() {
         if (D) vm.dbg(3, "dict.removeLast")
         _words.removeLast()
     }
-
-//    fun replaceWord(newWord: Word, wn: Int) {
-//        _words[wn] = newWord
-//    }
 }

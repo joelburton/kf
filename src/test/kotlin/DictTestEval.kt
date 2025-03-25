@@ -65,7 +65,7 @@ class DictTestEval  : ForthTestCase() {
         val word = Word("word", fn=::dummyFn)
         dict.add(word)
         assertFailsWith<WordNotFoundError> { dict["no-word"] }
-        assertEquals(0, dict.getNum("word"))
+        assertEquals(0, dict["word"].wn
     }
 
     @Test
