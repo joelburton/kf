@@ -16,10 +16,19 @@ import kf.words.fileaccess.wFileAccessExt
 
 class ForthCLI : CliktCommand("PupForth") {
 
+    /** How verbose should it be w/messages & debugging?
+     *
+     * See the [ForthVM.verbosity] property for a list of values.
+     */
+
     val verbosity: Int by option("-v", "--verbosity").int()
         .default(1)
         .help("verbosity level (default: 1)")
 
+    /** Should this use ANSI codes (colors, etc).
+     *
+     * This is normally detected, but it can be forced.
+     */
     val ansiLevel: AnsiLevel? by option()
         .switch(
             "--ansi" to AnsiLevel.TRUECOLOR,
@@ -27,9 +36,13 @@ class ForthCLI : CliktCommand("PupForth") {
         )
         .help("terminal type (default: detect)")
 
+    /** List of paths it will INCLUDE as it starts up. */
     val paths: List<String> by argument()
         .multiple()
 
+    /** The "small" size is very tiny, and is intended for just using less
+     * memory for tests, etc. Medium is probably perfect.
+     */
     val size: IMemConfig by option()
         .switch(
             "--large" to LargeMemConfig(),
@@ -39,6 +52,7 @@ class ForthCLI : CliktCommand("PupForth") {
         .default(MedMemConfig())
         .help("VM memory size (default: medium)")
 
+    /** This can serve Forth via HTTP or WebSockets. */
     val gateway: String? by option()
         .switch(
             "--http" to "http",
@@ -54,6 +68,7 @@ class ForthCLI : CliktCommand("PupForth") {
         .flag(default = false)
         .help("show version")
 
+    /** Which interpreter to use? This is mostly for nerdy tinkering around. */
     val interp: String by option()
         .switch(
             "--base" to "base",
@@ -64,10 +79,21 @@ class ForthCLI : CliktCommand("PupForth") {
         .default("fast")
         .help("interpreter to use")
 
+    /** Load only essential modules (about 20% of the full word set).
+     *
+     * This is mostly for tinkering and building your own Forth :-)
+     */
     val raw: Boolean by option("--raw")
         .flag(default = false)
         .help("Load only required modules for interp")
 
+
+    /** The runner for all the options.
+     *
+     * It's "wrapped" only in the sense that the caller of this wraps its
+     * call to this in a try/catch, and I don't want to have this big code
+     * block indented in a huge-try catch around the whole thing.
+     */
     fun wrappedRun() {
         if (version) {
             println(VERSION_STRING)
@@ -82,7 +108,11 @@ class ForthCLI : CliktCommand("PupForth") {
             return
         }
 
+        // Build the ForthVM that everything from this point down uses.
+
         val vm = ForthVM(memConfig = size)
+
+        // Attach the right interpreter to it.
         vm.interp = when (interp) {
             "base" -> InterpBase(vm)
             "eval" -> InterpEval(vm)
@@ -94,10 +124,27 @@ class ForthCLI : CliktCommand("PupForth") {
         vm.verbosity = verbosity
         vm.reboot(!raw)
 
-        // first, process any files passed in on cmd line
+        // Before the interactive mode starts, all files listed will be
+        // read. This is done by adding each file as an input source.
+        // This is done in reversed order as written on the command line:
+        //
+        //   ./kf a.fth b.fth c.fth
+        //
+        // should be processed in a -> b -> c -> interactive order,
+        // but the list of sources is a stack, so these are pushed in reverse.
+        // This DOESN'T run those files itself --- the VM doesn't do anything
+        // until it's started once, below, with `vm.runVM()`
+
         for (path in paths.asReversed()) wFileAccessExt.include(vm, path)
 
-        // start a gateway if one given
+        // Start a gateway if one given.
+        //
+        // It would be possible to start one or even both gateways AND have
+        // an interactive experience at the same time. But I think this would
+        // be confusing UX for users to understand. So, each gateway doesn't
+        // release the main thread until shutdown, and this function returns
+        // before getting to the interactive mode.
+
         if (gateway != null) {
             when (gateway) {
                 "websocket" -> GatewayWebsocket(vm)
@@ -107,10 +154,15 @@ class ForthCLI : CliktCommand("PupForth") {
             return
         }
 
+        // Attach the right terminal (colors, etc.)
         vm.io = Terminal(ansiLevel = ansiLevel)
 
+        // Start the puppy! It will run until the program quits --- and then it
+        // will be very, very sad and will miss you.
         vm.runVM()
     }
+
+    /** Entry point for the CLI. */
 
     override fun run() {
         try {

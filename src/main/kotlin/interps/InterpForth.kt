@@ -4,10 +4,30 @@ import kf.ForthVM
 import kf.IMetaWordModule
 import kf.words.mForthInterp
 
-class
-InterpForth(vm: ForthVM) : InterpEval(vm) {
+/** The "classic" Forth interpreter.
+ *
+ * The interpreter program here is much longer and broken down into more
+ * atomic, classic Forth words (`FIND`, `WORD`, etc.)
+ *
+ * It will run a bit slower (not the VM when running code, just the REPL),
+ * but in debugging mode will spew obnoxious amounts of info, since dozens
+ * of Forth works are executed for even a simple line entered to evaluate.
+ *
+ * However, it relies on far less specialized high-level words, and is closer
+ * to the Forth ethos of build-Forth-from-Forth.
+ *
+ * Interesting note:  the list of required words in COLD-RAW mode here is much
+ * longer, since it uses lots of Forth words (BL, DUP, ?DUP, STATE, >NUMBER,
+ * and many others) that [InterpFast] don't need since the logic those words
+ * supply is handled by the big interp-a-token word it uses.
+ *
+ */
+
+class InterpForth(vm: ForthVM) : InterpEval(vm) {
     override val name = "Forth"
     override val module: IMetaWordModule = mForthInterp
+    // fun fact: at the time I wrote this, it was the longest Forth program
+    // I had ever written ;-)
     override val code =  """
     begin 
       refill while                        ( loop as long as get-a-line succeeds

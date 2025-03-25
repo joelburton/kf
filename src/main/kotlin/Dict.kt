@@ -30,12 +30,6 @@ interface IMetaWordModule {
     val modules: Array<IWordModule>
 }
 
-// todo: should "words" be kept in reverse order?
-// - that's always how we look for a word
-// - plus, we'd have nice idiotmatic code for get, like:
-
-//     words.first { it.name.equals(name, ignoreCash }
-
 /** The dictionary of Forth words (sometimes called the "glossary".
  *
  * Every word is here, even though some words are very internal-facing and
@@ -46,8 +40,38 @@ interface IMetaWordModule {
  */
 
 class Dict(val vm: ForthVM, val capacity: Int = 1024) {
+    /** The real array of words, private to this class.
+     *
+     * It is arranged in order such that the word with wn=1 will be at array
+     * index 1 (therefore, this list will only ever be truncated from the
+     * end, never mutated in any other way).
+     *
+     * A read-only view is provided to outside users.
+     */
+
     private val _words = arrayListOf<Word>()
+
+    /** View for other classes.
+     *
+     * This is intended to be immutable --- but, unfortunately, it's still
+     * possible for a badly-behaving other class to mutate it by casting it
+     * back to its immutable form, like:
+     *
+     *   (words as ArrayList).add(...)
+     *
+     * If I was worried about this, I wouldn't expose this; I would have a
+     * getter that returns a .toList() version of it, which would be an
+     * entirely separate list, so any attempts at mutating it would be ignored.
+     * That would entail copy it each time it's needed, which would have some
+     * overhead. It isn't needed for this project.
+     *
+     */
     val words: List<Word> = _words
+
+    /** The word, if any, that is currently being defined.
+     *
+     * This is cleared after a definition has succeeded or failed.
+     */
     var currentlyDefining: Word? = null
 
     val size: Int get() = _words.size

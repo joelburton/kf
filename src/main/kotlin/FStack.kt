@@ -1,7 +1,7 @@
 package kf
 
-import kotlin.math.absoluteValue
-
+// These subclass ForthError, which should be for things which are recoverable
+// and just cause the interpreter to "quit" (ie, reset and clear stacks)
 
 class StackOverflowError(name: String) :
     ForthError("${name}: Stack overflow")
@@ -12,19 +12,24 @@ class StackUnderflowError(name: String) :
 class StackPtrInvalidError(name: String, n: Int) :
     ForthError("${name}: Stack ptr invalid: ${n}")
 
-/** Stack in a memory location. This stack "grows downward" (ie, if sp=100,
- *   and then you push an item, sp will be 99).
+/** Stack in a memory location.
+ *
+ * This stack "grows downward" (ie, if sp=100, and then you push an item, sp
+ * will be 99).
  */
 
 class FStack(
     val vm: ForthVM,
     val name: String,
+    /** Location in memory of start of stack. */
     val startAt: Int,
+    /** Location in memory of end of stack-space */
     val endAt: Int,
 ) {
+    /** Pointer to the current item. */
     var sp: Int = endAt + 1
-    val size: Int
-        get() = endAt - sp + 1
+    /** Number of items in the stack. */
+    val size: Int get() = endAt - sp + 1
 
     /**  Get stack as array (for debugging). */
     fun asArray() = vm.mem.copyOfRange(sp, endAt + 1).reversedArray()
@@ -32,17 +37,41 @@ class FStack(
     /**  Just useful for debuggers. */
     override fun toString(): String = "$name ${asArray().contentToString()}"
 
-    /** Retrieves value from stack at a index relative to the stack origin. */
-    fun getAt(n: Int): Int {
+    /** Retrieves value from stack at a index relative to the stack origin.
+     *
+     * getAt(0) would be the first item ever added to the stack.
+     * */
+    internal fun getAt(n: Int): Int {
         if (n < 0 || n > endAt - sp) throw StackPtrInvalidError(name, n)
         return vm.mem[endAt - n]
     }
 
-    /** Retrieves value from stack at a index relative to the stack pointer. */
+    /** Retrieves value from stack at a index relative to the stack pointer.
+     *
+     * getFrom(0) is the same as peek()
+     * */
     fun getFrom(n: Int): Int {
         if (n < 0 || n > endAt - sp) throw StackPtrInvalidError(name, n)
         return vm.mem[sp + n]
     }
+
+    /** Remove & return value at index relative to stack pointer.
+     *
+     * Used to implement `ROLL`
+     * */
+
+    fun popFrom(n: Int): Int {
+        if (D) vm.dbg(3, "$name: popFrom $n")
+
+        if (n < 0 || n >= size) throw StackPtrInvalidError(name, n)
+        val v = vm.mem[sp + n]
+        for (i in n downTo 1) {
+            vm.mem[sp + i] = vm.mem[sp + i - 1]
+        }
+        sp += 1
+        return v
+    }
+
 
     /** Add item. */
     fun push(n: Int) {
@@ -50,8 +79,11 @@ class FStack(
         vm.mem[--sp] = n
     }
 
-    /** Add two items (there's a variadic version below, but for performance
-     *  with two items, we don't force a variadic call.
+    /** Add two items.
+     *
+     * Just an optimization, given how common this is. This reduces the number
+     * of separate function calls and will perform better than the truly
+     * variadic version,below.
      */
     fun push(a: Int, b: Int) {
         if (sp - 1 <= startAt) throw StackOverflowError(name)
@@ -65,27 +97,16 @@ class FStack(
         for (v in vs) vm.mem[--sp] = v
     }
 
-    /** Push double num in two parts (first lo, then high) */
+    /** Push double num in two parts (first lo, then high)
+     *
+     * The project doesn't truly support double nums (they're not so urgent
+     * when the normal cell size is already 32 bits). But there are lots of
+     * API compatibility needed here. This takes a long, but only ever adds
+     * the lower 32 bits and a 0 for the hi-cell.
+     * */
     fun dblPush(n: Long) {
         if (n > ForthVM.MAX_INT) throw NumOutOfRange(n)
         push(n.toInt(), 0)
-
-    // more to figure out, but holding onto this as a start:
-
-        //        if (n >= 0) {
-        //            val hi = (n ushr 32).toInt()
-        //            val lo = (n and 0xFFFF_FFFF).toInt()
-        //            push(lo, hi)
-        //            println("POS $lo,$hi")
-        //        } else {
-        //            val na = n.absoluteValue
-        //            val hi = -(na ushr 32).toInt() - 1
-        //            val lo = -(na and 0xFFFF_FFFF).toInt()
-        //            push(lo, hi)
-        //            println("NEG $lo,$hi")
-        //        }
-
-
     }
 
     /** Pop double num in two parts (high first, then lo) */
@@ -96,19 +117,6 @@ class FStack(
         val lo = pop()
         return lo.toLong()
 
-        // see above:
-        //
-        //        val hi = pop()
-        //        val lo = pop()
-        //        if (hi >= 0) {
-        //            assert(lo >= 0)
-        //            return (hi.toLong() shl 32) or (lo.toLong() and 0xFFFF_FFFF)
-        //        } else {
-        //            return (
-        //                    (hi.toLong().inv() shl 32)
-        //                            or (lo.toLong().inv() and 0xFFFF_FFFF)
-        //                        .inv())
-        //        }
     }
 
     /** Remove & return top item. */
@@ -125,7 +133,7 @@ class FStack(
         sp = endAt + 1
     }
 
-    /** Dump a single line for the stack; this is used by w_dotS */
+    /** Dump a single line for the stack; this is used by `.S` */
     fun simpleDump() {
         val str = (endAt downTo sp).joinToString("") {
             "${vm.mem[it].numToStrPrefixed(vm.base)} "
@@ -136,28 +144,13 @@ class FStack(
     /**  Print a verbose stack dump. */
     fun dump() {
         if (D) vm.dbg(4, "$name: dump")
+
         for (i in 0..<size) {
             val v = getAt(i)
-            vm.io.print("$name[$i] = ${v.hex8} (${v.pad10})")
-            if (v in (0x20..0x7e)) {
-                vm.io.print(" ${v.charRepr}")
-            }
+            vm.io.print("$name[$i] = ${v.hex8} (${v.pad10}) ${v.charRepr}")
             if (i == size - 1)
                 vm.io.print("   <- top")
             vm.io.println()
         }
     }
-
-    fun popFrom(n: Int): Int {
-        if (D) vm.dbg(3, "$name: popFrom $n")
-        if (n < 0 || n >= size) throw StackPtrInvalidError(name, n)
-        val v = vm.mem[sp + n]
-        for (i in n downTo 1) {
-            vm.mem[sp + i] = vm.mem[sp + i - 1]
-        }
-        sp += 1
-        return v
-    }
-
-
 }

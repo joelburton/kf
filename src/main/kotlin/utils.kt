@@ -4,7 +4,20 @@ package kf
 
 import kotlin.text.HexFormat
 
+/** Set this to true to allow the system to generate copious logging msgs.
+ *
+ * This isn't changeable except in the source: it's a global constant so that
+ * the compiler can optimize away all debugging-level logs if false.
+ *
+ * Just because this is true doesn't mean you'll *see* the input (change the
+ * verbosity of the VM will `some-num r:verbosity !`), but when this is true,
+ * doing anything will have a dozen or two checks to see what the verbosity
+ * is to decide to log it, and so the whole VM is about 3x slower.
+ *
+ * Apologies for the absurdly short name; it's in a TON of lines.
+ */
 const val D = true
+
 const val VERSION_STRING = "KPupForth 0.1.0"
 
 
@@ -24,8 +37,20 @@ const val VERSION_STRING = "KPupForth 0.1.0"
  * #10  = 10
  * $10  = 16
  * %10  = 2
+ * 'A   = 65
+ * 'A'  = 65
  *
- * This will throw a ForthError. */
+ * This will throw a ForthError if it can't parse something as a number.
+ *
+ * While it may be used for other things, this ultimately is what either
+ * the evaluator or compiler functions use when it can find a word matching
+ * the name. So an error here is a "parsing error", like a user typed this
+ * in the interpreter:
+ *
+ *  >>> 10 20 xxx
+ *            ^---- not a word, and not parseable as an int = parsing error
+ * */
+
 fun String.toForthInt(radix: Int): Int {
     var s = this
 
@@ -33,7 +58,7 @@ fun String.toForthInt(radix: Int): Int {
     // like `'a'` or `'a`. This isn't standard Forth, but GForth does this,
     // and it's a very nice convenience.
 
-    if (s.isCharLit) {
+    if ((s[0] == '\'') && (length == 2 || (length == 3 && s[2] == '\''))) {
         return s[1].code
     }
 
@@ -66,25 +91,37 @@ fun String.toForthInt(radix: Int): Int {
 
     return try {
         s.toInt(_radix)
-    } catch (e: NumberFormatException) {
+    } catch (_: NumberFormatException) {
         throw ParseError(s)
     }
 }
 
+/** Output long hex num, like $0000123a */
 val DollarHex = HexFormat { number { prefix = "$" } }
+
+/** Output short-as-can-be, like $123a */
 val DollarBriefHex = HexFormat {
     number { prefix = "$"; removeLeadingZeros = true }
 }
 val Int.hex8 get() = this.toHexString(DollarHex)
 val Int.hex get() = this.toHexString(DollarBriefHex)
+
+/** Format an address like $FF99 */
 val Int.addr get() = this.toShort().toHexString(DollarHex)
+
+/** Pad integer by 10 --- that can fit $ffffffff, which is the largest num. */
 val Int.pad10 get(): String = toString().padStart(10, ' ')
+
+/** Output a string with the char rep like 'A' if # is ASCII range. */
 
 @Suppress("KotlinConstantConditions")
 val Int.charRepr get() =
     if (this in ' '.code..'~'.code) "'${this.toChar()}'" else ""
 
+/** Output number as Forth string. */
 fun Int.numToStr(base: Int): String = this.toString(base.coerceIn(2, 36))
+
+/** Output number as Forth string with prefixes, like "$AB" or "%1010" */
 fun Int.numToStrPrefixed(base: Int) =
      when(base) {
         2 -> "%${toString(2)}"
@@ -93,15 +130,20 @@ fun Int.numToStrPrefixed(base: Int) =
         else -> "$base#${toString(base)}"
     }
 
-
-
-val String.isCharLit get() = (get(0) == '\'')
-        && (length == 2 || (length == 3 && get(2) == '\''))
+// Forth strings come in two forms:
+//
+// - normal strings, which have an address, and the length is passed separately.
+// - counted strings, where the length is the cell before the start of chars.
+//
+// Many functions, like those in the parser, return a Pair (addr,len): these
+// functions can turn those into Kotlin strings.
 
 /** Return string from addr,len pair. */
 
 fun Pair<Int, Int>.strFromAddrLen(vm: ForthVM) =
     CharArray(second) { i -> vm.mem[first + i].toChar() }.concatToString()
+
+/** Return string from len,addr pair. */
 
 fun Pair<Int, Int>.strFromLenAddr(vm: ForthVM) =
     CharArray(first) { i -> vm.mem[second + i].toChar() }.concatToString()
@@ -109,6 +151,8 @@ fun Pair<Int, Int>.strFromLenAddr(vm: ForthVM) =
 /** Return string from address of counted string. */
 
 fun Int.strFromCSAddr(vm: ForthVM): String {
+    // very curious about why that annotation is needed to silence my IDE;
+    // without it, it shows a warning.
     @Suppress("KotlinConstantConditions") val len = vm.mem[this]
     return CharArray(len) { i -> vm.mem[this + i + 1].toChar() }.concatToString()
 }

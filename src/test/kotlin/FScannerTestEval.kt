@@ -4,7 +4,7 @@ import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
 
 class FScannerTestEval : ForthTestCase() {
-    val start = vm.memConfig.interBufStart
+    val start = vm.memConfig.interpBufStart
     val end = vm.memConfig.interpBufEnd
 
     @Test

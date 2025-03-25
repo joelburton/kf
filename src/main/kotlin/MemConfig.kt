@@ -1,5 +1,24 @@
 package kf
 
+/** Sets of compatible choice for memory size and memory regions:
+ *
+ * - name: purely informational
+ * - regs: registers; stuff like BASE and STATE and such
+ * - scratch: scratch space used when bootstrapping and internally
+ * - pad: scratch space that users can safely use
+ * - code: definitions
+ *   the start of this space is where the interp code (if any!) lives at
+ * - data: miscellaneous data created by users (CREATE, ALLOT, etc.)
+ * - interpBuf: memory scanner uses for line-in-process
+ *   this is what SOURCE returns
+ * - dStack: the data stack
+ * - rStack: the return stack
+ *
+ * This system has intentionally no memory protection --- you can read/write
+ * any address space in the machine. This makes for fun hacking, but you
+ * can easily trash the stack or interpreter code or such.
+ */
+
 interface IMemConfig {
     val name: String
     val regsStart: Int
@@ -12,7 +31,7 @@ interface IMemConfig {
     val codeEnd: Int
     val dataStart: Int
     val dataEnd: Int
-    val interBufStart: Int // interp input buf
+    val interpBufStart: Int // interp input buf
     val interpBufEnd: Int
     val dstackStart: Int
     val dstackEnd: Int
@@ -27,7 +46,7 @@ interface IMemConfig {
         println("Pad:           ${padStart.addr}-${padEnd.addr}")
         println("Code:          ${codeStart.addr}-${codeEnd.addr}")
         println("Data:          ${dataStart.addr}-${dataEnd.addr}")
-        println("Interp buffer: ${interBufStart.addr}-${interpBufEnd.addr}")
+        println("Interp buffer: ${interpBufStart.addr}-${interpBufEnd.addr}")
         println("Dstack:        ${dstackStart.addr}-${dstackEnd.addr}")
         println("Rstack:        ${rstackStart.addr}-${rstackEnd.addr}")
         println("Upper bound:        -${upperBound.addr}")
@@ -46,7 +65,7 @@ open class SmallMemConfig : IMemConfig {
     override val codeEnd: Int = 0x01ff
     override val dataStart: Int = 0x0200
     override val dataEnd: Int = 0x027f
-    override val interBufStart: Int = 0x0280
+    override val interpBufStart: Int = 0x0280
     override val interpBufEnd: Int = 0x02ff
     override val dstackStart: Int = 0x0300
     override val dstackEnd: Int = 0x03df
@@ -60,7 +79,7 @@ open class MedMemConfig : SmallMemConfig() {
     override val codeEnd: Int = 0x17ff
     override val dataStart: Int = 0x1800
     override val dataEnd: Int = 0x2eff
-    override val interBufStart: Int = 0x2f00
+    override val interpBufStart: Int = 0x2f00
     override val interpBufEnd: Int = 0x2fff
     override val dstackStart: Int = 0x3000
     override val dstackEnd: Int = 0x3dff
@@ -74,7 +93,7 @@ class LargeMemConfig : MedMemConfig() {
     override val codeEnd: Int = 0x4fff
     override val dataStart: Int = 0x5000
     override val dataEnd: Int = 0xaeff
-    override val interBufStart = 0xaf00
+    override val interpBufStart = 0xaf00
     override val interpBufEnd: Int = 0xafff
     override val dstackStart: Int = 0xb000
     override val dstackEnd: Int = 0xefff

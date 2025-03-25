@@ -1,6 +1,6 @@
 package kf.words.fileaccess
 
-import kf.FFileSource
+import kf.FileInputSource
 import kf.ForthVM
 import kf.IWordModule
 import kf.Word
@@ -24,7 +24,7 @@ object wFileAccessExt: IWordModule {
 
     fun include(vm: ForthVM, path: String) {
         vm.includedFiles.add(path)
-        vm.source.push(FFileSource(vm, vm.sources.lastIndex + 1, path))
+        vm.source.push(FileInputSource(vm, vm.sources.lastIndex + 1, path))
     }
 
     /**  `include` `( in:"file" -- : read Forth file in )` */

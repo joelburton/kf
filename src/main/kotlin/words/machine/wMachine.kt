@@ -44,8 +44,8 @@ object wMachine : IWordModule {
      */
     fun w_brk(vm: ForthVM) {
         val ipOfBrk = vm.ip - 1
-//        val callerOfBrk = vm.dict[vm.mem[ipOfBrk]].name
-//        throw IntBrk("$callerOfBrk at ${ipOfBrk.addr} ($ipOfBrk)")
+        val callerOfBrk = vm.dict[vm.mem[ipOfBrk]].name
+        throw IntBrk("$callerOfBrk at ${ipOfBrk.addr} ($ipOfBrk)")
     }
 
     /** `nop` ( -- : Does nothing )

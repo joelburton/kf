@@ -1,0 +1,36 @@
+ideas for double-push
+
+        // more to figure out, but holding onto this as a start:
+
+        //        if (n >= 0) {
+        //            val hi = (n ushr 32).toInt()
+        //            val lo = (n and 0xFFFF_FFFF).toInt()
+        //            push(lo, hi)
+        //            println("POS $lo,$hi")
+        //        } else {
+        //            val na = n.absoluteValue
+        //            val hi = -(na ushr 32).toInt() - 1
+        //            val lo = -(na and 0xFFFF_FFFF).toInt()
+        //            push(lo, hi)
+        //            println("NEG $lo,$hi")
+        //        }
+
+
+double-pop:
+
+        // see above:
+        //
+        //        val hi = pop()
+        //        val lo = pop()
+        //        if (hi >= 0) {
+        //            assert(lo >= 0)
+        //            return (hi.toLong() shl 32) or (lo.toLong() and 0xFFFF_FFFF)
+        //        } else {
+        //            return (
+        //                    (hi.toLong().inv() shl 32)
+        //                            or (lo.toLong().inv() and 0xFFFF_FFFF)
+        //                        .inv())
+        //        }
+
+these don't deal property with negative numbers.
+

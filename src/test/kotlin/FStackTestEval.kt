@@ -120,10 +120,10 @@ class FStackTestEval : ForthTestCase() {
         stk.dump()
         assertEquals(
             """
-myStack[0] = $00000001 (         1)
-myStack[1] = $000000ff (       255)
+myStack[0] = $00000001 (         1) 
+myStack[1] = $000000ff (       255) 
 myStack[2] = $00000041 (        65) 'A'
-myStack[3] = $00000002 (         2)   <- top
+myStack[3] = $00000002 (         2)    <- top
 
         """.trimIndent(), getOutput())
     }

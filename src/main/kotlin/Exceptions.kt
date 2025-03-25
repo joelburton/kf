@@ -4,6 +4,10 @@ package kf
  *
  * This is sealed, so you can't instantiate it directly. Instead, there are
  * subclasses for the different types.
+ *
+ * By and large, these are caught together --- but by making them separate
+ * exceptions rather than all just instances of ForthError makes it easier to
+ * write good tests and also gives some clarity and flexibility.
  */
 sealed class ForthError(m: String) : RuntimeException(m)
 
@@ -48,6 +52,10 @@ class WordLengthError(m: String) : ForthError(m)
 
 /** Cannot assign value to non-value */
 class WordValueAssignError(m: String) : ForthError(m)
+
+
+// ********************************************** serious errors and interrupts
+
 
 /** Base class of "interruptions".
  *

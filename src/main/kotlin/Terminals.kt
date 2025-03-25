@@ -20,6 +20,8 @@ val recorder = TerminalRecorder()
 class TerminalTestInterface : TerminalInterface by recorder  {
     val inputs: MutableList<String> = mutableListOf()
 
+    // fixme: since the input system was decoupled from the output system,
+    //  this should probably go away and the gateways should use an InputSource.
     fun addInputs(vararg cmds: String) {
         for (cmd in cmds) inputs.add(cmd)
     }

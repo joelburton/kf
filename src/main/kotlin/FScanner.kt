@@ -25,10 +25,13 @@ package kf
  * To explicitly consume everything and ignore it (like for "\" comments,
  * use `.nextLine()`.
  *
+ * The parsing methods move to the pointer ONE BEYOND THE END when they have
+ * exhausted it; this allows client code to tell when the parser has exhausted
+ * the buffer.
  */
 
 class FScanner(val vm: ForthVM) {
-    val start = vm.memConfig.interBufStart
+    val start = vm.memConfig.interpBufStart
     val end = vm.memConfig.interpBufEnd
     val size = end - start
 
