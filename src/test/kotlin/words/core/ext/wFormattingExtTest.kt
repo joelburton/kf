@@ -1,13 +1,13 @@
 package words.core.ext
 
-import ForthTestCase
-import org.junit.jupiter.api.Assertions.*
+import EvalForthTestCase
 import org.junit.jupiter.api.Test
 
-class wFormattingExtTest : ForthTestCase() {
+class wFormattingExtFuncTest : EvalForthTestCase() {
     @Test
-    fun w_holds() {
-        TODO()
+    fun formats() {
+        eval("1234 0 tuck <# # # s\" ---\" holds # # #> type")
+        assertPrinted("12---34")
     }
 
 }

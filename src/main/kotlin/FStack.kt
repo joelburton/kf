@@ -106,7 +106,7 @@ class FStack(
      * */
     fun dblPush(n: Long) {
         if (n > ForthVM.MAX_INT) throw NumOutOfRange(n)
-        push(n.toInt(), 0)
+        push(n.toInt(), if (n < 0) -1 else 0)
     }
 
     /** Pop double num in two parts (high first, then lo) */

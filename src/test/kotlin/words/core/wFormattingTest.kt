@@ -1,34 +1,19 @@
 package words.core
 
-import ForthTestCase
-import kf.words.core.wFormatting
+import EvalForthTestCase
 import org.junit.jupiter.api.Test
 
-class wFormattingTest : ForthTestCase() {
-    val mod = wFormatting
 
+class wFormattingTestFunc : EvalForthTestCase() {
     @Test
-    fun w_numberSign() {
-    }
+    fun formats() {
+        vm.base = 10
+        eval("-65535 -1 hex tuck <# # # 'A hold #s # rot sign #> type")
+        assertPrinted("-0ffAff")
 
-    @Test
-    fun w_numberSignGreater() {
+        vm.base = 10
+        eval("65535 0 hex tuck <# # # 'A hold #s # rot sign #> type")
+        assertPrinted("0ffAff")
+        vm.base = 10
     }
-
-    @Test
-    fun w_numberSignS() {
-    }
-
-    @Test
-    fun w_lessNumberSign() {
-    }
-
-    @Test
-    fun w_hold() {
-    }
-
-    @Test
-    fun w_sign() {
-    }
-
 }

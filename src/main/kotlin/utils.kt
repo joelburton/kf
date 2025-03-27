@@ -2,7 +2,7 @@
 
 package kf
 
-import kotlin.text.HexFormat
+import org.apache.commons.text.WordUtils
 
 /** Set this to true to allow the system to generate copious logging msgs.
  *
@@ -155,4 +155,12 @@ fun Int.strFromCSAddr(vm: ForthVM): String {
     // without it, it shows a warning.
     @Suppress("KotlinConstantConditions") val len = vm.mem[this]
     return CharArray(len) { i -> vm.mem[this + i + 1].toChar() }.concatToString()
+}
+
+/** Wrap words with indent. */
+
+fun String.wrap(maxWidth: Int = 80, indent:Int = 0): String {
+    val spaces = " ".repeat(indent)
+    return spaces + WordUtils.wrap(
+        "$spaces$this", maxWidth - indent, "\n$spaces", false)
 }

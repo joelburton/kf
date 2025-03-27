@@ -9,6 +9,7 @@ import kf.addr
 import kf.hex8
 import kf.strFromAddrLen
 import kf.words.custom.wToolsCustom
+import kf.wrap
 import org.apache.commons.text.WordUtils.wrap
 
 object wTools : IWordModule {
@@ -51,10 +52,10 @@ object wTools : IWordModule {
      */
 
     fun w_words(vm: ForthVM) {
-        val width = (vm.io.terminalInterface.getTerminalSize()?.width ?: 80) - 4
+        val width = (vm.io.terminalInterface.getTerminalSize()?.width ?: 80)
         val s =
             vm.dict.words.filter { !it.hidden }.joinToString(" ") { it.name }
-        vm.io.println(wrap(s, width))
+        vm.io.println(s.wrap(width))
     }
 
     /** ?    question    TOOLS

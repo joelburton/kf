@@ -179,10 +179,8 @@ class Dict(val vm: ForthVM, val capacity: Int = 1024) {
             add(it)
             it.name
         }
-        val width = (vm.io.terminalInterface.getTerminalSize()?.width ?: 80) - 4
-        if (vm.verbosity >= 1) {
-            vm.io.println("    " + wrap(sb, width).replace("\n", "\n    "))
-        }
+        val width = (vm.io.terminalInterface.getTerminalSize()?.width ?: 80)
+        if (vm.verbosity >= 1) vm.io.println(sb.wrap(width, indent=4))
 
         vm.modulesLoaded.put(mod.name, mod)
     }
