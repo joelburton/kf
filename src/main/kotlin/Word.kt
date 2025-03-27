@@ -159,7 +159,7 @@ class Word(
 
     // Purely internal: normalize a function name to remove noisy cruft.
     // This appears in debugging logs to show the function name:
-    private fun getFnName(): String {
+    internal fun getFnName(): String {
         var s = gray(
             fn.toString()
                 .removeSuffix("(kf.ForthVM): kotlin.Unit")

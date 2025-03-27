@@ -17,6 +17,7 @@ dependencies {
     implementation("io.ktor:ktor-server-core")
     implementation("io.ktor:ktor-server-websockets")
     implementation("io.ktor:ktor-server-cio")
+    implementation("org.apache.commons:commons-text:1.13.0")
 }
 
 application {

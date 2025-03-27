@@ -1,5 +1,6 @@
 package kf.interps
 
+import RegisterDelegate
 import com.github.ajalt.mordant.terminal.success
 import kf.D
 import kf.ForthVM
@@ -29,12 +30,7 @@ open class InterpBase(val vm: ForthVM) : IInterp {
     }
 
     /** A register for interpreter use: state of interpreting/compiling. */
-
-    override var state: Int
-        get() = vm.mem[REG_STATE]
-        set(value) {
-            vm.mem[REG_STATE] = value
-        }
+    override var state by RegisterDelegate(REG_STATE, vm.mem)
 
     override val isInterpreting get() = vm.mem[REG_STATE] == STATE_INTERPRETING
     override val isCompiling get() = vm.mem[REG_STATE] == STATE_COMPILING

@@ -104,7 +104,8 @@ open class EvalForthTestCase : ForthTestCase() {
 
     fun eval(s: String): String {
         with(vm) {
-            vm.sources = arrayListOf(FakeStdInInputSource(vm, s))
+            vm.sources.clear()
+            vm.sources.add(FakeStdInInputSource(vm, s))
             ip = cstart
             try {
                 while (true) {

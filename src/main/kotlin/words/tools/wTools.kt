@@ -9,8 +9,9 @@ import kf.addr
 import kf.hex8
 import kf.strFromAddrLen
 import kf.words.custom.wToolsCustom
+import org.apache.commons.text.WordUtils.wrap
 
-object wTools: IWordModule {
+object wTools : IWordModule {
     override val name = "kf.words.tools.wTools"
     override val description = "Programming tools"
 
@@ -50,11 +51,10 @@ object wTools: IWordModule {
      */
 
     fun w_words(vm: ForthVM) {
-        vm.io.println(
-            vm.dict.words.filter { !it.hidden }.joinToString(" ") { it.name },
-            whitespace = Whitespace.NORMAL,
-            overflowWrap = OverflowWrap.BREAK_WORD
-        )
+        val width = (vm.io.terminalInterface.getTerminalSize()?.width ?: 80) - 4
+        val s =
+            vm.dict.words.filter { !it.hidden }.joinToString(" ") { it.name }
+        vm.io.println(wrap(s, width))
     }
 
     /** ?    question    TOOLS
@@ -90,13 +90,13 @@ object wTools: IWordModule {
             val a = if (i >= start && i <= end) vm.mem[i].hex8
             else "        "
 
-            val b = if (i + 1 >= start && i + 1 <= end) vm.mem[i+1].hex8
+            val b = if (i + 1 >= start && i + 1 <= end) vm.mem[i + 1].hex8
             else "        "
 
-            val c = if (i + 2 >= start && i + 2 <= end) vm.mem[i+2].hex8
+            val c = if (i + 2 >= start && i + 2 <= end) vm.mem[i + 2].hex8
             else "        "
 
-            val d = if (i + 3 >= start && i + 3 <= end) vm.mem[i+3].hex8
+            val d = if (i + 3 >= start && i + 3 <= end) vm.mem[i + 3].hex8
             else "        "
 
             vm.io.println("${i.addr} = $a $b $c $d")
@@ -116,7 +116,7 @@ object wTools: IWordModule {
      */
 
     fun w_see(vm: ForthVM) {
-        val w: Word = vm.dict[ vm.source.scanner.parseName().strFromAddrLen(vm)]
+        val w: Word = vm.dict[vm.source.scanner.parseName().strFromAddrLen(vm)]
         wToolsCustom._see(vm, w, false)
     }
 

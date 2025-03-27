@@ -6,6 +6,7 @@ import com.github.ajalt.mordant.rendering.TextStyles.bold
 import com.github.ajalt.mordant.rendering.Whitespace
 import com.github.ajalt.mordant.terminal.muted
 import com.github.ajalt.mordant.widgets.Text
+import org.apache.commons.text.WordUtils.wrap
 
 class WordNotFoundError(m: String) : ForthError("Word not found: $m")
 class DictFullError() : ForthError("Dictionary full")
@@ -173,13 +174,15 @@ class Dict(val vm: ForthVM, val capacity: Int = 1024) {
             return
         }
 
-        if (vm.verbosity >= 2) vm.io.println(bold(yellow("${mod.name}:")))
+        if (vm.verbosity >= 1) vm.io.println(bold(yellow("  ${mod.name}:")))
         val sb = mod.words.joinToString(" ") {
             add(it)
             it.name
         }
-        if (vm.verbosity >= 2)
-            vm.io.println(Text("    $sb", whitespace = Whitespace.PRE_WRAP))
+        val width = (vm.io.terminalInterface.getTerminalSize()?.width ?: 80) - 4
+        if (vm.verbosity >= 1) {
+            vm.io.println("    " + wrap(sb, width).replace("\n", "\n    "))
+        }
 
         vm.modulesLoaded.put(mod.name, mod)
     }
@@ -188,7 +191,7 @@ class Dict(val vm: ForthVM, val capacity: Int = 1024) {
 
     fun addMetaModule(mod: IMetaWordModule) {
         if (D) vm.dbg(3, "dict.addMetaModule: ${mod.name}")
-        if (vm.verbosity >= 2) vm.io.println(bold(blue("${mod.name}:")))
+        if (vm.verbosity >= 1) vm.io.println(bold(blue("${mod.name}:")))
         for (m in mod.modules) addModule(m, false)
     }
 

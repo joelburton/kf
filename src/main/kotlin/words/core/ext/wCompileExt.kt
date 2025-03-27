@@ -50,6 +50,9 @@ object wCompileExt: IWordModule {
      * This is what the interpreter loop could use.
      */
 
+    // fixme: i think this is wrong -- real compile, is just "," ---
+    //   doesn't check imm mode, etc
+
     fun w_compileComma(vm: ForthVM) {
         compile(vm, vm.dstk.pop())
     }

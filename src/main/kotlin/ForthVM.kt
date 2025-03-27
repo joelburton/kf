@@ -1,6 +1,7 @@
 package kf
 
 
+import RegisterDelegate
 import com.github.ajalt.mordant.rendering.TextColors.gray
 import com.github.ajalt.mordant.terminal.Terminal
 import com.github.ajalt.mordant.terminal.danger
@@ -18,18 +19,19 @@ import kotlin.time.TimeSource
 
 
 /**
- *  A Forth virtual machine. This executes in Forth-memory code and
+ *  A Forth virtual machine.
+ *
+ *  This executes in Forth-memory code and
  *  manages Forth memory, registers, and stacks.
+ *
+ *  @property io Terminal used by VM. Defaults to std-out, detect-colors, etc.
+ *  @property memConfig Memory layout of this VM.
+ *  @property mem RAM for the VM
  */
 
 class ForthVM(
-    /** Terminal used by the VM. Defaults to std-out, detect-colors, etc. */
     var io: Terminal = Terminal(),
-
-    /** Memory layout of this VM. */
     val memConfig: IMemConfig = SmallMemConfig(),
-
-    /** RAM for the VM */
     val mem: IntArray = IntArray(memConfig.upperBound + 1),
 ) {
 
@@ -37,7 +39,7 @@ class ForthVM(
     /** Which interpreter is active?
      *
      * The VM needs to point to the interp, and the interp needs to point to the
-     * VM, so this is a lateinit -- the creator of the VM will patch the interp
+     * VM, so this is a lateinit--the creator of the VM will patch the interp
      * on here after making it.
      */
 
@@ -45,25 +47,8 @@ class ForthVM(
 
     // *************************************************************** registers
 
-    /** Convenience for creating registers, which have getters/setters that
-     * uses the underlying [mem].
-     */
-
-    // fixme: might just make these vanilla getters/setters: this stuff
-    //  generates even more debugger calls that its a pain to wade through.
-
-    inner class RegisterDelegate(val addr: Int) {
-        operator fun getValue(thisRef: Any?, prop: KProperty<*>): Int {
-            return mem[addr]
-        }
-
-        operator fun setValue(thisRef: Any?, prop: KProperty<*>, value: Int) {
-            mem[addr] = value
-        }
-    }
-
     /** Base of math output (10 is for decimal and default) */
-    var base: Int by RegisterDelegate(REG_BASE)
+    var base by RegisterDelegate(REG_BASE, this.mem)
 
     /** Verbosity of system:
      *
@@ -78,33 +63,25 @@ class ForthVM(
      *  To see any dev-debugging messages, the global variable [D] needs to
      *  be true.
      */
-    var verbosity: Int by RegisterDelegate(REG_VERBOSITY)
+    var verbosity by RegisterDelegate(REG_VERBOSITY, this.mem)
 
     /** Current end of the CODE section. */
-    var cend: Int by RegisterDelegate(REG_CEND)
+    var cend  by RegisterDelegate(REG_CEND, this.mem)
 
     /** Current end of the DATA section. */
-    var dend: Int by RegisterDelegate(REG_DEND)
+    var dend by RegisterDelegate(REG_DEND, this.mem)
 
     /** Start of the CODE section. This comes from the memory configuration
      * passed in, and normally wouldn't ever change. However, to hack around,
      * users *can* change this.
      */
-    var cstart
-        get() = mem[REG_CSTART]
-        set(value) {
-            mem[REG_CSTART] = value
-        }
+    var cstart by RegisterDelegate(REG_CSTART, this.mem)
 
     /** Start of the DATA section. See [cstart]. */
-    var dstart: Int by RegisterDelegate(REG_DSTART)
+    var dstart by RegisterDelegate(REG_DSTART, this.mem)
 
     /** The pointer the scanner is at in a line of input. */
-    var inPtr: Int
-        get() = mem[REG_IN_PTR]
-        set(value) {
-            mem[REG_IN_PTR] = value
-        }
+    var inPtr by RegisterDelegate(REG_IN_PTR, this.mem)
 
     // *************************************************************************
 
@@ -133,7 +110,7 @@ class ForthVM(
     val includedFiles: ArrayList<String> = ArrayList()
 
     /** Stack of input sources, with the top being the active one. */
-    var sources = arrayListOf<InputSource>()
+    val sources = arrayListOf<InputSource>()
 
     /** Convenient way to get the currently-active input source (or null)
      *
@@ -155,12 +132,6 @@ class ForthVM(
      */
     val timeMarkCreated = TimeSource.Monotonic.markNow()
 
-    init {
-        // THere needs to be a verbosity set, so setting it to mildly-chatty.
-        // Most callers will directly set this on their vm instance before
-        // rebooting. This will prob be changed by the CLI.
-        this.verbosity = 1
-    }
 
     // *************************************************************************
 
@@ -172,7 +143,7 @@ class ForthVM(
 
         val curVerbosity = verbosity  // restore to current after reboot
 
-        sources = arrayListOf()
+        sources.clear()
         mem.fill(0)  // keep this above register setting, since it clears them
         cellMeta.fill(CellMeta.Unknown)
 
@@ -338,7 +309,7 @@ class ForthVM(
      * address of the counted-string (ie, len+chars), rather than the addr of
      * the chars.
      * */
-    fun appendCStrToData(s: String) : Int {
+    fun appendCStrToData(s: String): Int {
         return appendStrToData(s) - 1
     }
 
