@@ -133,13 +133,15 @@ class FStack(
         sp = endAt + 1
     }
 
-    /** Dump a single line for the stack; this is used by `.S` */
-    fun simpleDump() {
+    fun simpleDumpStr(): String {
         val str = (endAt downTo sp).joinToString("") {
             "${vm.mem[it].numToStrPrefixed(vm.base)} "
         }
-        vm.io.print("<${size}> $str")
+        return "<${size}> $str"
     }
+
+    /** Dump a single line for the stack; this is used by `.S` */
+    fun simpleDump()  = vm.io.print(simpleDumpStr())
 
     /**  Print a verbose stack dump. */
     fun dump() {

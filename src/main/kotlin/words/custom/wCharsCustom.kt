@@ -5,7 +5,7 @@ import kf.IWordModule
 import kf.Word
 
 object wCharsCustom: IWordModule {
-    override val name = "kf.words.custom.CharsCustom"
+    override val name = "kf.words.custom.wCharsCustom"
     override val description = "Custom words for characters"
     override val words = arrayOf<Word>(
         Word("TOUPPER",::w_toUpper),

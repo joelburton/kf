@@ -41,6 +41,19 @@
 package kf
 
 import com.github.ajalt.mordant.platform.MultiplatformSystem
+import kf.numToStrPrefixed
+import org.jline.reader.EndOfFileException
+import org.jline.reader.LineReader
+import org.jline.reader.LineReaderBuilder
+import org.jline.terminal.TerminalBuilder
+import org.jline.terminal.TerminalBuilder.terminal
+import org.jline.utils.AttributedString
+import org.jline.utils.AttributedStringBuilder
+import org.jline.utils.AttributedStyle.*
+import org.jline.utils.AttributedStyle.GREEN
+import org.jline.utils.Status
+import org.jline.widget.AutosuggestionWidgets
+import kotlin.collections.joinToString
 
 /** ABC of all input sources. */
 
@@ -137,6 +150,20 @@ open class FileInputSource(
 /** Interactive stdin source. */
 
 class StdInInputSource(vm: ForthVM) : InputSource(vm, 0, "<stdin>") {
+    val terminal = TerminalBuilder.builder().dumb(true).build()
+
+    var status: Status = Status.getStatus(terminal, true)
+        .apply { setBorder(true) }
+
+    val reader = LineReaderBuilder
+        .builder()
+        .appName("kf")
+        .completer(ForthCompleter(vm.dict))
+        .terminal(terminal)
+        .highlighter(ForthHighlighter(vm))
+        .variable(LineReader.HISTORY_FILE, "/Users/joel/.kf_history") // fixme
+        .build()
+        .apply { AutosuggestionWidgets(this).enable() }
 
     /** Get a line from a real console or something piped in via the shell.
      *
@@ -145,8 +172,33 @@ class StdInInputSource(vm: ForthVM) : InputSource(vm, 0, "<stdin>") {
      * */
 
     override fun readLineOrNull(): String? {
+        val stk = vm.dstk.simpleDumpStr()
+        val mode = if (vm.interp.isCompiling) " Compiling " else ""
+        val base = when (vm.base) {
+            2 -> "Bin "
+            8 -> "Oct "
+            10 -> "Dec "
+            16 -> "Hex "
+            else -> "Base(${vm.base}) "
+        }
+        val padding = " ".repeat(
+            terminal.width - (stk.length + base.length + mode.length))
+
+        val info = AttributedStringBuilder()
+            .append(AttributedString(stk, DEFAULT.bold()))
+            .append(padding)
+            .append(AttributedString(base, DEFAULT.foreground(YELLOW)))
+            .append(AttributedString(mode, DEFAULT.foreground(MAGENTA)))
+            .toAttributedString()
+
+        status.update(mutableListOf(info))
+
         lineCount += 1
-        return readlnOrNull()
+        return try {
+            reader.readLine()
+        } catch (_: EndOfFileException) {
+            null
+        }
     }
 }
 

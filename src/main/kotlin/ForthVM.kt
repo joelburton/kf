@@ -14,6 +14,7 @@ import kf.words.doublenums.mDoubleNums
 import kf.words.facility.mFacility
 import kf.words.fileaccess.mFileAccess
 import kf.words.tools.mTools
+import org.jline.reader.LineReader
 import kotlin.reflect.KProperty
 import kotlin.time.TimeSource
 
@@ -132,6 +133,7 @@ class ForthVM(
      */
     val timeMarkCreated = TimeSource.Monotonic.markNow()
 
+    var readerForHistory: LineReader? = null
 
     // *************************************************************************
 
@@ -143,6 +145,7 @@ class ForthVM(
 
         val curVerbosity = verbosity  // restore to current after reboot
 
+        readerForHistory?.history?.save()
         sources.clear()
         mem.fill(0)  // keep this above register setting, since it clears them
         cellMeta.fill(CellMeta.Unknown)
@@ -163,7 +166,9 @@ class ForthVM(
         if (includePrimitives) addCoreWords()
 
         interp.reboot()
-        sources.add(StdInInputSource(this))
+        val inputSource = StdInInputSource(this)
+        readerForHistory = inputSource.reader
+        sources.add(inputSource)
         quit()
     }
 
@@ -334,6 +339,10 @@ class ForthVM(
                 val w = dict[wn]
                 // run it
                 w(this)
+            } catch (e: ArrayIndexOutOfBoundsException) {
+                io.danger("$source MEMFAULT Mem Out of bound: $ip")
+                if (verbosity >= 3) io.print(gray(e.stackTraceToString()))
+                abort()
             } catch (e: ForthError) {
                 io.danger("$source ERROR: " + e.message)
                 if (verbosity >= 3) io.print(gray(e.stackTraceToString()))

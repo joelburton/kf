@@ -18,6 +18,9 @@ dependencies {
     implementation("io.ktor:ktor-server-websockets")
     implementation("io.ktor:ktor-server-cio")
     implementation("org.apache.commons:commons-text:1.13.0")
+    implementation("org.jline:jline-terminal:3.29.0")
+    implementation("org.jline:jline-reader:3.29.0")
+    implementation("org.jline:jline-console:3.29.0")
 }
 
 application {

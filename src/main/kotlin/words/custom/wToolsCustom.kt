@@ -3,8 +3,15 @@ package kf.words.custom
 import com.github.ajalt.mordant.rendering.OverflowWrap
 import com.github.ajalt.mordant.rendering.TextColors.gray
 import com.github.ajalt.mordant.rendering.Whitespace
+import com.github.ajalt.mordant.terminal.danger
 import com.github.ajalt.mordant.terminal.warning
 import kf.*
+import org.jline.builtins.Commands.less
+import org.jline.utils.AttributedString
+import org.jline.utils.AttributedStyle.DEFAULT
+import org.jline.utils.AttributedStyle.BLACK
+import org.jline.utils.ExecHelper.exec
+import java.io.IOException
 
 
 object wToolsCustom : IWordModule {
@@ -28,6 +35,11 @@ object wToolsCustom : IWordModule {
             Word(".SIMILAR", ::w_dotSimilar),
             Word("./WORDS", ::w_dotSlashWords),
             Word(".CS", ::w_dotCS),
+            Word(".HISTORY", ::w_dotHistory),
+            Word(".LESS", ::w_dotLess),
+            Word(".SHELL", ::w_shell),
+            Word("~~", ::w_tildeTilde),
+            Word(".RERUN", ::w_dotReRun),
 
 
             // ~~  *terminal*:lineno:char:<2> 20 10
@@ -169,5 +181,76 @@ object wToolsCustom : IWordModule {
     fun w_dotCS(vm: ForthVM) {
         vm.dstk.simpleDump()
         vm.dstk.reset()
+    }
+
+    fun w_dotHistory(vm: ForthVM) {
+        vm.readerForHistory?.let {
+            it.history.forEach { vm.io.println(it) }
+        }
+    }
+
+    fun w_dotLess(vm: ForthVM) {
+        val fname = vm.source.scanner.parseName().strFromAddrLen(vm)
+        val path = java.nio.file.Path.of(fname)
+        val term = (vm.source as StdInInputSource).terminal
+
+        // fixme: not working
+        term.enterRawMode()
+        less(
+            term,
+            term.input(),
+            System.out,
+            System.err,
+            path,
+            emptyArray<Any>()
+        )
+    }
+
+    fun w_shell(vm: ForthVM) {
+        val possibleArgs = generateSequence {
+                vm.source.scanner.parseName().strFromAddrLen(vm)
+            }
+                .take(8)
+                .filter { it.isNotEmpty() }
+                .toList()
+                .toTypedArray()
+        val out = try {
+            exec(false, *possibleArgs)
+        } catch (e: IOException) {
+            vm.io.danger("Exception: ${e.message}")
+            return
+        }
+        vm.io.print(out)
+    }
+
+    fun w_tildeTilde(vm: ForthVM) {
+        vm.io.print(
+            AttributedString(
+                "${vm.source} ${vm.dstk.simpleDumpStr()}",
+                DEFAULT.foreground(BLACK)
+                // fixme!
+                ).toAnsi((vm.source as StdInInputSource).terminal)
+        )
+    }
+
+    fun w_dotReRun(vm: ForthVM) {
+        val prev = vm.source.scanner.parseName().strFromAddrLen(vm)
+        val history = vm.readerForHistory?.history
+        if (history == null) throw ParseError("History not available")
+
+        val command = try {
+            history[prev.toInt()]
+        } catch (e: IllegalArgumentException) {
+            vm.io.danger("No such command in history: $prev")
+            return
+        }
+        vm.source.scanner.fill(command)
+        vm.io.println(
+            AttributedString(
+                "Executing: $command",
+                DEFAULT.foreground(BLACK)
+                // fixme!
+            ).toAnsi((vm.source as StdInInputSource).terminal)
+        )
     }
 }

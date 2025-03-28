@@ -27,7 +27,7 @@ class InterpFast(vm: ForthVM) : InterpEval(vm) {
     override val module = mFastInterp
     override val code = """
         begin 
-            interp-prompt
+            \ interp-prompt
             refill while
                 begin
                     parse-name dup while

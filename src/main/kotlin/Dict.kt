@@ -174,13 +174,19 @@ class Dict(val vm: ForthVM, val capacity: Int = 1024) {
             return
         }
 
-        if (vm.verbosity >= 1) vm.io.println(bold(yellow("  ${mod.name}:")))
+        val modName = mod.name.removePrefix("kf.words.")
+        if (vm.verbosity >= 1) vm.io.print(bold(yellow("  $modName: ")))
         val sb = mod.words.joinToString(" ") {
             add(it)
-            it.name
+            it.name.removePrefix("kf.words.")
         }
-        val width = (vm.io.terminalInterface.getTerminalSize()?.width ?: 80)
-        if (vm.verbosity >= 1) vm.io.println(sb.wrap(width, indent=4))
+        if (vm.verbosity >= 1) {
+            val width = (vm.io.terminalInterface.getTerminalSize()?.width ?: 80)
+            if (mod.name.length + sb.length + 3 < width)
+                vm.io.println(sb)
+            else
+                vm.io.println("\n" + sb.wrap(width, indent=4))
+        }
 
         vm.modulesLoaded.put(mod.name, mod)
     }
@@ -188,8 +194,9 @@ class Dict(val vm: ForthVM, val capacity: Int = 1024) {
     /** Add a "meta-module", a module that just contains other modules. */
 
     fun addMetaModule(mod: IMetaWordModule) {
+        val modName = mod.name.removePrefix("kf.words.")
         if (D) vm.dbg(3, "dict.addMetaModule: ${mod.name}")
-        if (vm.verbosity >= 1) vm.io.println(bold(blue("${mod.name}:")))
+        if (vm.verbosity >= 1) vm.io.println(bold(blue("$modName:")))
         for (m in mod.modules) addModule(m, false)
     }
 
