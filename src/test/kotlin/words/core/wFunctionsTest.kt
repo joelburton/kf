@@ -1,7 +1,7 @@
 package words.core
 
 import ForthTestCase
-import kf.Word
+import kf.dict.Word
 import kf.words.core.wCompiling
 import kf.words.core.wFunctions
 import org.junit.jupiter.api.Assertions.*

@@ -3,6 +3,8 @@ package words.core
 import EvalForthTestCase
 import ForthTestCase
 import kf.*
+import kf.dict.Word
+import kf.dict.w_notImpl
 import kf.interps.InterpBase.Companion.STATE_INTERPRETING
 import kf.words.core.ext.wCompileExt
 import kf.words.core.wCompiling

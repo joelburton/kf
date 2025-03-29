@@ -1,4 +1,3 @@
-import kf.FakeStdInInputSource
 import kf.ForthError
 import kf.IntEOF
 import kf.ForthVM
@@ -22,7 +21,7 @@ open class ForthTestCase() {
     init {
         vm.interp = InterpFast(vm)
         vm.verbosity = -2
-        vm.sources.add(FakeStdInInputSource(vm, ""))
+        vm.sources.add(SourceFakeInteractive(vm, ""))
     }
 
     @BeforeEach
@@ -63,7 +62,7 @@ open class ForthTestCase() {
     }
 
     fun setInput(s: String) {
-        (vm.source as FakeStdInInputSource).content += s
+        (vm.source as SourceFakeInteractive).content += s
     }
 
     fun dump(start: Int, len: Int) {
@@ -87,7 +86,7 @@ open class EvalForthTestCase : ForthTestCase() {
     fun eval(s: String): String {
         with(vm) {
             vm.sources.clear()
-            vm.sources.add(FakeStdInInputSource(vm, s))
+            vm.sources.add(SourceFakeInteractive(vm, s))
             ip = cstart
             try {
                 while (true) {

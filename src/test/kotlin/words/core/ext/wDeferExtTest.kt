@@ -4,7 +4,7 @@ import EvalForthTestCase
 import ForthTestCase
 import dummyFn
 import kf.ForthDeferredWordError
-import kf.Word
+import kf.dict.Word
 import kf.words.core.ext.wDeferExt
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test

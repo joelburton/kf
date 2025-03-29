@@ -2,7 +2,7 @@ package words.core
 
 import EvalForthTestCase
 import ForthTestCase
-import kf.Word
+import kf.dict.Word
 import kf.words.core.wCompiling
 import kf.words.core.wCreate
 import kf.words.core.wFunctions

@@ -1,5 +1,5 @@
 import kf.ForthVM
-import kf.Word
+import kf.dict.Word
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 
