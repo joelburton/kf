@@ -14,27 +14,23 @@ import org.jline.reader.EndOfFileException
 import org.jline.reader.impl.LineReaderImpl
 import org.jline.terminal.Terminal
 import org.jline.terminal.TerminalBuilder
-import org.jline.utils.AttributedString
-import org.jline.utils.AttributedStringBuilder
-import org.jline.utils.AttributedStyle
+import org.jline.utils.*
 import org.jline.utils.AttributedStyle.*
 import org.jline.utils.InfoCmp.Capability
-import org.jline.utils.ShutdownHooks
-import org.jline.utils.Status
 import org.jline.widget.AutosuggestionWidgets
-
 
 
 class ForthConsole(val vm: ForthVM) : IForthConsole {
 
     /** LineReader that doesn't print newline after accepting. */
-    class MyLineReader(vm: ForthVM, terminal: Terminal?) :
+    class ForthLineReader(vm: ForthVM, terminal: Terminal?) :
         LineReaderImpl(terminal, "kf") {
         init {
             completer = ForthCompleter(vm.dict)
             highlighter = ForthHighlighter(vm)
             AutosuggestionWidgets(this).enable()
-            setVariable(HISTORY_FILE, "/Users/joel/.kf_history") // fixme
+            setVariable(HISTORY_FILE,
+                "${System.getProperty("user.home")}/.kf_history")
         }
 
         override fun cleanup() = doCleanup(false)
@@ -43,7 +39,7 @@ class ForthConsole(val vm: ForthVM) : IForthConsole {
     override val termWidth get() = (if (term.width == 0) 80 else term.width) - 1
     private val term: Terminal = TerminalBuilder.builder().dumb(true).build()
         .also { it.enterRawMode() }
-    val reader: MyLineReader by lazy { MyLineReader(vm, term) }
+    private val reader: ForthLineReader by lazy { ForthLineReader(vm, term) }
     private var status: Status? =
         Status.getStatus(term, true)?.apply { setBorder(true) }
 

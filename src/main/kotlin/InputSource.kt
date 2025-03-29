@@ -80,7 +80,7 @@ abstract class InputSource(val vm: ForthVM, val id: Int, val path: String) {
      *
      * Store on us the current in-line-scanner pointer (see above).
      */
-    fun push(newSrc: InputSource) {  // fixme: can this just be this?
+    fun push(newSrc: InputSource) {
         if (vm.sources.isNotEmpty()) vm.source.storedInPtr = vm.inPtr
         vm.sources.add(newSrc)
         vm.inPtr = 0

@@ -27,9 +27,7 @@ abstract class ForthGateway(val vm: ForthVM) {
 
     fun run(code: String): String {
         println(code)
-        val cmds = code.split("\n").toTypedArray()
-        // fixme: should this move to an input source?
-//        termInterface.addInputs(*cmds)
+        (vm.source as FakeStdInInputSource).content = code
 
         try {
             vm.runVM()

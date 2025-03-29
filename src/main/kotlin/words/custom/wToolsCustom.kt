@@ -179,7 +179,6 @@ object wToolsCustom : IWordModule {
 
     fun w_dotHistory(vm: ForthVM) {
         vm.readerForHistory?.let {
-            // fixme: off-by-one
             it.history.forEach {
                 val n = (it.index() + 1).toString().padStart(3)
                 vm.io.println("$n: ${it.line()}")

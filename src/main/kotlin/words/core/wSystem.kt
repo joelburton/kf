@@ -44,7 +44,8 @@ object wSystem: IWordModule {
         when (s.lowercase()) {
             "/counted-string" -> vm.dstk.push(
                 vm.memConfig.scratchEnd - vm.memConfig.scratchStart)
-            "/hold" -> vm.dstk.push(FALSE) // fixme
+            "/hold" -> vm.dstk.push(
+                vm.memConfig.scratchEnd - vm.memConfig.scratchStart)
             "/pad" -> vm.dstk.push(vm.memConfig.padEnd - vm.memConfig.padStart)
             "address-unit-bits" -> vm.dstk.push(32)
             "floored" -> vm.dstk.push(FALSE)

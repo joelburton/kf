@@ -172,7 +172,7 @@ class ForthCLI : CliktCommand("PupForth") {
         } catch (_: IntEOF) {
             // just quit quietly
         } catch (e: IntBye) {
-            println(e.message)
+            // just quit quietly
         }
     }
 }

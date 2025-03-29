@@ -95,7 +95,8 @@ object wToolsExt: IWordModule {
      */
 
     fun w_bye(vm: ForthVM) {
-        throw IntBye("Bye!")
+        vm.io.info("Bye!")
+        throw IntBye()
     }
 
 }
