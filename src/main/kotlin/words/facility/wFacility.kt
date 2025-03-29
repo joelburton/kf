@@ -1,6 +1,7 @@
 package kf.words.facility
 
 import kf.*
+import org.jline.utils.InfoCmp.Capability
 
 object wFacility : IWordModule {
     override val name = "kf.words.facility.wFacility"
@@ -19,9 +20,9 @@ object wFacility : IWordModule {
     /** `page` `( -- : clear screen )` */
 
     private fun w_page(vm: ForthVM) {
-        vm.io.cursor.move {
-            setPosition(0, 0)
-            clearScreen()
-        }
+        vm.io.terminal?.let { term ->
+            term.puts(Capability.clear_screen);
+            term.flush();
+        } ?: vm.io.println("\n\n\n\n\n\n\n\n")
     }
 }

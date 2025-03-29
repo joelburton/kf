@@ -6,13 +6,12 @@ import com.github.ajalt.clikt.parameters.arguments.argument
 import com.github.ajalt.clikt.parameters.arguments.multiple
 import com.github.ajalt.clikt.parameters.options.*
 import com.github.ajalt.clikt.parameters.types.int
-import com.github.ajalt.mordant.rendering.AnsiLevel
-import com.github.ajalt.mordant.terminal.Terminal
 import kf.interps.InterpBase
 import kf.interps.InterpEval
 import kf.interps.InterpFast
 import kf.interps.InterpForth
 import kf.words.fileaccess.wFileAccessExt
+import org.jline.terminal.TerminalBuilder
 
 class ForthCLI : CliktCommand("PupForth") {
 
@@ -29,12 +28,12 @@ class ForthCLI : CliktCommand("PupForth") {
      *
      * This is normally detected, but it can be forced.
      */
-    val ansiLevel: AnsiLevel? by option()
-        .switch(
-            "--ansi" to AnsiLevel.TRUECOLOR,
-            "--dumb" to AnsiLevel.NONE,
-        )
-        .help("terminal type (default: detect)")
+//    val ansiLevel: AnsiLevel? by option()
+//        .switch(
+//            "--ansi" to AnsiLevel.TRUECOLOR,
+//            "--dumb" to AnsiLevel.NONE,
+//        )
+//        .help("terminal type (default: detect)")
 
     /** List of paths it will INCLUDE as it starts up. */
     val paths: List<String> by argument()
@@ -155,7 +154,7 @@ class ForthCLI : CliktCommand("PupForth") {
         }
 
         // Attach the right terminal (colors, etc.)
-        vm.io = Terminal(ansiLevel = ansiLevel)
+//        vm.io = TerminalOutputSource()
 
         // Start the puppy! It will run until the program quits --- and then it
         // will be very, very sad and will miss you.
@@ -169,7 +168,9 @@ class ForthCLI : CliktCommand("PupForth") {
     /** Entry point for the CLI. */
 
     override fun run() {
-        println("console=${System.console()}")
+//        val terminal = TerminalBuilder.builder().dumb(true).build()
+//        println("${terminal.type} width=${terminal.width}")
+
         try {
             wrappedRun()
         } catch (_: IntEOF) {

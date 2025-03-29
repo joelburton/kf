@@ -1,7 +1,5 @@
 package kf
 
-import com.github.ajalt.mordant.rendering.TextColors.*
-import com.github.ajalt.mordant.terminal.warning
 
 typealias StaticFunc = (ForthVM) -> Unit
 
@@ -160,20 +158,18 @@ class Word(
     // Purely internal: normalize a function name to remove noisy cruft.
     // This appears in debugging logs to show the function name:
     internal fun getFnName(): String {
-        var s = gray(
-            fn.toString()
+        return fn.toString()
                 .removeSuffix("(kf.ForthVM): kotlin.Unit")
                 .removePrefix("fun ")
-        )
-        return s
+
     }
 
     /**  Useful for debugging and to support `w_see` and `w_simple-see`. */
     fun getHeaderStr(): String {
         return java.lang.String.format(
-            "%s %-36s %-2s %-2s %-2s %-2s %-2s C:%-5s D:%-5s\n",
-            gray(String.format("(%3d)", wn)),
-            yellow(name),
+            "%s %-36s %-2s %-2s %-2s %-2s %-2s C:%-5s D:%-5s",
+            String.format("(%3d)", wn),
+            name,
             if (imm) "IM" else "",
             if (compO) "CO" else "",
             if (interpO) "IO" else "",

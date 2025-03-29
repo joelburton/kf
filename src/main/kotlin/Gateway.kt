@@ -1,9 +1,5 @@
 package kf
 
-import com.github.ajalt.mordant.rendering.AnsiLevel
-import com.github.ajalt.mordant.rendering.TextColors.*
-import com.github.ajalt.mordant.rendering.TextStyles.*
-import com.github.ajalt.mordant.terminal.Terminal
 import io.ktor.server.application.*
 import io.ktor.server.cio.*
 import io.ktor.server.engine.*
@@ -14,13 +10,12 @@ import io.ktor.server.websocket.*
 import io.ktor.websocket.*
 
 abstract class ForthGateway(val vm: ForthVM) {
-    val termInterface = TerminalTestInterface()
+    val io = TestTerminalOutputSource()
     abstract val server: EmbeddedServer<CIOApplicationEngine,
             CIOApplicationEngine.Configuration>
 
     fun start() {
-        vm.io = Terminal(
-            ansiLevel = AnsiLevel.NONE, terminalInterface = termInterface)
+        vm.io = io
         println("Starting gateway... control-c to quit")
         server.start(wait = true)
     }
@@ -30,10 +25,11 @@ abstract class ForthGateway(val vm: ForthVM) {
     }
 
     fun run(code: String): String {
-        println(bold(yellow("\n" + code)))
+        println(code)
         val cmds = code.split("\n").toTypedArray()
         // fixme: should this move to an input source?
-        termInterface.addInputs(*cmds)
+//        termInterface.addInputs(*cmds)
+
         try {
             vm.runVM()
         } catch (e: ForthInterrupt) {
@@ -42,15 +38,15 @@ abstract class ForthGateway(val vm: ForthVM) {
                     stop()
                     throw e
                 }
-                is IntEOF -> recorder.output()
+                is IntEOF -> io.output
                 else -> {
                     println("Interrupt: $e")
-                    recorder.output()
+                    io.output
                 }
             }
         } finally {
-            println(blue(italic(recorder.output())))
-            recorder.clearOutput()
+            println(io.output)
+            io.clear()
         }
     }
 }

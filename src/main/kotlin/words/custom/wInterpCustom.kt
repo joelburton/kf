@@ -1,7 +1,5 @@
 package kf.words.custom
 
-import com.github.ajalt.mordant.rendering.TextColors
-import com.github.ajalt.mordant.rendering.TextStyles
 import kf.IntQuitNonInteractive
 import kf.ForthVM
 import kf.IWordModule
@@ -18,6 +16,7 @@ object wInterpCustom : IWordModule {
     override val words
         get() = arrayOf(
             Word("INTERP-PROMPT", ::w_interpPrompt),
+            Word("INTERP-OK", ::w_interpOk),
 
             // exiting the interpreter
             Word("\\\\\\", ::w_tripleBackSlash),
@@ -34,9 +33,9 @@ object wInterpCustom : IWordModule {
         if (vm.verbosity >= -1 && vm.source.id == 0) {
             val stkLen: Int = vm.dstk.size
             if (vm.interp.isInterpreting) {
-                vm.io.print(TextStyles.bold(TextColors.green("($stkLen) >>> ")))
+                vm.io.print("($stkLen) >>> ")
             } else {
-                vm.io.print(TextStyles.bold(TextColors.green("($stkLen) ... ")))
+                vm.io.print("($stkLen) ... ")
             }
         }
     }
@@ -98,38 +97,7 @@ object wInterpCustom : IWordModule {
     }
 
 
-
-
-
-    /**`eval` ( addr u -- : evaluate string of Forth ) */
-
-//    private fun w_eval(vm: ForthVM) {
-//        // TODO: this might not be the best approach; we'd want
-//        // everything the same: ANSI, raw-term-ability, etc
-//        // better perhaps: being able to "stuff" input into
-//        // the normal input?
-//        // or, even better: a different string buffer loc
-//
-//        val len = vm.dstk.pop()
-//        val addr = vm.dstk.pop()
-//        val s = vm.interp.interpScanner.getAsString(addr, len)
-//
-//        val prevIO = vm.io
-//        val prevVerbosity = vm.verbosity
-//
-//        vm.io = Terminal(terminalInterface = TerminalStringInterface(s))
-//        vm.verbosity = -2
-//
-//        try {
-//            vm.runVM()
-//        } catch (_: ForthQuitNonInteractive) {
-//
-//        } catch (_: ForthEOF) {
-//
-//        } finally {
-//            vm.io = prevIO
-//            vm.verbosity = prevVerbosity
-//        }
-//    }
-
+    fun w_interpOk(vm: ForthVM) {
+        vm.io.success("  ok${if (vm.dstk.size > 0) "-" + vm.dstk.size else ""}")
+    }
 }

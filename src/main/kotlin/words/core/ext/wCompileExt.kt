@@ -1,16 +1,11 @@
 package kf.words.core.ext
 
-import com.github.ajalt.mordant.rendering.OverflowWrap
-import com.github.ajalt.mordant.rendering.Whitespace
-import com.github.ajalt.mordant.terminal.warning
 import kf.ForthVM
 import kf.IWordModule
 import kf.Word
 import kf.interps.InterpBase
 import kf.strFromAddrLen
-import kf.w_notImpl
 import kf.words.core.wFunctions
-import kf.words.core.wFunctions.w_call
 
 object wCompileExt: IWordModule {
     override val name = "kf.words.core.ext.wCompileExt"
@@ -29,11 +24,9 @@ object wCompileExt: IWordModule {
         val w = vm.dict[wn]
 
         if (vm.interp.isInterpreting) {
-            vm.io.warning("Interpreting a postponed non-immediate word: '$w'."
-                    + " This is probably not what you want to do."
-                    + " (Use 'immediate' to mark the word as immediate-mode.)",
-                whitespace = Whitespace.NORMAL,
-                overflowWrap = OverflowWrap.NORMAL)
+            vm.io.warning("Interpreting a postponed non-immediate word: '$w'.")
+            vm.io.warning(" This is probably not what you want to do.")
+            vm.io.warning(" Use '.(' to compile a postponed non-immediate word.")
             vm.interp.interpret(vm.dict[wn].name)
         }
         vm.interp.compile(w.name)

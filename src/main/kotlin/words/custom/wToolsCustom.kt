@@ -1,13 +1,8 @@
 package kf.words.custom
 
-import com.github.ajalt.mordant.rendering.OverflowWrap
-import com.github.ajalt.mordant.rendering.TextColors.gray
-import com.github.ajalt.mordant.rendering.Whitespace
-import com.github.ajalt.mordant.terminal.danger
-import com.github.ajalt.mordant.terminal.warning
 import kf.*
 import org.jline.builtins.Commands.less
-import org.jline.utils.AttributedString
+import org.jline.terminal.Terminal
 import org.jline.utils.AttributedStyle.DEFAULT
 import org.jline.utils.AttributedStyle.BLACK
 import org.jline.utils.ExecHelper.exec
@@ -37,10 +32,10 @@ object wToolsCustom : IWordModule {
             Word(".CS", ::w_dotCS),
             Word(".HISTORY", ::w_dotHistory),
             Word(".LESS", ::w_dotLess),
-            Word(".SHELL", ::w_shell),
+            Word(".SHELL", ::w_dotShell),
             Word("~~", ::w_tildeTilde),
             Word(".RERUN", ::w_dotReRun),
-
+            Word(".TERM-INFO", ::w_dotTermInfo),
 
             // ~~  *terminal*:lineno:char:<2> 20 10
 
@@ -48,7 +43,7 @@ object wToolsCustom : IWordModule {
 
     fun _see(vm: ForthVM, w: Word, simple: Boolean) {
         val semiS = vm.dict[";s"]
-        vm.io.print(w.getHeaderStr())
+        vm.io.info(w.getHeaderStr())
         w.deferToWn?.let {
             val src: Word = vm.dict[it]
             vm.io.println(" (deferrable word pointing to $src (${src.wn}))")
@@ -149,11 +144,12 @@ object wToolsCustom : IWordModule {
     /**  `.dict` ( -- : list all words with internal info )
      */
     fun w_dotDict(vm: ForthVM) {
+        vm.io.println()
         for (i in 0..<vm.dict.size) {
             val w: Word = vm.dict[i]
-            vm.io.print(w.getHeaderStr())
+            vm.io.info(w.getHeaderStr())
         }
-        vm.io.println(gray(Word.Companion.HEADER_STR))
+        vm.io.muted(Word.Companion.HEADER_STR)
     }
 
     /** `.SIMILAR` ( -- ) Find similar words */
@@ -164,9 +160,7 @@ object wToolsCustom : IWordModule {
         vm.io.println(
             vm.dict.words
                 .filter { it.name.contains(term) }
-                .joinToString(" ") { it.name },
-            whitespace = Whitespace.NORMAL,
-            overflowWrap = OverflowWrap.BREAK_WORD
+                .joinToString(" ") { it.name }.wrap(vm.io.termWidth),
         )
     }
 
@@ -185,14 +179,15 @@ object wToolsCustom : IWordModule {
 
     fun w_dotHistory(vm: ForthVM) {
         vm.readerForHistory?.let {
-            it.history.forEach { vm.io.println(it) }
+            // fixme: off-by-one
+            it.history.forEach { vm.io.println(it.toString()) }
         }
     }
 
     fun w_dotLess(vm: ForthVM) {
         val fname = vm.source.scanner.parseName().strFromAddrLen(vm)
         val path = java.nio.file.Path.of(fname)
-        val term = (vm.source as StdInInputSource).terminal
+        val term = vm.io.terminal as Terminal
 
         // fixme: not working
         term.enterRawMode()
@@ -206,14 +201,14 @@ object wToolsCustom : IWordModule {
         )
     }
 
-    fun w_shell(vm: ForthVM) {
+    fun w_dotShell(vm: ForthVM) {
         val possibleArgs = generateSequence {
-                vm.source.scanner.parseName().strFromAddrLen(vm)
-            }
-                .take(8)
-                .filter { it.isNotEmpty() }
-                .toList()
-                .toTypedArray()
+            vm.source.scanner.parseName().strFromAddrLen(vm)
+        }
+            .take(8)
+            .filter { it.isNotEmpty() }
+            .toList()
+            .toTypedArray()
         val out = try {
             exec(false, *possibleArgs)
         } catch (e: IOException) {
@@ -225,11 +220,8 @@ object wToolsCustom : IWordModule {
 
     fun w_tildeTilde(vm: ForthVM) {
         vm.io.print(
-            AttributedString(
-                "${vm.source} ${vm.dstk.simpleDumpStr()}",
-                DEFAULT.foreground(BLACK)
-                // fixme!
-                ).toAnsi((vm.source as StdInInputSource).terminal)
+            "${vm.source} ${vm.dstk.simpleDumpStr()}",
+            DEFAULT.foreground(BLACK)
         )
     }
 
@@ -245,12 +237,10 @@ object wToolsCustom : IWordModule {
             return
         }
         vm.source.scanner.fill(command)
-        vm.io.println(
-            AttributedString(
-                "Executing: $command",
-                DEFAULT.foreground(BLACK)
-                // fixme!
-            ).toAnsi((vm.source as StdInInputSource).terminal)
-        )
+        vm.io.println("Executing: $command", DEFAULT.foreground(BLACK))
+    }
+
+    fun w_dotTermInfo(vm: ForthVM) {
+        vm.io.println("${vm.io.terminal?.type} width=${vm.io.termWidth} ")
     }
 }

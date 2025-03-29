@@ -2,10 +2,6 @@ package kf
 
 
 import RegisterDelegate
-import com.github.ajalt.mordant.rendering.TextColors.gray
-import com.github.ajalt.mordant.terminal.Terminal
-import com.github.ajalt.mordant.terminal.danger
-import com.github.ajalt.mordant.terminal.info
 import kf.interps.IInterp
 import kf.words.core.ext.mCoreExt
 import kf.words.core.mCore
@@ -15,7 +11,7 @@ import kf.words.facility.mFacility
 import kf.words.fileaccess.mFileAccess
 import kf.words.tools.mTools
 import org.jline.reader.LineReader
-import kotlin.reflect.KProperty
+import org.jline.terminal.TerminalBuilder
 import kotlin.time.TimeSource
 
 
@@ -31,7 +27,8 @@ import kotlin.time.TimeSource
  */
 
 class ForthVM(
-    var io: Terminal = Terminal(),
+//    val terminal = TerminalBuilder.builder().dumb(true).build(),
+    var io: IOutputSource = TerminalOutputSource(),
     val memConfig: IMemConfig = SmallMemConfig(),
     val mem: IntArray = IntArray(memConfig.upperBound + 1),
 ) {
@@ -341,11 +338,11 @@ class ForthVM(
                 w(this)
             } catch (e: ArrayIndexOutOfBoundsException) {
                 io.danger("$source MEMFAULT Mem Out of bound: $ip")
-                if (verbosity >= 3) io.print(gray(e.stackTraceToString()))
+                if (verbosity >= 3) io.muted(e.stackTraceToString())
                 abort()
             } catch (e: ForthError) {
                 io.danger("$source ERROR: " + e.message)
-                if (verbosity >= 3) io.print(gray(e.stackTraceToString()))
+                if (verbosity >= 3) io.muted(e.stackTraceToString())
 
                 // all Forth-errors call abort: clearing stacks, ignoring the
                 // rest of the line and, if reading from a file or EVALUATING,
@@ -364,8 +361,8 @@ class ForthVM(
     fun dbg(lvl: Int, s: String) {
         if (verbosity < lvl) return
         when (lvl) {
-            0, 1, 2 -> io.info(s)
-            else -> io.println(gray(s))
+            0, 1, 2 -> io.debug(s)
+            else -> io.debugSubtle(s)
         }
     }
 

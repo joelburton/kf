@@ -1,9 +1,5 @@
 package kf.words.core
 
-import com.github.ajalt.mordant.input.KeyboardEvent
-import com.github.ajalt.mordant.input.enterRawModeOrNull
-import com.github.ajalt.mordant.rendering.TextColors.yellow
-import com.github.ajalt.mordant.terminal.prompt
 import kf.*
 
 object wIO : IWordModule {
@@ -42,7 +38,7 @@ object wIO : IWordModule {
     /** `EMIT` ( x -- ) Display character with value x */
 
     fun w_emit(vm: ForthVM) {
-        vm.io.print(vm.dstk.pop().toChar())
+        vm.io.print(vm.dstk.pop().toChar().toString())
     }
 
     /** `DECIMAL` ( -- ) Set the numeric conversion radix to ten (decimal) */
@@ -77,27 +73,27 @@ object wIO : IWordModule {
     fun w_key(vm: ForthVM) {
         // todo: much of this should probably move down into the IO layer
 
-        val ti = vm.io.terminalInterface
-        if (ti is TerminalTestInterface)
-            throw ForthIOError("Cannot use `key` from test input")
-
-        val rawMode = vm.io.enterRawModeOrNull()
-        if (rawMode == null) {
-            var s = vm.io.prompt(yellow("Enter 1 character"))
-            while (s == null || s.length != 1) {
-                s = vm.io.prompt(yellow("Try again, enter 1 character"))
-            }
-            vm.dstk.push(s[0].code)
-        } else {
-            rawMode.use {
-                var k: Char = rawMode.run {
-                    var keyEv: KeyboardEvent? = null
-                    while (keyEv == null) keyEv = rawMode.readKeyOrNull()
-                    keyEv.key[0].toChar()
-                }
-                vm.dstk.push(k.code)
-            }
-        }
+//        val ti = vm.io.terminalInterface
+//        if (ti is TerminalTestInterface)
+//            throw ForthIOError("Cannot use `key` from test input")
+//
+//        val rawMode = vm.io.enterRawModeOrNull()
+//        if (rawMode == null) {
+//            var s = vm.io.prompt(yellow("Enter 1 character"))
+//            while (s == null || s.length != 1) {
+//                s = vm.io.prompt(yellow("Try again, enter 1 character"))
+//            }
+//            vm.dstk.push(s[0].code)
+//        } else {
+//            rawMode.use {
+//                var k: Char = rawMode.run {
+//                    var keyEv: KeyboardEvent? = null
+//                    while (keyEv == null) keyEv = rawMode.readKeyOrNull()
+//                    keyEv.key[0].toChar()
+//                }
+//                vm.dstk.push(k.code)
+//            }
+//        }
     }
 
     /** BL  b-l   CORE

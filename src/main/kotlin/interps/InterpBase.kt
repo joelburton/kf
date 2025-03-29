@@ -1,7 +1,6 @@
 package kf.interps
 
 import RegisterDelegate
-import com.github.ajalt.mordant.terminal.success
 import kf.D
 import kf.ForthVM
 import kf.ForthVM.Companion.REG_STATE
@@ -66,7 +65,7 @@ open class InterpBase(val vm: ForthVM) : IInterp {
 
     /** Message shown on startup/reboot. */
     override fun banner() {
-        vm.io.success("\nWelcome to ${VERSION_STRING} ($name)\n")
+        vm.io.info("\nWelcome to ${VERSION_STRING} ($name)\n")
     }
 
     /** This would interpret a string token, but the base interpreter won't. */

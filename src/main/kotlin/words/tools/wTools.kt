@@ -1,16 +1,7 @@
 package kf.words.tools
 
-import com.github.ajalt.mordant.rendering.OverflowWrap
-import com.github.ajalt.mordant.rendering.Whitespace
-import kf.ForthVM
-import kf.IWordModule
-import kf.Word
-import kf.addr
-import kf.hex8
-import kf.strFromAddrLen
+import kf.*
 import kf.words.custom.wToolsCustom
-import kf.wrap
-import org.apache.commons.text.WordUtils.wrap
 
 object wTools : IWordModule {
     override val name = "kf.words.tools.wTools"
@@ -52,10 +43,9 @@ object wTools : IWordModule {
      */
 
     fun w_words(vm: ForthVM) {
-        val width = (vm.io.terminalInterface.getTerminalSize()?.width ?: 80)
         val s =
             vm.dict.words.filter { !it.hidden }.joinToString(" ") { it.name }
-        vm.io.println(s.wrap(width))
+        vm.io.println(s.wrap(vm.io.termWidth))
     }
 
     /** ?    question    TOOLS

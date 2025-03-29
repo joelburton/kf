@@ -60,14 +60,14 @@ internal class ForthHighlighter(val vm: ForthVM) : Highlighter {
 
             // backslash comments are grey
             else if (backSlashComment != null)
-                sb.append(backSlashComment, DEFAULT.foreground(BLACK))
+                sb.append(backSlashComment, DEFAULT.foreground(249))
 
             // for words:
             // - recognize ( comments ) and make them grey
             // - guess that any word ending with quote (." s" etc) starts string
             // - strings are green until a closing string
             // - if word is in dict: bold
-            // - if not: try as number; if so: blue
+            // - if not: try as number; if so: bold
             // - else: either typo or a word currently being defined: underline
 
             else if (word != null) {
@@ -77,12 +77,12 @@ internal class ForthHighlighter(val vm: ForthVM) : Highlighter {
                 } else if (inString) {
                     sb.append(word, DEFAULT.foreground(GREEN))
                 } else if (inComment && word.endsWith(")")) {
-                    sb.append(word, DEFAULT.foreground(BLACK))
+                    sb.append(word, DEFAULT.foreground(249))
                     inComment = false
                 } else if (inComment) {
-                    sb.append(word, DEFAULT.foreground(BLACK))
+                    sb.append(word, DEFAULT.foreground(249))
                 } else if (word == "(") {
-                    sb.append("(", DEFAULT.foreground(BLACK))
+                    sb.append("(", DEFAULT.foreground(249))
                     inComment = true
                 } else if (vm.dict.getSafe(word) != null) {
                     sb.append(word, DEFAULT.bold()) // recognized word
@@ -90,7 +90,7 @@ internal class ForthHighlighter(val vm: ForthVM) : Highlighter {
                 } else {
                     try {
                         word.toForthInt(base)
-                        sb.append(word, DEFAULT.foreground(BLUE)) // num
+                        sb.append(word, DEFAULT.foreground(195).bold()) // num
                     } catch (_: ParseError) {
                         sb.append(word, DEFAULT.underline()) // unknown
                     }

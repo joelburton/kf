@@ -1,6 +1,5 @@
 package kf.interps
 
-import com.github.ajalt.mordant.terminal.warning
 import kf.*
 import kf.words.core.ext.wInterpExt.w_parseName
 import kf.words.custom.wToolsCustom
@@ -215,7 +214,7 @@ open class InterpEval(vm: ForthVM) : InterpBase(vm) {
             .forEach { bootstrapEval(it) }
             .also {
                 if (D && vm.verbosity > 2) {
-                    vm.io.warning("\nInterpreter is:")
+                    vm.io.info("\nInterpreter is:")
                     wToolsCustom.w_dotCode(vm)
                     vm.io.println()
                 }

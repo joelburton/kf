@@ -1,8 +1,6 @@
 package kf.words.custom
 
-import com.github.ajalt.mordant.terminal.warning
 import kf.*
-import kotlin.reflect.KClass
 
 object wBload : IWordModule {
     override val name = "kf.words.custom.wBload"

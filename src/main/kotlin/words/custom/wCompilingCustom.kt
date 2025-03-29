@@ -1,8 +1,5 @@
 package kf.words.custom
 
-import com.github.ajalt.mordant.rendering.OverflowWrap
-import com.github.ajalt.mordant.rendering.Whitespace
-import com.github.ajalt.mordant.terminal.warning
 import kf.ForthVM
 import kf.IWordModule
 import kf.Word
@@ -67,11 +64,8 @@ object wCompilingCustom : IWordModule {
         val cw = vm.dict.last
 
         if (!cw.imm) {
-            vm.io.warning(
-                """Using postpone in a word not already immediate word: '$cw'.
-This is almost certainly not what you want to do.""",
-                whitespace = Whitespace.NORMAL,
-                overflowWrap = OverflowWrap.NORMAL)
+            vm.io.warning("Using postpone in word not already immediate: '$cw'.")
+            vm.io.warning("This is almost certainly not what you want to do.")
         }
         vm.appendWord("[compile]")
         vm.appendWord(token)

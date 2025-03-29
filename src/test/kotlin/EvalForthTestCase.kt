@@ -1,5 +1,3 @@
-import com.github.ajalt.mordant.rendering.AnsiLevel
-import com.github.ajalt.mordant.terminal.Terminal
 import kf.EvalInputSource
 import kf.FakeStdInInputSource
 import kf.ForthError
@@ -7,7 +5,7 @@ import kf.IntEOF
 import kf.ForthVM
 import kf.InputSource
 import kf.StdInInputSource
-import kf.TerminalTestInterface
+import kf.TestTerminalOutputSource
 import kf.interps.InterpBase
 import kf.interps.InterpFast
 import kf.words.custom.wToolsCustom._see
@@ -26,13 +24,8 @@ fun dummyFn(vm: ForthVM) {
 /** Test cases that need a VM, but doesn't need to eval or load modules. */
 
 open class ForthTestCase() {
-    val testIO = TerminalTestInterface()
-    val vm = ForthVM(
-        io = Terminal(
-            ansiLevel = AnsiLevel.NONE,
-            terminalInterface = testIO
-        )
-    )
+    val testIO = TestTerminalOutputSource()
+    val vm = ForthVM(io = testIO)
 
     init {
         vm.interp = InterpFast(vm)
@@ -42,7 +35,7 @@ open class ForthTestCase() {
 
     @BeforeEach
     fun beforeEach() {
-        recorder.clearOutput()
+        testIO.clear()
     }
 
     fun assertDStack(vararg items: Int) {
@@ -69,9 +62,7 @@ open class ForthTestCase() {
     }
 
     fun getOutput(): String {
-        return recorder.output().also {
-            recorder.clearOutput()
-        }
+        return testIO.output.also { testIO.clear() }
     }
 
     fun see(name: String) {
@@ -80,7 +71,6 @@ open class ForthTestCase() {
     }
 
     fun setInput(s: String) {
-//        (vm.io.terminalInterface as TerminalTestInterface).addInputs(s)
         (vm.source as FakeStdInInputSource).content += s
     }
 
@@ -114,7 +104,7 @@ open class EvalForthTestCase : ForthTestCase() {
                     w(this)
                 }
             } catch (_: IntEOF) {
-                return recorder.output()
+                return testIO.output
             } catch (e: ForthError) {
                 source.scanner.nextLine()
                 rstk.reset()

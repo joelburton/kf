@@ -1,6 +1,5 @@
 package kf.words.core
 
-import com.github.ajalt.mordant.terminal.danger
 import kf.*
 import kf.interps.InterpBase
 import kf.interps.InterpEval

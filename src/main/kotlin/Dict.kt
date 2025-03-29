@@ -1,12 +1,6 @@
 package kf
 
-import com.github.ajalt.mordant.rendering.TextColors.yellow
-import com.github.ajalt.mordant.rendering.TextColors.blue
-import com.github.ajalt.mordant.rendering.TextStyles.bold
-import com.github.ajalt.mordant.rendering.Whitespace
-import com.github.ajalt.mordant.terminal.muted
-import com.github.ajalt.mordant.widgets.Text
-import org.apache.commons.text.WordUtils.wrap
+import org.jline.utils.AttributedStyle
 
 class WordNotFoundError(m: String) : ForthError("Word not found: $m")
 class DictFullError() : ForthError("Dictionary full")
@@ -145,7 +139,7 @@ class Dict(val vm: ForthVM, val capacity: Int = 1024) {
                     (currentlyDefining !== it || it.recursive)
         }?.also {
             if (currentlyDefining === it && !it.recursive) {
-                vm.io.muted(
+                vm.io.warning(
                     "Skipping currently-defining word because it isn't recursive")
             }
         }
@@ -170,22 +164,22 @@ class Dict(val vm: ForthVM, val capacity: Int = 1024) {
 
         if (!reloadOk && mod.name in vm.modulesLoaded) {
             if (vm.verbosity >= 2)
-                vm.io.muted("Skipping already-loaded module: ${mod.name}")
+                vm.io.warning("Skipping already-loaded module: ${mod.name}")
             return
         }
 
         val modName = mod.name.removePrefix("kf.words.")
-        if (vm.verbosity >= 1) vm.io.print(bold(yellow("  $modName: ")))
+        if (vm.verbosity >= 2) vm.io.print(
+            "  $modName: ", AttributedStyle.DEFAULT.bold())
         val sb = mod.words.joinToString(" ") {
             add(it)
             it.name.removePrefix("kf.words.")
         }
-        if (vm.verbosity >= 1) {
-            val width = (vm.io.terminalInterface.getTerminalSize()?.width ?: 80)
-            if (mod.name.length + sb.length + 3 < width)
+        if (vm.verbosity >= 2) {
+            if (mod.name.length + sb.length + 3 < vm.io.termWidth)
                 vm.io.println(sb)
             else
-                vm.io.println("\n" + sb.wrap(width, indent=4))
+                vm.io.println("\n" + sb.wrap(vm.io.termWidth, indent=4))
         }
 
         vm.modulesLoaded.put(mod.name, mod)
@@ -196,7 +190,7 @@ class Dict(val vm: ForthVM, val capacity: Int = 1024) {
     fun addMetaModule(mod: IMetaWordModule) {
         val modName = mod.name.removePrefix("kf.words.")
         if (D) vm.dbg(3, "dict.addMetaModule: ${mod.name}")
-        if (vm.verbosity >= 1) vm.io.println(bold(blue("$modName:")))
+        if (vm.verbosity >= 2) vm.io.success("$modName:")
         for (m in mod.modules) addModule(m, false)
     }
 

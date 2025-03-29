@@ -127,7 +127,7 @@ class wCompilingFuncTest : EvalForthTestCase() {
         assertDStack(42)
         // recursive func
 
-        recorder.clearOutput()
+        testIO.clear()
         eval(": f3 1- dup dup . 0 > if recurse then ; 3 f3 ")
         assertPrinted("2 1 0 ")
     }
@@ -142,15 +142,15 @@ class wCompilingFuncTest : EvalForthTestCase() {
         // but it does work
         eval("10 plus2")
         assertDStack(12)
-        assertTrue(recorder.output().length > 10)
-        recorder.clearOutput()
+        assertTrue(testIO.output.length > 10)
+        testIO.clear()
 
         eval(": uses-plus2 10 plus2 ;")
         assertDStack()
 
         eval("uses-plus2")
         assertDStack(12)
-        assertTrue(recorder.output().isEmpty())
+        assertPrinted("")
 
         // trying some plain aliasing of complex words to shake out bugs
 

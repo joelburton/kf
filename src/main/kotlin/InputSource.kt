@@ -40,20 +40,16 @@
 
 package kf
 
-import com.github.ajalt.mordant.platform.MultiplatformSystem
-import kf.numToStrPrefixed
 import org.jline.reader.EndOfFileException
-import org.jline.reader.LineReader
-import org.jline.reader.LineReaderBuilder
-import org.jline.terminal.TerminalBuilder
-import org.jline.terminal.TerminalBuilder.terminal
+import org.jline.reader.impl.LineReaderImpl
+import org.jline.terminal.Terminal
 import org.jline.utils.AttributedString
 import org.jline.utils.AttributedStringBuilder
 import org.jline.utils.AttributedStyle.*
-import org.jline.utils.AttributedStyle.GREEN
 import org.jline.utils.Status
 import org.jline.widget.AutosuggestionWidgets
-import kotlin.collections.joinToString
+import java.nio.file.Files
+import kotlin.io.path.Path
 
 /** ABC of all input sources. */
 
@@ -127,12 +123,11 @@ abstract class InputSource(val vm: ForthVM, val id: Int, val path: String) {
  * with system-specific syscalls like tell, etc.
  * */
 
-open class FileInputSource(
+open class StringInputSource(
     vm: ForthVM, id: Int, path: String
 ) : InputSource(vm, id, path) {
     // slurp, slurp, slurp, that's tasty unicode
-    open val content: String =
-        MultiplatformSystem.readFileAsUtf8(path).toString()
+    open val content: String  = ""
 
     /** Read line and return null at end of file. */
 
@@ -147,23 +142,35 @@ open class FileInputSource(
     }
 }
 
+open class FileInputSource(
+    vm: ForthVM, id: Int, path: String
+) : StringInputSource(vm, id, path) {
+    // slurp, slurp, slurp, that's tasty unicode
+    override val content= Files.readString(Path(path)).toString()
+}
+
+
+
 /** Interactive stdin source. */
 
 class StdInInputSource(vm: ForthVM) : InputSource(vm, 0, "<stdin>") {
-    val terminal = TerminalBuilder.builder().dumb(true).build()
 
-    var status: Status = Status.getStatus(terminal, true)
-        .apply { setBorder(true) }
+    /** LineReader that doesn't print newline after accepting. */
+    class MyLineReader(vm: ForthVM, terminal: Terminal?) :
+        LineReaderImpl(terminal, "kf") {
+        init {
+            completer = ForthCompleter(vm.dict)
+            highlighter = ForthHighlighter(vm)
+            AutosuggestionWidgets(this).enable()
+            setVariable(HISTORY_FILE, "/Users/joel/.kf_history") // fixme
+        }
+        override fun cleanup() = doCleanup(false)
+    }
 
-    val reader = LineReaderBuilder
-        .builder()
-        .appName("kf")
-        .completer(ForthCompleter(vm.dict))
-        .terminal(terminal)
-        .highlighter(ForthHighlighter(vm))
-        .variable(LineReader.HISTORY_FILE, "/Users/joel/.kf_history") // fixme
-        .build()
-        .apply { AutosuggestionWidgets(this).enable() }
+    var status: Status? = Status.getStatus(vm.io.terminal, true)
+        ?.apply {  setBorder(true) }
+
+    val reader = MyLineReader(vm, vm.io.terminal)
 
     /** Get a line from a real console or something piped in via the shell.
      *
@@ -172,6 +179,20 @@ class StdInInputSource(vm: ForthVM) : InputSource(vm, 0, "<stdin>") {
      * */
 
     override fun readLineOrNull(): String? {
+        updateStatusBar()
+
+        lineCount += 1
+        val result = try {
+            reader.readLine()
+        } catch (_: EndOfFileException) {
+            null
+        }
+        // Space between input and any output
+        vm.io.print(" ")
+        return result
+    }
+
+    private fun updateStatusBar() {
         val stk = vm.dstk.simpleDumpStr()
         val mode = if (vm.interp.isCompiling) " Compiling " else ""
         val base = when (vm.base) {
@@ -181,8 +202,8 @@ class StdInInputSource(vm: ForthVM) : InputSource(vm, 0, "<stdin>") {
             16 -> "Hex "
             else -> "Base(${vm.base}) "
         }
-        val padding = " ".repeat(
-            terminal.width - (stk.length + base.length + mode.length))
+        val toPad = vm.io.termWidth - (stk.length + base.length + mode.length)
+        val padding = " ".repeat(if (toPad > 0) toPad else 0)
 
         val info = AttributedStringBuilder()
             .append(AttributedString(stk, DEFAULT.bold()))
@@ -191,22 +212,15 @@ class StdInInputSource(vm: ForthVM) : InputSource(vm, 0, "<stdin>") {
             .append(AttributedString(mode, DEFAULT.foreground(MAGENTA)))
             .toAttributedString()
 
-        status.update(mutableListOf(info))
-
-        lineCount += 1
-        return try {
-            reader.readLine()
-        } catch (_: EndOfFileException) {
-            null
-        }
+        status?.update(mutableListOf(info))
     }
 }
 
 /** A simple input source for EVALUATE: it's given a string that's its input. */
 
 class EvalInputSource(
-    vm: ForthVM, override val content: String
-) : FileInputSource(vm, -1, "<eval>")
+    vm: ForthVM, override var content: String
+) : StringInputSource(vm, -1, "<eval>")
 
 /** Input source for tests: the content can be added to.
  *
@@ -216,4 +230,4 @@ class EvalInputSource(
 
 class FakeStdInInputSource(
     vm: ForthVM, override var content: String
-) : FileInputSource(vm, 0, "<fake>")
+) : StringInputSource(vm, 0, "<fake>")
