@@ -1,18 +1,14 @@
 package kf.cli
 
 import com.github.ajalt.clikt.core.CliktCommand
-import com.github.ajalt.clikt.core.main
 import com.github.ajalt.clikt.parameters.arguments.argument
 import com.github.ajalt.clikt.parameters.arguments.multiple
 import com.github.ajalt.clikt.parameters.options.*
 import com.github.ajalt.clikt.parameters.types.int
 import kf.ForthVM
-import kf.IMemConfig
+import kf.mem.MemConfig
 import kf.IntBye
 import kf.IntEOF
-import kf.LargeMemConfig
-import kf.MedMemConfig
-import kf.SmallMemConfig
 import kf.VERSION_STRING
 import kf.gateways.GatewayHttp
 import kf.gateways.GatewayWebsocket
@@ -20,7 +16,9 @@ import kf.interps.InterpBase
 import kf.interps.InterpEval
 import kf.interps.InterpFast
 import kf.interps.InterpForth
-import kf.memoryConfigs
+import kf.mem.largeMemConfig
+import kf.mem.medMemConfig
+import kf.mem.smallMemConfig
 import kf.words.fileaccess.wFileAccessExt
 
 class ForthCLI : CliktCommand("PupForth") {
@@ -52,13 +50,13 @@ class ForthCLI : CliktCommand("PupForth") {
     /** The "small" size is very tiny, and is intended for just using less
      * memory for tests, etc. Medium is probably perfect.
      */
-    val size: IMemConfig by option()
+    val size: MemConfig by option()
         .switch(
-            "--large" to LargeMemConfig(),
-            "--medium" to MedMemConfig(),
-            "--small" to SmallMemConfig(),
+            "--large" to largeMemConfig,
+            "--medium" to medMemConfig,
+            "--small" to smallMemConfig,
         )
-        .default(MedMemConfig())
+        .default(medMemConfig)
         .help("VM memory size (default: medium)")
 
     /** This can serve Forth via HTTP or WebSockets. */
@@ -109,7 +107,7 @@ class ForthCLI : CliktCommand("PupForth") {
             return
         }
         if (listMemConfigs) {
-            for (memConfig in memoryConfigs) {
+            for (memConfig in MemConfig.configs) {
                 println("${memConfig.name}:")
                 memConfig.show()
                 println()

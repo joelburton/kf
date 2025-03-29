@@ -1,8 +1,9 @@
 import kf.ForthError
 import kf.IntEOF
 import kf.ForthVM
-import kf.RecordingForthConsole
+import kf.consoles.RecordingForthConsole
 import kf.interps.InterpFast
+import kf.sources.SourceFakeInteractive
 import kf.words.custom.wToolsCustom._see
 import org.junit.jupiter.api.BeforeEach
 import kotlin.test.assertContentEquals

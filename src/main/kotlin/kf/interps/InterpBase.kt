@@ -1,6 +1,6 @@
 package kf.interps
 
-import kf.RegisterDelegate
+import kf.mem.RegisterDelegate
 import kf.D
 import kf.ForthVM
 import kf.ForthVM.Companion.REG_STATE

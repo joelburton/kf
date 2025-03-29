@@ -7,6 +7,10 @@ import kf.dict.Dict
 import kf.dict.IWordModule
 import kf.dict.Word
 import kf.interps.IInterp
+import kf.mem.MemConfig
+import kf.mem.RegisterDelegate
+import kf.mem.MemConfig.Companion
+import kf.mem.smallMemConfig
 import kf.sources.SourceBase
 import kf.sources.SourceStdIn
 import kf.words.core.ext.mCoreExt
@@ -33,7 +37,7 @@ import kotlin.time.TimeSource
 
 class ForthVM(
     io: IForthConsole? = null,
-    val memConfig: IMemConfig = SmallMemConfig(),
+    val memConfig: MemConfig = smallMemConfig,
     val mem: IntArray = IntArray(memConfig.upperBound + 1),
 ) {
     var io: IForthConsole = io ?: ForthConsole(this)

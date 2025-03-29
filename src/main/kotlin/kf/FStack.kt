@@ -1,16 +1,5 @@
 package kf
 
-// These subclass ForthError, which should be for things which are recoverable
-// and just cause the interpreter to "quit" (ie, reset and clear stacks)
-
-class StackOverflowError(name: String) :
-    ForthError("${name}: Stack overflow")
-
-class StackUnderflowError(name: String) :
-    ForthError("${name}: Stack underflow")
-
-class StackPtrInvalidError(name: String, n: Int) :
-    ForthError("${name}: Stack ptr invalid: ${n}")
 
 /** Stack in a memory location.
  *

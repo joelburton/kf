@@ -1,4 +1,4 @@
-package kf
+package kf.mem
 
 import kotlin.reflect.KProperty
 

@@ -3,8 +3,8 @@ package kf.words.core
 import kf.CharLitError
 import kf.ForthVM
 import kf.ForthVM.Companion.CHAR_SIZE
-import kf.IWordModule
-import kf.Word
+import kf.dict.IWordModule
+import kf.dict.Word
 import kf.strFromAddrLen
 
 object wChars: IWordModule {

@@ -1,9 +1,9 @@
 package kf.words.core.ext
 
 import kf.ForthVM
-import kf.IWordModule
-import kf.Word
-import kf.w_notImpl
+import kf.dict.IWordModule
+import kf.dict.Word
+import kf.dict.w_notImpl
 
 object wIOExt: IWordModule {
     override val name = "kf.words.core.ext.wIOExt"
