@@ -3,6 +3,7 @@ package kf.words.core.ext
 import kf.*
 import kf.dict.IWordModule
 import kf.dict.Word
+import kf.mem.CellMeta
 
 object wValuesExt: IWordModule {
     override val name = "kf.words.core.ext.wValuesExt"

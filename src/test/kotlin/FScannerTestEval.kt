@@ -1,4 +1,4 @@
-import kf.FScanner
+import kf.interps.FScanner
 import kf.strFromCSAddr
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test

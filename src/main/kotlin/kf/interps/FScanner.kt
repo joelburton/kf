@@ -1,4 +1,9 @@
-package kf
+package kf.interps
+
+import kf.ForthVM
+import kf.MemError
+import kf.strFromAddrLen
+import kotlin.text.iterator
 
 /** Scanner for parsing buffers.
  *

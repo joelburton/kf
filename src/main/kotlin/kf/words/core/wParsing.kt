@@ -1,6 +1,6 @@
 package kf.words.core
 
-import kf.CellMeta
+import kf.mem.CellMeta
 import kf.D
 import kf.ForthVM
 import kf.dict.IWordModule

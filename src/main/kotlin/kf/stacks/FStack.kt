@@ -1,4 +1,15 @@
-package kf
+package kf.stacks
+
+import kf.*
+
+class StackOverflowError(name: String) :
+    StackError("${name}: Stack overflow")
+
+class StackUnderflowError(name: String) :
+    StackError("${name}: Stack underflow")
+
+class StackPtrInvalidError(name: String, n: Int) :
+    StackError("${name}: Stack ptr invalid: ${n}")
 
 
 /** Stack in a memory location.
@@ -94,7 +105,7 @@ class FStack(
      * the lower 32 bits and a 0 for the hi-cell.
      * */
     fun dblPush(n: Long) {
-        if (n > ForthVM.MAX_INT) throw NumOutOfRange(n)
+        if (n > ForthVM.Companion.MAX_INT) throw NumOutOfRange(n)
         push(n.toInt(), if (n < 0) -1 else 0)
     }
 

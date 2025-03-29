@@ -32,6 +32,7 @@ class ForthConsole(val vm: ForthVM) : IForthConsole {
                 HISTORY_FILE,
                 "${System.getProperty("user.home")}/.kf_history"
             )
+            setVariable(SECONDARY_PROMPT_PATTERN, "")
         }
 
         override fun cleanup() = doCleanup(false)
@@ -54,8 +55,10 @@ class ForthConsole(val vm: ForthVM) : IForthConsole {
     private fun mks(s: String, style: AttributedStyle) =
         AttributedString(s, style).toAnsi(term)
 
-    private fun nl(s: String) =
-        pl("${if (term.getCursorPosition(null).x != 0) "\n" else ""}$s")
+    private fun nl(s: String) {
+        val x = term.getCursorPosition(null)?.x ?: 1 // force new line
+        return pl("${if (x != 0) "\n" else ""}$s")
+    }
 
     private fun p(s: String) = term.writer().print(s)
     private fun pl(s: String) = term.writer().println(s)
@@ -82,7 +85,7 @@ class ForthConsole(val vm: ForthVM) : IForthConsole {
 
     override fun runFromHistory(prev: Int): String? {
         return try {
-            reader.history[prev.toInt()]
+            reader.history[prev.toInt() - 1]
         } catch (_: IllegalArgumentException) {
             null
         }

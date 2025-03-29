@@ -1,7 +1,9 @@
 import kf.*
 import kf.dict.Dict
+import kf.dict.DictFullError
 import kf.dict.IWordModule
 import kf.dict.Word
+import kf.dict.WordNotFoundError
 import org.junit.jupiter.api.Test
 
 import org.junit.jupiter.api.Assertions.*

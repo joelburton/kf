@@ -1,12 +1,13 @@
 package kf.dict
 
 import kf.D
-import kf.DictFullError
+import kf.DictError
 import kf.ForthVM
-import kf.WordNotFoundError
 import kf.wrap
 import org.jline.utils.AttributedStyle
 
+class WordNotFoundError(m: String) : DictError("Word not found: $m")
+class DictFullError() : DictError("Dictionary full")
 
 /** The dictionary of Forth words (sometimes called the "glossary".
  *

@@ -7,11 +7,13 @@ import kf.dict.Dict
 import kf.dict.IWordModule
 import kf.dict.Word
 import kf.interps.IInterp
+import kf.mem.CellMeta
 import kf.mem.MemConfig
 import kf.mem.RegisterDelegate
 import kf.mem.smallMemConfig
 import kf.sources.SourceBase
 import kf.sources.SourceStdIn
+import kf.stacks.FStack
 import kf.words.core.ext.mCoreExt
 import kf.words.core.mCore
 import kf.words.custom.mCustom
@@ -19,6 +21,7 @@ import kf.words.doublenums.mDoubleNums
 import kf.words.facility.mFacility
 import kf.words.fileaccess.mFileAccess
 import kf.words.tools.mTools
+import kotlin.reflect.KClass
 import kotlin.time.TimeSource
 
 

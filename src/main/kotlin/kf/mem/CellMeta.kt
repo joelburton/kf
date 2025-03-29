@@ -1,5 +1,9 @@
-package kf
+package kf.mem
 
+import kf.ForthVM
+import kf.addr
+import kf.charRepr
+import kf.hex
 
 /** What sort of information does this cell in memory hold?
  *

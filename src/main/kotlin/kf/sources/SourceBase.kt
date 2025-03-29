@@ -40,7 +40,7 @@
 
 package kf.sources
 
-import kf.FScanner
+import kf.interps.FScanner
 import kf.ForthVM
 import kf.IntEOF
 

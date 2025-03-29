@@ -3,6 +3,7 @@ package kf.words.custom
 import kf.*
 import kf.dict.IWordModule
 import kf.dict.Word
+import kf.mem.CellMeta
 import org.jline.utils.AttributedStyle.DEFAULT
 import org.jline.utils.AttributedStyle.BLACK
 import org.jline.utils.ExecHelper.exec

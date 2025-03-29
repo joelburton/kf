@@ -1,5 +1,9 @@
 package kf
 
+// These subclass ForthError, which should be for things which are recoverable
+// and just cause the interpreter to "quit" (ie, reset and clear stacks)
+
+
 /** Interpreter hit a problem.
  *
  * This is sealed, so you can't instantiate it directly. Instead, there are
@@ -53,21 +57,8 @@ class WordLengthError(m: String) : ForthError(m)
 /** Cannot assign value to non-value */
 class WordValueAssignError(m: String) : ForthError(m)
 
-// These subclass ForthError, which should be for things which are recoverable
-// and just cause the interpreter to "quit" (ie, reset and clear stacks)
-
-class StackOverflowError(name: String) :
-    ForthError("${name}: Stack overflow")
-
-class StackUnderflowError(name: String) :
-    ForthError("${name}: Stack underflow")
-
-class StackPtrInvalidError(name: String, n: Int) :
-    ForthError("${name}: Stack ptr invalid: ${n}")
-
-class WordNotFoundError(m: String) : ForthError("Word not found: $m")
-class DictFullError() : ForthError("Dictionary full")
-
+open class DictError(m:String) : ForthError(m)
+open class StackError(m:String) : ForthError(m)
 
 // ********************************************** serious errors and interrupts
 

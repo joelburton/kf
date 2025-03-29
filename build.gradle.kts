@@ -1,5 +1,5 @@
 group = "kf"
-version = "1.0-SNAPSHOT"
+version = "1.0"
 
 plugins {
     kotlin("jvm") version "2.1.20"
@@ -20,13 +20,14 @@ dependencies {
     implementation("org.jline:jline-terminal:3.29.0")
     implementation("org.jline:jline-reader:3.29.0")
     implementation("org.jline:jline-console:3.29.0")
+    implementation("org.slf4j:slf4j-simple:2.1.0-alpha1")  // silence warn
 }
 
 application {
-    mainClass = "kf.MainKt"
+    mainClass = "kf.cli.MainKt"
 }
 
 tasks.test { useJUnitPlatform() }
 tasks.jar {
-    manifest { attributes["Main-Class"] = "kf.MainKt" }
+    manifest { attributes["Main-Class"] = "kf.cli.MainKt" }
 }

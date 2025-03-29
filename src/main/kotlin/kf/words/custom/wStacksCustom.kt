@@ -2,7 +2,7 @@ package kf.words.custom
 
 import kf.ForthVM
 import kf.dict.IWordModule
-import kf.StackPtrInvalidError
+import kf.stacks.StackPtrInvalidError
 import kf.dict.Word
 import kf.words.machine.wMachine.w_nop
 

@@ -7,3 +7,4 @@ import kf.WordNotImplemented
 fun w_notImpl(vm: ForthVM) {
     throw WordNotImplemented("Not implemented")
 }
+
