@@ -18,8 +18,10 @@ import kf.interps.InterpFast
 import kf.interps.InterpForth
 import kf.mem.largeMemConfig
 import kf.mem.medMemConfig
+import kf.mem.memConfigs
 import kf.mem.smallMemConfig
 import kf.words.fileaccess.wFileAccessExt
+import org.jline.terminal.TerminalBuilder
 
 class ForthCLI : CliktCommand("PupForth") {
 
@@ -36,12 +38,15 @@ class ForthCLI : CliktCommand("PupForth") {
      *
      * This is normally detected, but it can be forced.
      */
-//    val ansiLevel: AnsiLevel? by option()
-//        .switch(
-//            "--ansi" to AnsiLevel.TRUECOLOR,
-//            "--dumb" to AnsiLevel.NONE,
-//        )
-//        .help("terminal type (default: detect)")
+    val terminal: TerminalBuilder by option()
+        .switch(
+            "--dumb" to TerminalBuilder.builder().dumb(true).type("dumb"),
+            "--dumb-color" to TerminalBuilder.builder().type("dumb-color"),
+            "--ansi" to TerminalBuilder.builder().type("ansi"),
+            "--xterm" to TerminalBuilder.builder().type("xterm-256color"),
+        )
+        .default(TerminalBuilder.builder().dumb(true))
+        .help("terminal type (default: autodetect)")
 
     /** List of paths it will INCLUDE as it starts up. */
     val paths: List<String> by argument()
@@ -107,7 +112,7 @@ class ForthCLI : CliktCommand("PupForth") {
             return
         }
         if (listMemConfigs) {
-            for (memConfig in MemConfig.configs) {
+            for (memConfig in memConfigs) {
                 println("${memConfig.name}:")
                 memConfig.show()
                 println()
@@ -116,8 +121,7 @@ class ForthCLI : CliktCommand("PupForth") {
         }
 
         // Build the ForthVM that everything from this point down uses.
-
-        val vm = ForthVM(memConfig = size)
+        val vm = ForthVM(memConfig = size, terminal = terminal.build())
 
         // Attach the right interpreter to it.
         vm.interp = when (interp) {
@@ -161,9 +165,6 @@ class ForthCLI : CliktCommand("PupForth") {
             return
         }
 
-        // Attach the right terminal (colors, etc.)
-//        vm.io = TerminalOutputSource()
-
         // Start the puppy! It will run until the program quits --- and then it
         // will be very, very sad and will miss you.
         vm.runVM()
@@ -172,9 +173,6 @@ class ForthCLI : CliktCommand("PupForth") {
     /** Entry point for the CLI. */
 
     override fun run() {
-//        val terminal = TerminalBuilder.builder().dumb(true).build()
-//        println("${terminal.type} width=${terminal.width}")
-
         try {
             wrappedRun()
         } catch (_: IntEOF) {

@@ -3,7 +3,6 @@ package kf.dict
 import kf.D
 import kf.ForthVM
 import kf.WordLengthError
-import kf.WordNotImplemented
 import kf.addr
 
 

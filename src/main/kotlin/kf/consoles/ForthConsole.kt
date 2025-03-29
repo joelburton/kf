@@ -19,7 +19,10 @@ import org.jline.widget.AutosuggestionWidgets
  * - testing / gateways
  * - file input
  */
-class ForthConsole(val vm: ForthVM) : IForthConsole {
+class ForthConsole(
+    val vm: ForthVM,
+    terminal: Terminal?
+) : IForthConsole {
 
     /** LineReader that doesn't print newline after accepting. */
     class ForthLineReader(vm: ForthVM, terminal: Terminal?) :
@@ -38,9 +41,13 @@ class ForthConsole(val vm: ForthVM) : IForthConsole {
         override fun cleanup() = doCleanup(false)
     }
 
+    val term = terminal ?: throw Exception("No terminal provided")
+
+    init {
+        term.enterRawMode()
+    }
+
     override val termWidth get() = (if (term.width == 0) 80 else term.width) - 1
-    private val term: Terminal = TerminalBuilder.builder().dumb(true).build()
-        .also { it.enterRawMode() }
     private val reader: ForthLineReader by lazy { ForthLineReader(vm, term) }
     private var status: Status? =
         Status.getStatus(term, true)?.apply { setBorder(true) }
@@ -56,7 +63,7 @@ class ForthConsole(val vm: ForthVM) : IForthConsole {
         AttributedString(s, style).toAnsi(term)
 
     private fun nl(s: String) {
-        val x = term.getCursorPosition(null)?.x ?: 1 // force new line
+        val x = term.getCursorPosition(null)?.x ?: 0
         return pl("${if (x != 0) "\n" else ""}$s")
     }
 
@@ -98,8 +105,13 @@ class ForthConsole(val vm: ForthVM) : IForthConsole {
     }
 
     override fun clearScreen() {
-        term.puts(InfoCmp.Capability.clear_screen)
-        term.flush()
+        when (term.type) {
+            "dumb", "dumb-color" -> print("\n".repeat(40))
+            else -> {
+                term.puts(InfoCmp.Capability.clear_screen)
+                term.flush()
+            }
+        }
     }
 
     // standard print

@@ -53,8 +53,4 @@ open class MemConfig(
         println("Rstack:        ${rstackStart.addr}-${rstackEnd.addr}")
         println("Upper bound:        -${upperBound.addr}")
     }
-
-    companion object {
-        val configs = arrayOf(smallMemConfig, medMemConfig, largeMemConfig)
-    }
 }

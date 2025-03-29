@@ -168,7 +168,7 @@ object wLoops : IWordModule {
 
     /** (LOOP) CO : the runtime part */
 
-    fun w_parenLoop(vm: ForthVM) {  // dstk is index limit incby
+    fun w_parenLoop(vm: ForthVM) {  // dstk is index limit inc-by
         runtimeLoop(vm, incrementBy = 1)
     }
 

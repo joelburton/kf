@@ -21,6 +21,7 @@ import kf.words.doublenums.mDoubleNums
 import kf.words.facility.mFacility
 import kf.words.fileaccess.mFileAccess
 import kf.words.tools.mTools
+import org.jline.terminal.Terminal
 import kotlin.reflect.KClass
 import kotlin.time.TimeSource
 
@@ -40,8 +41,9 @@ class ForthVM(
     io: IForthConsole? = null,
     val memConfig: MemConfig = smallMemConfig,
     val mem: IntArray = IntArray(memConfig.upperBound + 1),
+    terminal: Terminal? = null,
 ) {
-    var io: IForthConsole = io ?: ForthConsole(this)
+    var io: IForthConsole = io ?: ForthConsole(this, terminal)
 
     /** Which interpreter is active?
      *
@@ -105,7 +107,7 @@ class ForthVM(
     val rstk = FStack(this, "rstk", memConfig.rstackStart, memConfig.rstackEnd)
 
     /** Current word being executed by the VM. */
-    lateinit var currentWord: Word  // TODO: this should be removed
+    lateinit var currentWord: Word
 
     /** The instruction pointer; where is the VM executing next? */
     var ip = memConfig.codeStart

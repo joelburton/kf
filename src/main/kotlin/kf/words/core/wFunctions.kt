@@ -1,5 +1,6 @@
 package kf.words.core
 
+import kf.D
 import kf.ForthVM
 import kf.dict.IWordModule
 import kf.dict.Word

@@ -2,6 +2,7 @@ package kf.words.core.ext
 
 import kf.D
 import kf.ForthVM
+import kf.MemError
 import kf.dict.IWordModule
 import kf.dict.Word
 
@@ -58,6 +59,8 @@ object wInterpExt : IWordModule {
         if (s == null) {
             vm.dstk.push(0)
         } else {
+            val max = vm.source.scanner.size
+            if (s.length > max) throw MemError("Input overflow, max len=$max")
             vm.source.scanner.fill(s)
             vm.dstk.push(1)
         }
