@@ -2,6 +2,7 @@ package words.core
 
 import EvalForthTestCase
 import ForthTestCase
+import kf.mem.appendStrToData
 import kf.words.core.wStrings
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test

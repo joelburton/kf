@@ -3,6 +3,7 @@ package kf.words.core.ext
 import kf.ForthVM
 import kf.dict.IWordModule
 import kf.dict.Word
+import kf.mem.appendJump
 
 object wLoopsExt : IWordModule {
     override val name = "kf.words.core.ext.wLoopsExt"

@@ -3,6 +3,10 @@ package kf.interps
 import kf.*
 import kf.dict.IWordMetaModule
 import kf.dict.Word
+import kf.mem.appendCode
+import kf.mem.appendJump
+import kf.mem.appendLit
+import kf.mem.appendWord
 import kf.sources.SourceEval
 import kf.words.core.ext.wInterpExt.w_parseName
 import kf.words.custom.wToolsCustom

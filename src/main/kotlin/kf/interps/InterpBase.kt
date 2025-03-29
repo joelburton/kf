@@ -6,6 +6,7 @@ import kf.ForthVM
 import kf.ForthVM.Companion.REG_STATE
 import kf.dict.IWordMetaModule
 import kf.VERSION_STRING
+import kf.mem.appendWord
 import kf.words.mBaseInterp
 
 

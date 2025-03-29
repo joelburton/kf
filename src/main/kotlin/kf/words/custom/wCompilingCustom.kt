@@ -3,6 +3,7 @@ package kf.words.custom
 import kf.ForthVM
 import kf.dict.IWordModule
 import kf.dict.Word
+import kf.mem.appendWord
 import kf.strFromAddrLen
 
 object wCompilingCustom : IWordModule {

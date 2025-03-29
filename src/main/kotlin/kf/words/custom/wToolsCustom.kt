@@ -178,12 +178,7 @@ object wToolsCustom : IWordModule {
     }
 
     fun w_dotHistory(vm: ForthVM) {
-        vm.readerForHistory?.let {
-            it.history.forEach {
-                val n = (it.index() + 1).toString().padStart(3)
-                vm.io.println("$n: ${it.line()}")
-            }
-        }
+        vm.io.showHistory()
     }
 
     fun w_dotLess(vm: ForthVM) {
@@ -229,17 +224,18 @@ object wToolsCustom : IWordModule {
 
     fun w_dotReRun(vm: ForthVM) {
         val prev = vm.source.scanner.parseName().strFromAddrLen(vm)
-        val history = vm.readerForHistory?.history
-        if (history == null) throw ParseError("History not available")
-
-        val command = try {
-            history[prev.toInt()]
-        } catch (e: IllegalArgumentException) {
-            vm.io.danger("No such command in history: $prev")
-            return
+        val num = try {
+            prev.toInt()
+        } catch (e: NumberFormatException) {
+            throw ParseError("Invalid number: $prev")
         }
-        vm.source.scanner.fill(command)
-        vm.io.println("Executing: $command", DEFAULT.foreground(BLACK))
+        val command = vm.io.runFromHistory(num)
+        if (command == null) {
+            throw ParseError("No history entry for: $prev")
+        } else {
+            vm.source.scanner.fill(command)
+            vm.io.println("Executing: $command", DEFAULT.foreground(BLACK))
+        }
     }
 
     fun w_dotTermInfo(vm: ForthVM) {

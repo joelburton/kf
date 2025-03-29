@@ -5,6 +5,7 @@ import kf.ForthVM
 import kf.ForthVM.Companion.CHAR_SIZE
 import kf.dict.IWordModule
 import kf.dict.Word
+import kf.mem.appendLit
 import kf.strFromAddrLen
 
 object wChars: IWordModule {

@@ -4,6 +4,8 @@ import kf.ForthVM
 import kf.dict.IWordModule
 import kf.dict.Word
 import kf.interps.InterpBase
+import kf.mem.appendLit
+import kf.mem.appendWord
 import kf.strFromAddrLen
 
 object wCompiling : IWordModule {

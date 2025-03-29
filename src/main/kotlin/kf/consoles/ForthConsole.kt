@@ -1,6 +1,7 @@
 package kf.consoles
 
 import kf.ForthVM
+import kf.ParseError
 import org.jline.reader.EndOfFileException
 import org.jline.reader.impl.LineReaderImpl
 import org.jline.terminal.Terminal
@@ -27,8 +28,10 @@ class ForthConsole(val vm: ForthVM) : IForthConsole {
             completer = ForthCompleter(vm.dict)
             highlighter = ForthHighlighter(vm)
             AutosuggestionWidgets(this).enable()
-            setVariable(HISTORY_FILE,
-                "${System.getProperty("user.home")}/.kf_history")
+            setVariable(
+                HISTORY_FILE,
+                "${System.getProperty("user.home")}/.kf_history"
+            )
         }
 
         override fun cleanup() = doCleanup(false)
@@ -70,6 +73,22 @@ class ForthConsole(val vm: ForthVM) : IForthConsole {
         }
     }
 
+    override fun showHistory() {
+        reader.history.forEach {
+            val n = (it.index() + 1).toString().padStart(3)
+            vm.io.println("$n: ${it.line()}")
+        }
+    }
+
+    override fun runFromHistory(prev: Int): String? {
+        return try {
+            reader.history[prev.toInt()]
+        } catch (_: IllegalArgumentException) {
+            null
+        }
+
+    }
+
     override fun termInfo() = println("${term.type} width=${term.width}")
     override fun setXY(x: Int, y: Int) {
         term.puts(InfoCmp.Capability.cursor_address, y, x);
@@ -90,18 +109,39 @@ class ForthConsole(val vm: ForthVM) : IForthConsole {
     // print a line stylized (all start on new line except "ok")
 
     override fun out(s: String) = p(mks(s, AttributedStyle.DEFAULT.italic()))
-    override fun info(s: String) = nl(mks(s, AttributedStyle.DEFAULT.foreground(
-        AttributedStyle.YELLOW
-    )))
-    override fun danger(s: String) = nl(mks(s, AttributedStyle.DEFAULT.foreground(
-        AttributedStyle.RED
-    )))
-    override fun muted(s: String) = nl(mks(s, AttributedStyle.DEFAULT.foreground(247)))
-    override fun warning(s: String) = nl(mks(s, AttributedStyle.DEFAULT.foreground(208)))
-    override fun success(s: String) = nl(mks(s, AttributedStyle.DEFAULT.foreground(120).bold()))
-    override fun ok(s: String) = pl(mks(s, AttributedStyle.DEFAULT.foreground(120).bold()))
-    override fun debug(s: String) = nl(mks(s, AttributedStyle.DEFAULT.foreground(241)))
-    override fun debugSubtle(s: String) = nl(mks(s, AttributedStyle.DEFAULT.foreground(245)))
+    override fun info(s: String) = nl(
+        mks(
+            s, AttributedStyle.DEFAULT.foreground(
+                AttributedStyle.YELLOW
+            )
+        )
+    )
+
+    override fun danger(s: String) = nl(
+        mks(
+            s, AttributedStyle.DEFAULT.foreground(
+                AttributedStyle.RED
+            )
+        )
+    )
+
+    override fun muted(s: String) =
+        nl(mks(s, AttributedStyle.DEFAULT.foreground(247)))
+
+    override fun warning(s: String) =
+        nl(mks(s, AttributedStyle.DEFAULT.foreground(208)))
+
+    override fun success(s: String) =
+        nl(mks(s, AttributedStyle.DEFAULT.foreground(120).bold()))
+
+    override fun ok(s: String) =
+        pl(mks(s, AttributedStyle.DEFAULT.foreground(120).bold()))
+
+    override fun debug(s: String) =
+        nl(mks(s, AttributedStyle.DEFAULT.foreground(241)))
+
+    override fun debugSubtle(s: String) =
+        nl(mks(s, AttributedStyle.DEFAULT.foreground(245)))
 
     private fun updateStatusBar() {
         val stk = vm.dstk.simpleDumpStr()

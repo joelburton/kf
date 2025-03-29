@@ -16,6 +16,8 @@ interface IForthConsole {
     fun setXY(x: Int, y: Int)
     fun clearScreen()
     fun termInfo()
+    fun showHistory()
+    fun runFromHistory(prev: Int): String?
 
     // Standard print
     fun print(s: String)

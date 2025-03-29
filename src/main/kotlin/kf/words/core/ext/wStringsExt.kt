@@ -3,6 +3,10 @@ package kf.words.core.ext
 import kf.ForthVM
 import kf.dict.IWordModule
 import kf.dict.Word
+import kf.mem.appendCStr
+import kf.mem.appendCStrToData
+import kf.mem.appendStr
+import kf.mem.appendStrToData
 import kf.strFromAddrLen
 
 object wStringsExt: IWordModule {

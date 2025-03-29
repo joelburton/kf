@@ -4,6 +4,7 @@ import kf.D
 import kf.ForthVM
 import kf.dict.IWordModule
 import kf.dict.Word
+import kf.mem.appendLit
 import kf.strFromAddrLen
 import kf.strFromCSAddr
 

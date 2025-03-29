@@ -21,6 +21,8 @@ class RecordingForthConsole() : IForthConsole {
     override fun setXY(x: Int, y: Int) {}
     override fun clearScreen() = println("\n".repeat(40))
     override fun termInfo() = println("test width=80")
+    override fun showHistory() {}
+    override fun runFromHistory(prev: Int) = null
 
     // standard print
 

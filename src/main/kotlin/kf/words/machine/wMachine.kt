@@ -3,6 +3,7 @@ package kf.words.machine
 import kf.*
 import kf.dict.IWordModule
 import kf.dict.Word
+import kf.mem.appendLit
 
 
 object wMachine : IWordModule {

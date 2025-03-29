@@ -3,6 +3,7 @@ package words.core
 import ForthTestCase
 import dummyFn
 import kf.dict.Word
+import kf.mem.appendStrToData
 import kf.words.core.wWords
 import kf.words.machine.wMachine
 import org.junit.jupiter.api.Assertions.assertEquals

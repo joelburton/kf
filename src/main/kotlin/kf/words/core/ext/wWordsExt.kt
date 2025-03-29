@@ -3,6 +3,8 @@ package kf.words.core.ext
 import kf.ForthVM
 import kf.dict.IWordModule
 import kf.dict.Word
+import kf.mem.appendLit
+import kf.mem.appendWord
 import kf.strFromAddrLen
 import kf.words.core.wFunctions
 
