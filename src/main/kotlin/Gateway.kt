@@ -8,9 +8,10 @@ import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import io.ktor.server.websocket.*
 import io.ktor.websocket.*
+import kf.consoles.RecordingForthConsole
 
 abstract class ForthGateway(val vm: ForthVM) {
-    val io = TestTerminalOutputSource()
+    val io = RecordingForthConsole()
     abstract val server: EmbeddedServer<CIOApplicationEngine,
             CIOApplicationEngine.Configuration>
 

@@ -180,25 +180,28 @@ object wToolsCustom : IWordModule {
     fun w_dotHistory(vm: ForthVM) {
         vm.readerForHistory?.let {
             // fixme: off-by-one
-            it.history.forEach { vm.io.println(it.toString()) }
+            it.history.forEach {
+                val n = (it.index() + 1).toString().padStart(3)
+                vm.io.println("$n: ${it.line()}")
+            }
         }
     }
 
     fun w_dotLess(vm: ForthVM) {
         val fname = vm.source.scanner.parseName().strFromAddrLen(vm)
         val path = java.nio.file.Path.of(fname)
-        val term = vm.io.terminal as Terminal
+//        val term = vm.io.term as Terminal
 
         // fixme: not working
-        term.enterRawMode()
-        less(
-            term,
-            term.input(),
-            System.out,
-            System.err,
-            path,
-            emptyArray<Any>()
-        )
+//        term.enterRawMode()
+//        less(
+//            term,
+//            term.input(),
+//            System.out,
+//            System.err,
+//            path,
+//            emptyArray<Any>()
+//        )
     }
 
     fun w_dotShell(vm: ForthVM) {
@@ -241,6 +244,6 @@ object wToolsCustom : IWordModule {
     }
 
     fun w_dotTermInfo(vm: ForthVM) {
-        vm.io.println("${vm.io.terminal?.type} width=${vm.io.termWidth} ")
+        vm.io.termInfo()
     }
 }

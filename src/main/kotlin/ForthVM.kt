@@ -2,6 +2,8 @@ package kf
 
 
 import RegisterDelegate
+import kf.comsole.ForthConsole
+import kf.consoles.IForthConsole
 import kf.interps.IInterp
 import kf.words.core.ext.mCoreExt
 import kf.words.core.mCore
@@ -11,7 +13,6 @@ import kf.words.facility.mFacility
 import kf.words.fileaccess.mFileAccess
 import kf.words.tools.mTools
 import org.jline.reader.LineReader
-import org.jline.terminal.TerminalBuilder
 import kotlin.time.TimeSource
 
 
@@ -27,12 +28,11 @@ import kotlin.time.TimeSource
  */
 
 class ForthVM(
-//    val terminal = TerminalBuilder.builder().dumb(true).build(),
-    var io: IOutputSource = TerminalOutputSource(),
+    io: IForthConsole? = null,
     val memConfig: IMemConfig = SmallMemConfig(),
     val mem: IntArray = IntArray(memConfig.upperBound + 1),
 ) {
-
+    var io: IForthConsole = io ?: ForthConsole(this)
 
     /** Which interpreter is active?
      *
@@ -53,7 +53,7 @@ class ForthVM(
      * -  4  very low-level debugging
      * -  3  show internal msgs
      * -  2  show all words
-     * -  1  welcome messages, user warnings, etc (default)
+     * -  1  welcome messages, user warnings, etc. (default)
      * -  0  no banner or unimportant warnings
      * - -1  quiet: no warnings
      * - -2  very no prompt, no output except direct (like .)
@@ -64,7 +64,7 @@ class ForthVM(
     var verbosity by RegisterDelegate(REG_VERBOSITY, this.mem)
 
     /** Current end of the CODE section. */
-    var cend  by RegisterDelegate(REG_CEND, this.mem)
+    var cend by RegisterDelegate(REG_CEND, this.mem)
 
     /** Current end of the DATA section. */
     var dend by RegisterDelegate(REG_DEND, this.mem)
@@ -126,7 +126,7 @@ class ForthVM(
 
     /** Time mark for when VM started (the `millis` word reports # of millis
      * since server start, since it's not possible to return millis before the
-     * 1970 epoch on a 32-bit machine.
+     * 1970 epoch on a 32-bit machine.)
      */
     val timeMarkCreated = TimeSource.Monotonic.markNow()
 
@@ -142,7 +142,6 @@ class ForthVM(
 
         val curVerbosity = verbosity  // restore to current after reboot
 
-        readerForHistory?.history?.save()
         sources.clear()
         mem.fill(0)  // keep this above register setting, since it clears them
         cellMeta.fill(CellMeta.Unknown)
@@ -164,7 +163,6 @@ class ForthVM(
 
         interp.reboot()
         val inputSource = StdInInputSource(this)
-        readerForHistory = inputSource.reader
         sources.add(inputSource)
         quit()
     }
@@ -212,7 +210,7 @@ class ForthVM(
     fun addCoreWords() {
         if (D) dbg(3, "vm.addCoreWords")
 
-        // Keep this up-to-date with "what are the modules we want as default?
+        // Keep this up-to-date with "what are the modules we want as default?"
         for (metaMod in arrayOf(
             mCore,
             mCoreExt,
@@ -250,7 +248,7 @@ class ForthVM(
     /**  Append word to the code section.
      *
      * This is just a convenience function for "appendCode", as this can be
-     * passed the word name and it will find the wn and add the meta info.
+     * passed the word name, and it will find the wn and add the meta info.
      */
     fun appendWord(s: String) {
         if (D) dbg(4, "vm.appendWord: $s")

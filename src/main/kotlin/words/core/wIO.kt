@@ -71,29 +71,7 @@ object wIO : IWordModule {
     /** KEY ( -- char ) Receive one character (not displayed) */
 
     fun w_key(vm: ForthVM) {
-        // todo: much of this should probably move down into the IO layer
-
-//        val ti = vm.io.terminalInterface
-//        if (ti is TerminalTestInterface)
-//            throw ForthIOError("Cannot use `key` from test input")
-//
-//        val rawMode = vm.io.enterRawModeOrNull()
-//        if (rawMode == null) {
-//            var s = vm.io.prompt(yellow("Enter 1 character"))
-//            while (s == null || s.length != 1) {
-//                s = vm.io.prompt(yellow("Try again, enter 1 character"))
-//            }
-//            vm.dstk.push(s[0].code)
-//        } else {
-//            rawMode.use {
-//                var k: Char = rawMode.run {
-//                    var keyEv: KeyboardEvent? = null
-//                    while (keyEv == null) keyEv = rawMode.readKeyOrNull()
-//                    keyEv.key[0].toChar()
-//                }
-//                vm.dstk.push(k.code)
-//            }
-//        }
+        vm.dstk.push(vm.io.readKey())
     }
 
     /** BL  b-l   CORE

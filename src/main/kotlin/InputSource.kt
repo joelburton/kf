@@ -40,14 +40,6 @@
 
 package kf
 
-import org.jline.reader.EndOfFileException
-import org.jline.reader.impl.LineReaderImpl
-import org.jline.terminal.Terminal
-import org.jline.utils.AttributedString
-import org.jline.utils.AttributedStringBuilder
-import org.jline.utils.AttributedStyle.*
-import org.jline.utils.Status
-import org.jline.widget.AutosuggestionWidgets
 import java.nio.file.Files
 import kotlin.io.path.Path
 
@@ -113,15 +105,26 @@ abstract class InputSource(val vm: ForthVM, val id: Int, val path: String) {
     }
 }
 
-/** Input source for files (either read-at-start or INCLUDE-d.
- *
- * Since it's legal for Forth users to change where they are in an input
- * source (using SAVE-SOURCE, changing info, and RESTORE-SOURCE, plus to help
- * with compatability of this outside of stuff like JVM, I'm choosing to read
- * the entire file at a gulp and "moving around in the file" is just
- * adjusting a pointer of where are directly, rather than fiddling around
- * with system-specific syscalls like tell, etc.
- * */
+/** Interactive stdin source. */
+
+class StdInInputSource(vm: ForthVM) : InputSource(vm, 0, "<stdin>") {
+
+    /** Get a line from a real console or something piped in via the shell.
+     *
+     * Returns NULL at end of pipe or when console user uses Control-D
+     * (or Control-Z for any Forth-loving Windows users)
+     * */
+
+    override fun readLineOrNull(): String? {
+        lineCount += 1
+        val result = vm.io.readLine()
+        // Space between input and any output
+        vm.io.print(" ")
+        return result
+    }
+}
+
+/** Abstract layer for read-from-string input sources. */
 
 open class StringInputSource(
     vm: ForthVM, id: Int, path: String
@@ -142,79 +145,23 @@ open class StringInputSource(
     }
 }
 
-open class FileInputSource(
+/** Input source for files (either read-at-start or INCLUDE-d.
+ *
+ * Since it's legal for Forth users to change where they are in an input
+ * source (using SAVE-SOURCE, changing info, and RESTORE-SOURCE, plus to help
+ * with compatability of this outside of stuff like JVM, I'm choosing to read
+ * the entire file at a gulp and "moving around in the file" is just
+ * adjusting a pointer of where are directly, rather than fiddling around
+ * with system-specific syscalls like tell, etc.
+ * */
+
+class FileInputSource(
     vm: ForthVM, id: Int, path: String
 ) : StringInputSource(vm, id, path) {
     // slurp, slurp, slurp, that's tasty unicode
     override val content= Files.readString(Path(path)).toString()
 }
 
-
-
-/** Interactive stdin source. */
-
-class StdInInputSource(vm: ForthVM) : InputSource(vm, 0, "<stdin>") {
-
-    /** LineReader that doesn't print newline after accepting. */
-    class MyLineReader(vm: ForthVM, terminal: Terminal?) :
-        LineReaderImpl(terminal, "kf") {
-        init {
-            completer = ForthCompleter(vm.dict)
-            highlighter = ForthHighlighter(vm)
-            AutosuggestionWidgets(this).enable()
-            setVariable(HISTORY_FILE, "/Users/joel/.kf_history") // fixme
-        }
-        override fun cleanup() = doCleanup(false)
-    }
-
-    var status: Status? = Status.getStatus(vm.io.terminal, true)
-        ?.apply {  setBorder(true) }
-
-    val reader = MyLineReader(vm, vm.io.terminal)
-
-    /** Get a line from a real console or something piped in via the shell.
-     *
-     * Returns NULL at end of pipe or when console user uses Control-D
-     * (or Control-Z for any Forth-loving Windows users)
-     * */
-
-    override fun readLineOrNull(): String? {
-        updateStatusBar()
-
-        lineCount += 1
-        val result = try {
-            reader.readLine()
-        } catch (_: EndOfFileException) {
-            null
-        }
-        // Space between input and any output
-        vm.io.print(" ")
-        return result
-    }
-
-    private fun updateStatusBar() {
-        val stk = vm.dstk.simpleDumpStr()
-        val mode = if (vm.interp.isCompiling) " Compiling " else ""
-        val base = when (vm.base) {
-            2 -> "Bin "
-            8 -> "Oct "
-            10 -> "Dec "
-            16 -> "Hex "
-            else -> "Base(${vm.base}) "
-        }
-        val toPad = vm.io.termWidth - (stk.length + base.length + mode.length)
-        val padding = " ".repeat(if (toPad > 0) toPad else 0)
-
-        val info = AttributedStringBuilder()
-            .append(AttributedString(stk, DEFAULT.bold()))
-            .append(padding)
-            .append(AttributedString(base, DEFAULT.foreground(YELLOW)))
-            .append(AttributedString(mode, DEFAULT.foreground(MAGENTA)))
-            .toAttributedString()
-
-        status?.update(mutableListOf(info))
-    }
-}
 
 /** A simple input source for EVALUATE: it's given a string that's its input. */
 

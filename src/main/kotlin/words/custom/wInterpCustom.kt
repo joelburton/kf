@@ -98,6 +98,6 @@ object wInterpCustom : IWordModule {
 
 
     fun w_interpOk(vm: ForthVM) {
-        vm.io.success("  ok${if (vm.dstk.size > 0) "-" + vm.dstk.size else ""}")
+        vm.io.ok("  ok${if (vm.dstk.size > 0) "-" + vm.dstk.size else ""}")
     }
 }

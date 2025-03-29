@@ -1,18 +1,10 @@
-import kf.EvalInputSource
 import kf.FakeStdInInputSource
 import kf.ForthError
 import kf.IntEOF
 import kf.ForthVM
-import kf.InputSource
-import kf.StdInInputSource
-import kf.TestTerminalOutputSource
-import kf.interps.InterpBase
+import kf.RecordingForthConsole
 import kf.interps.InterpFast
 import kf.words.custom.wToolsCustom._see
-import kf.recorder
-import kf.words.machine.wMachine
-import org.junit.jupiter.api.BeforeAll
-import org.junit.jupiter.api.TestInstance
 import org.junit.jupiter.api.BeforeEach
 import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
@@ -24,7 +16,7 @@ fun dummyFn(vm: ForthVM) {
 /** Test cases that need a VM, but doesn't need to eval or load modules. */
 
 open class ForthTestCase() {
-    val testIO = TestTerminalOutputSource()
+    val testIO = RecordingForthConsole()
     val vm = ForthVM(io = testIO)
 
     init {

@@ -16,7 +16,7 @@ import org.apache.commons.text.WordUtils
  *
  * Apologies for the absurdly short name; it's in a TON of lines.
  */
-const val D = true
+const val D = false
 
 const val VERSION_STRING = "KPupForth 0.1.0"
 

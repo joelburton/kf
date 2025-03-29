@@ -158,11 +158,7 @@ class ForthCLI : CliktCommand("PupForth") {
 
         // Start the puppy! It will run until the program quits --- and then it
         // will be very, very sad and will miss you.
-        try {
-            vm.runVM()
-        } finally {
-            vm.readerForHistory?.history?.save()
-        }
+        vm.runVM()
     }
 
     /** Entry point for the CLI. */
