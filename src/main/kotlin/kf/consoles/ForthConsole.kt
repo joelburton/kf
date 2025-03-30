@@ -19,10 +19,9 @@ import org.jline.widget.AutosuggestionWidgets
  * - testing / gateways
  * - file input
  */
-class ForthConsole(
-    val vm: ForthVM,
-    terminal: Terminal?
-) : IForthConsole {
+class ForthConsole(val term: Terminal) : IForthConsole {
+    lateinit var vm: ForthVM
+    lateinit var reader: ForthLineReader
 
     /** LineReader that doesn't print newline after accepting. */
     class ForthLineReader(vm: ForthVM, terminal: Terminal?) :
@@ -41,23 +40,19 @@ class ForthConsole(
         override fun cleanup() = doCleanup(false)
     }
 
-    val term = terminal ?: throw Exception("No terminal provided")
-
-    init {
+    override fun setUp(vm: ForthVM) {
+        this.vm = vm
+        reader = ForthLineReader(vm, term)
         term.enterRawMode()
-    }
-
-    override val termWidth get() = (if (term.width == 0) 80 else term.width) - 1
-    private val reader: ForthLineReader by lazy { ForthLineReader(vm, term) }
-    private var status: Status? =
-        Status.getStatus(term, true)?.apply { setBorder(true) }
-
-    init {
         ShutdownHooks.add(ShutdownHooks.Task {
             reader.history.save()
             term.close()
         })
     }
+
+    override val termWidth get() = (if (term.width == 0) 80 else term.width) - 1
+    private var status: Status? =
+        Status.getStatus(term, true)?.apply { setBorder(true) }
 
     private fun mks(s: String, style: AttributedStyle) =
         AttributedString(s, style).toAnsi(term)
@@ -86,7 +81,7 @@ class ForthConsole(
     override fun showHistory() {
         reader.history.forEach {
             val n = (it.index() + 1).toString().padStart(3)
-            vm.io.println("$n: ${it.line()}")
+            println("$n: ${it.line()}")
         }
     }
 

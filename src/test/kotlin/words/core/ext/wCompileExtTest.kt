@@ -13,7 +13,6 @@ class wCompileExtTest : ForthTestCase() {
     val mod = wCompileExt
 
     init {
-        vm.interp = InterpForth(vm)
         vm.dict.addModule(mod)
     }
 

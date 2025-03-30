@@ -21,16 +21,22 @@ import kf.words.mBaseInterp
  * It is a subclass of the other interpreters.
  */
 
-open class InterpBase(val vm: ForthVM) : IInterp {
+open class InterpBase() : IInterp {
+    override lateinit var vm: ForthVM
     override val name: String = "Base"
     override val module: IWordMetaModule = mBaseInterp
     companion object {
         const val STATE_INTERPRETING: Int = 0
         const val STATE_COMPILING: Int = -1
     }
+    override fun setUp(vm: ForthVM) {
+        this.vm = vm
+    }
 
     /** A register for interpreter use: state of interpreting/compiling. */
-    override var state by RegisterDelegate(REG_STATE, vm.mem)
+    override var state: Int get() = vm.mem[REG_STATE]
+        set(value) { vm.mem[REG_STATE] = value }
+//    override var state by RegisterDelegate(REG_STATE, vm.mem)
 
     override val isInterpreting get() = vm.mem[REG_STATE] == STATE_INTERPRETING
     override val isCompiling get() = vm.mem[REG_STATE] == STATE_COMPILING

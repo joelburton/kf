@@ -52,7 +52,7 @@ import kf.words.mEvalInterp
  *
  * */
 
-open class InterpEval(vm: ForthVM) : InterpBase(vm) {
+open class InterpEval() : InterpBase() {
     override val name = "Eval"
     override val module: IWordMetaModule = mEvalInterp
 
@@ -221,7 +221,7 @@ open class InterpEval(vm: ForthVM) : InterpBase(vm) {
         code.split("\n")
             .forEach { bootstrapEval(it) }
             .also {
-                if (D && vm.verbosity > 2) {
+                if (D) {
                     vm.io.info("\nInterpreter is:")
                     wToolsCustom.w_dotCode(vm)
                     vm.io.println()

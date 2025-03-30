@@ -23,7 +23,7 @@ import kf.words.mForthInterp
  *
  */
 
-class InterpForth(vm: ForthVM) : InterpEval(vm) {
+class InterpForth() : InterpEval() {
     override val name = "Forth"
     override val module: IWordMetaModule = mForthInterp
     // fun fact: at the time I wrote this, it was the longest Forth program

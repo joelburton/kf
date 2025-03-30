@@ -2,6 +2,7 @@ import kf.ForthError
 import kf.IntEOF
 import kf.ForthVM
 import kf.consoles.RecordingForthConsole
+import kf.interps.InterpBase
 import kf.interps.InterpFast
 import kf.sources.SourceFakeInteractive
 import kf.words.custom.wToolsCustom._see
@@ -17,10 +18,12 @@ fun dummyFn(vm: ForthVM) {
 
 open class ForthTestCase() {
     val testIO = RecordingForthConsole()
-    val vm = ForthVM(io = testIO)
+    val vm = ForthVM(
+        io = testIO,
+        interp = InterpFast(),
+    )
 
     init {
-        vm.interp = InterpFast(vm)
         vm.verbosity = -2
         vm.sources.add(SourceFakeInteractive(vm, ""))
     }

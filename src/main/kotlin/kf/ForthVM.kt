@@ -1,7 +1,6 @@
 package kf
 
 
-import kf.consoles.ForthConsole
 import kf.consoles.IForthConsole
 import kf.dict.Dict
 import kf.dict.IWordModule
@@ -21,8 +20,6 @@ import kf.words.doublenums.mDoubleNums
 import kf.words.facility.mFacility
 import kf.words.fileaccess.mFileAccess
 import kf.words.tools.mTools
-import org.jline.terminal.Terminal
-import kotlin.reflect.KClass
 import kotlin.time.TimeSource
 
 
@@ -38,12 +35,12 @@ import kotlin.time.TimeSource
  */
 
 class ForthVM(
-    io: IForthConsole? = null,
+    val io: IForthConsole,
+    val interp: IInterp,
     val memConfig: MemConfig = smallMemConfig,
     val mem: IntArray = IntArray(memConfig.upperBound + 1),
-    terminal: Terminal? = null,
+    initVerbosity: Int = 1,
 ) {
-    var io: IForthConsole = io ?: ForthConsole(this, terminal)
 
     /** Which interpreter is active?
      *
@@ -52,7 +49,6 @@ class ForthVM(
      * on here after making it.
      */
 
-    lateinit var interp: IInterp
 
     // *************************************************************** registers
 
@@ -140,6 +136,12 @@ class ForthVM(
      * 1970 epoch on a 32-bit machine.)
      */
     val timeMarkCreated = TimeSource.Monotonic.markNow()
+
+    init {
+        verbosity = initVerbosity
+        io.setUp(this)
+        interp.setUp(this)
+    }
 
 
     // *************************************************************************

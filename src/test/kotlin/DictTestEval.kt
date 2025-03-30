@@ -1,9 +1,11 @@
 import kf.*
+import kf.consoles.RecordingForthConsole
 import kf.dict.Dict
 import kf.dict.DictFullError
 import kf.dict.IWordModule
 import kf.dict.Word
 import kf.dict.WordNotFoundError
+import kf.interps.InterpBase
 import org.junit.jupiter.api.Test
 
 import org.junit.jupiter.api.Assertions.*
@@ -22,7 +24,8 @@ object FakeMod: IWordModule {
 
 
 class DictTestEval  : ForthTestCase() {
-    val dict: Dict = Dict(ForthVM(), capacity = 3)
+    val dict: Dict = Dict(
+        ForthVM(RecordingForthConsole(), InterpBase()), capacity = 3)
 
     @Test
     fun reset() {

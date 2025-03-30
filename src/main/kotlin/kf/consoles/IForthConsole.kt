@@ -1,5 +1,6 @@
 package kf.consoles
 
+import kf.ForthVM
 import org.jline.utils.AttributedStyle
 
 /** This is a global singleton; it holds the output of any recorder terminal,
@@ -10,14 +11,15 @@ interface IForthConsole {
     val termWidth: Int
 
     // API
+    fun setUp(vm: ForthVM)
     fun keyAvail(): Int
     fun readKey(): Int
     fun readLine(): String?
     fun setXY(x: Int, y: Int)
     fun clearScreen()
     fun termInfo()
-    fun showHistory()
-    fun runFromHistory(prev: Int): String?
+    fun showHistory() // todo: move out of console
+    fun runFromHistory(prev: Int): String? // ^
 
     // Standard print
     fun print(s: String)

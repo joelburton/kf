@@ -14,7 +14,7 @@ class RecordingForthConsole() : IForthConsole {
     }
 
     // API
-
+    override fun setUp(vm: kf.ForthVM) {}
     override fun keyAvail() = 0
     override fun readKey() = -1
     override fun readLine() = throw RuntimeException("Can't read w/o term")

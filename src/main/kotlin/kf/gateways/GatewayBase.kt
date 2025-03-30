@@ -11,12 +11,11 @@ import com.github.ajalt.mordant.rendering.TextStyles.*
 
 abstract class GatewayBase(val vm: ForthVM) {
     val thisTerm = Terminal()
-    val io = RecordingForthConsole()
+    val io = vm.io as RecordingForthConsole
     abstract val server: EmbeddedServer<CIOApplicationEngine,
             CIOApplicationEngine.Configuration>
 
     fun start() {
-        vm.io = io
         println(green(bold("\nStarting gateway... control-c to quit")))
         server.start(wait = true)
     }

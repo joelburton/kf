@@ -10,6 +10,8 @@ import kf.mem.MemConfig
 import kf.IntBye
 import kf.IntEOF
 import kf.VERSION_STRING
+import kf.consoles.ForthConsole
+import kf.consoles.RecordingForthConsole
 import kf.gateways.GatewayHttp
 import kf.gateways.GatewayWebsocket
 import kf.interps.InterpBase
@@ -120,19 +122,28 @@ class ForthCLI : CliktCommand("PupForth") {
             return
         }
 
-        // Build the ForthVM that everything from this point down uses.
-        val vm = ForthVM(memConfig = size, terminal = terminal.build())
+        val io =
+            if (gateway != null) {
+                RecordingForthConsole()
+            } else {
+                ForthConsole(terminal.build())
+            }
 
-        // Attach the right interpreter to it.
-        vm.interp = when (interp) {
-            "base" -> InterpBase(vm)
-            "eval" -> InterpEval(vm)
-            "fast" -> InterpFast(vm)
-            "forth" -> InterpForth(vm)
+        val interp = when (interp) {
+            "base" -> InterpBase()
+            "eval" -> InterpEval()
+            "fast" -> InterpFast()
+            "forth" -> InterpForth()
             else -> throw RuntimeException("Unknown interpreter: ${interp}")
         }
 
-        vm.verbosity = verbosity
+        // Build the ForthVM that everything from this point down uses.
+        val vm = ForthVM(
+            interp = interp,
+            memConfig = size,
+            io = io,
+            initVerbosity = verbosity,
+        )
         vm.reboot(!raw)
 
         // Before the interactive mode starts, all files listed will be

@@ -22,7 +22,7 @@ import kf.words.mFastInterp
  * and doesn't use newfangled words and sticks with the classics.
  */
 
-class InterpFast(vm: ForthVM) : InterpEval(vm) {
+class InterpFast() : InterpEval() {
     override val name = "Fast"
     override val module = mFastInterp
     override val code = """
@@ -42,5 +42,4 @@ class InterpFast(vm: ForthVM) : InterpEval(vm) {
         vm.dict.add(Word("INTERP-PROCESS-TOKEN", ::w_processToken))
         super.reboot()
     }
-
 }
