@@ -2,6 +2,7 @@ import kf.*
 import kf.stacks.FStack
 import kf.stacks.StackPtrInvalidError
 import kf.stacks.StackUnderflowError
+import kf.stacks.StackOverflowError
 import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith

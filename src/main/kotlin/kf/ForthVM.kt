@@ -29,9 +29,12 @@ import kotlin.time.TimeSource
  *  This executes in Forth-memory code and
  *  manages Forth memory, registers, and stacks.
  *
- *  @property io Terminal used by VM. Defaults to std-out, detect-colors, etc.
- *  @property memConfig Memory layout of this VM.
+ *  @property io [kf.consoles.ForthConsole] for this VM
+ *  @property interp [kf.interps.InterpBase] for this VM
+ *  @property memConfig [MemConfig] for this VM
  *  @property mem RAM for the VM
+ *  @param initVerbosity Initial verbosity setting
+ *  @param initSourceMaker Lambda VM will call after reboot to set input source
  */
 
 class ForthVM(
@@ -40,6 +43,7 @@ class ForthVM(
     val memConfig: MemConfig = smallMemConfig,
     val mem: IntArray = IntArray(memConfig.upperBound + 1),
     initVerbosity: Int = 1,
+    val initSourceMaker: (ForthVM) -> SourceBase = { SourceStdIn(it) },
 ) {
 
     /** Which interpreter is active?
@@ -154,7 +158,6 @@ class ForthVM(
 
         val curVerbosity = verbosity  // restore to current after reboot
 
-        sources.clear()
         mem.fill(0)  // keep this above register setting, since it clears them
         cellMeta.fill(CellMeta.Unknown)
 
@@ -173,9 +176,9 @@ class ForthVM(
         dict.addMetaModule(interp.module)
         if (includePrimitives) addCoreWords()
 
+        sources.clear()
+        sources.add(initSourceMaker(this))
         interp.reboot()
-        val inputSource = SourceStdIn(this)
-        sources.add(inputSource)
         quit()
     }
 
@@ -248,7 +251,7 @@ class ForthVM(
     /**  Run the VM.
      *
      * The VM needs to be rebooted prior to this. This runs the VM until it is
-     * forced to stop with an exception.
+     * forced to stop with an uncaught exception.
      *
      * Note that this isn't the "interpreter"; that's a *program the VM can
      * run* (and, unless you want a really bare-bones experience, you will want
@@ -259,11 +262,7 @@ class ForthVM(
 
         while (true) {
             try {
-                // get the opcode to run, and find it in the dictionary
-                val wn = mem[ip++]
-                val w = dict[wn]
-                // run it
-                w(this)
+                innerRunVM()
             } catch (e: ArrayIndexOutOfBoundsException) {
                 io.danger("$source MEMFAULT Mem Out of bound: $ip")
                 if (verbosity >= 3) io.muted(e.stackTraceToString())
@@ -284,10 +283,28 @@ class ForthVM(
         }
     }
 
+    /** Run the VM until an error happens.
+     *
+     * This is separated out so things like tests can use it.
+     *
+     * That's useful so that errors aren't caught here.
+     */
+
+    fun innerRunVM(): Nothing {
+        while (true) {
+            // get the opcode to run, and find it in the dictionary
+            val wn = mem[ip++]
+            val w = dict[wn]
+            // run it
+            w(this)
+        }
+    }
+
 
     /** Programmers get lonely and we love to get logs. */
+    @Suppress("KotlinConstantConditions")
     fun dbg(lvl: Int, s: String) {
-        if (verbosity < lvl) return
+        if (!D) throw Exception("FIX THIS: DBG called when D is false")
         when (lvl) {
             0, 1, 2 -> io.debug(s)
             else -> io.debugSubtle(s)

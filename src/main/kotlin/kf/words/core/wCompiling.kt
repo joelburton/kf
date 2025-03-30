@@ -75,8 +75,8 @@ object wCompiling : IWordModule {
     fun w_immediate(vm: ForthVM) {
         vm.dict.last.imm = true
         if (vm.dict.currentlyDefining == null) {
-            vm.dbg(
-                0, """Marked '${vm.dict.last}' as immediate-mode
+            vm.io.muted(
+                """Marked '${vm.dict.last}' as immediate-mode
 (Put "immediate" inside definition to avoid warning)"""
             )
         }

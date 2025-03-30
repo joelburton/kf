@@ -96,12 +96,8 @@ class IntQuitNonInteractive(m:String="\\\\\\") : ForthInterrupt(m)
  * This is helpful with debugging a Forth program, since a debugger
  * can catch this.
  */
-class IntBrk(m: String="BRK") : ForthInterrupt(m) {
-    init {
-        // Always print stack trace, even w/low verbosity or handled elsewhere.
-        this.printStackTrace()
-    }
-}
+class IntBrk(m: String="BRK") : ForthInterrupt(m)
+
 
 /** Quit the program.
  *

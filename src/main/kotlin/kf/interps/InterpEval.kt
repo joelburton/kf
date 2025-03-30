@@ -167,22 +167,13 @@ open class InterpEval() : InterpBase() {
         // needed for bootstrapping, so it will get junked when the system
         // uses that space for other scratch stuff.
 
-        vm.sources.add(SourceEval(vm, ""))
         vm.ip = vm.memConfig.scratchStart
         vm.source.scanner.fill(line)
         try {
-            while (true) {
-                val wn = vm.mem[vm.ip++]
-                val w = vm.dict[wn]
-                w(vm)
-            }
-        } catch (e: ForthInterrupt) {
-            when (e) {
-                is IntEOF -> return
-                else -> throw e
-            }
+            vm.innerRunVM()
+        } catch (_: IntBrk) {
+            return
         }
-        vm.ip = vm.cstart
     }
 
     /** Set up bootstrap evaluator. */
@@ -202,7 +193,7 @@ open class InterpEval() : InterpBase() {
         vm.appendWord("BOOTSTRAP-PROCESS-TOKEN")
         vm.appendJump("BRANCH", -6) // back to start: another token
         vm.appendWord("2DROP")
-        vm.appendWord("EOF")
+        vm.appendWord("BRK")
 
         vm.cend = vm.cstart
     }
@@ -221,7 +212,7 @@ open class InterpEval() : InterpBase() {
         code.split("\n")
             .forEach { bootstrapEval(it) }
             .also {
-                if (D) {
+                if (D || vm.verbosity >= 3) {
                     vm.io.info("\nInterpreter is:")
                     wToolsCustom.w_dotCode(vm)
                     vm.io.println()

@@ -149,10 +149,7 @@ class Word(
 
     operator fun invoke(vm: ForthVM) {
         vm.currentWord = this
-        if (D) {
-            var s = getFnName()
-            vm.dbg(2, "x@ ${(vm.ip - 1).addr} -> $name $s")
-        }
+        if (D) vm.dbg(2, "x@ ${(vm.ip - 1).addr} -> $name ${getFnName()}")
         fn(vm)
         if (D) vm.dbg(3, "x@ ${vm.ip.addr} <- $name")
     }
@@ -182,7 +179,7 @@ class Word(
         )
     }
 
-    // fixme: is this really not used?
+    // not currently using, but keeping it around in case its useful
 
     fun isSameExec(other: Word): Boolean =
         this.fn == other.fn

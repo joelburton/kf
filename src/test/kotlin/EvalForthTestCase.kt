@@ -2,9 +2,9 @@ import kf.ForthError
 import kf.IntEOF
 import kf.ForthVM
 import kf.consoles.RecordingForthConsole
-import kf.interps.InterpBase
 import kf.interps.InterpFast
 import kf.sources.SourceFakeInteractive
+import kf.sources.SourceTestNoInput
 import kf.words.custom.wToolsCustom._see
 import org.junit.jupiter.api.BeforeEach
 import kotlin.test.assertContentEquals
@@ -21,11 +21,14 @@ open class ForthTestCase() {
     val vm = ForthVM(
         io = testIO,
         interp = InterpFast(),
+        initVerbosity = -2,
     )
 
     init {
-        vm.verbosity = -2
-        vm.sources.add(SourceFakeInteractive(vm, ""))
+        // Need to do this here, since the machine is never booted, so it
+        // won't have any source (and many tests need a scanner, which comes
+        // from the source).
+        vm.sources.add(SourceTestNoInput(vm))
     }
 
     @BeforeEach
@@ -50,7 +53,6 @@ open class ForthTestCase() {
     fun assertRStackKeep(vararg items: Int) {
         assertContentEquals(items, vm.rstk.asArray())
     }
-
 
     fun assertPrinted(s: String) {
         assertEquals(s, getOutput())
@@ -83,7 +85,7 @@ open class ForthTestCase() {
 open class EvalForthTestCase : ForthTestCase() {
 
     @BeforeEach
-    fun beforeEachEval() {
+    fun beforeEachEvalTestFn() {
         vm.reboot(includePrimitives = true)
     }
 
@@ -93,18 +95,11 @@ open class EvalForthTestCase : ForthTestCase() {
             vm.sources.add(SourceFakeInteractive(vm, s))
             ip = cstart
             try {
-                while (true) {
-                    val wn = mem[ip++]
-                    val w = dict[wn]
-                    w(this)
-                }
+                vm.innerRunVM()
             } catch (_: IntEOF) {
                 return testIO.output
             } catch (e: ForthError) {
-                source.scanner.nextLine()
-                rstk.reset()
-                ip = cstart
-                interp.reset()
+                vm.abort()
                 throw e
             }
         }

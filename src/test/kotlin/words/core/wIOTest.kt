@@ -4,6 +4,7 @@ import ForthTestCase
 import kf.ForthBufferError
 import kf.ForthIOError
 import kf.ForthVM
+import kf.sources.SourceFakeInteractive
 import kf.words.core.wIO
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
@@ -61,7 +62,8 @@ class wIOTest : ForthTestCase() {
 
     @Test
     fun w_key() {
-        assertFailsWith<ForthIOError> { mod.w_key(vm) }
+        mod.w_key(vm)
+        assertDStack(-1)
     }
 
 
@@ -75,7 +77,9 @@ class wIOTest : ForthTestCase() {
     fun w_accept() {
         vm.dstk.push(vm.memConfig.padStart)
         vm.dstk.push(5)
-        setInput("ABC")
+        vm.sources.clear()
+        vm.sources.add(SourceFakeInteractive(vm, "ABC"))
+        vm.source.scanner.nextLine()
         mod.w_accept(vm)
         assertDStack(3)
         assertEquals(65, vm.mem[vm.memConfig.padStart] + 0)
