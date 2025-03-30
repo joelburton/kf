@@ -3,12 +3,7 @@ package kf.interps
 import kf.*
 import kf.dict.IWordMetaModule
 import kf.dict.Word
-import kf.mem.CellMeta
-import kf.mem.appendCode
-import kf.mem.appendJump
-import kf.mem.appendLit
-import kf.mem.appendWord
-import kf.sources.SourceEval
+import kf.mem.*
 import kf.words.core.ext.wInterpExt.w_parseName
 import kf.words.custom.wToolsCustom
 import kf.words.mEvalInterp
@@ -185,7 +180,7 @@ open class InterpEval() : InterpBase() {
         // This is the smallest thing that could be called an interpreter:
         // it doesn't REFILL to get another line (so it can only be an
         // interpreter for one line of code and if that's already placed in
-        // the scanner buffer.
+        // the scanner buffer).
 
         vm.appendWord("PARSE-NAME")
         vm.appendWord("DUP")

@@ -4,7 +4,7 @@ import kf.ForthVM
 
 /** Abstract layer for read-from-string input sources. */
 
-open class SourceString(
+open class SourceBaseString(
     vm: ForthVM, id: Int, path: String
 ) : SourceBase(vm, id, path) {
     // slurp, slurp, slurp, that's tasty unicode

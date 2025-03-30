@@ -74,19 +74,19 @@ object wInterpCustom : IWordModule {
      * with interpreter state and need to return to immediate mode. */
 
 
-    /** ']' ( -- : enter compile mode )
+    /** ``']'`` ( -- : enter compile mode )
      *
      * This is generally used when you were in compile mode, in the middle of
      * a word definition creation, and needed to do something immediate, and
      * now want to return to compiling mode. A simple example would be:
      *
-     * : test 10 [65 emit] 20 ;
+     * ```: test 10 [65 emit] 20 ;```
      *
      * This creates a function that, when run, will put 10 and 20 on the stack,
      * but when *first compiled*, will print 'A'. */
 
 
-    /**  'interp-reload-code` ( -- : reloads orig interp code at cend )
+    /** `interp-reload-code` ( -- : reloads orig interp code at cend )
      *
      * This loads the original interpreter loop code to the code section.
      * This is useful to hack on the interpreter without having to change the

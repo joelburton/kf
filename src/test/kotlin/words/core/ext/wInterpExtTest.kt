@@ -1,7 +1,7 @@
 package words.core.ext
 
 import ForthTestCase
-import kf.sources.SourceFakeInteractive
+import kf.sources.SourceTestEvalInput
 import kf.words.core.ext.wInterpExt
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
@@ -19,7 +19,7 @@ class wInterpExtTest : ForthTestCase() {
     @Test
     fun w_refill() {
         vm.sources.clear()
-        vm.sources.add(SourceFakeInteractive(vm, "abc 123"))
+        vm.sources.add(SourceTestEvalInput(vm, "abc 123"))
         vm.source.scanner.nextLine()
         mod.w_refill(vm)
         assertEquals("abc 123", vm.source.scanner.toString())

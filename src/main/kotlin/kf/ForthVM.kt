@@ -1,7 +1,7 @@
 package kf
 
 
-import kf.consoles.IForthConsole
+import kf.consoles.IConsole
 import kf.dict.Dict
 import kf.dict.IWordModule
 import kf.dict.Word
@@ -29,7 +29,7 @@ import kotlin.time.TimeSource
  *  This executes in Forth-memory code and
  *  manages Forth memory, registers, and stacks.
  *
- *  @property io [kf.consoles.ForthConsole] for this VM
+ *  @property io [kf.consoles.Console] for this VM
  *  @property interp [kf.interps.InterpBase] for this VM
  *  @property memConfig [MemConfig] for this VM
  *  @property mem RAM for the VM
@@ -38,7 +38,7 @@ import kotlin.time.TimeSource
  */
 
 class ForthVM(
-    val io: IForthConsole,
+    val io: IConsole,
     val interp: IInterp,
     val memConfig: MemConfig = smallMemConfig,
     val mem: IntArray = IntArray(memConfig.upperBound + 1),

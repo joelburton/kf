@@ -1,11 +1,10 @@
 package kf.interps
 
-import kf.mem.RegisterDelegate
 import kf.D
 import kf.ForthVM
 import kf.ForthVM.Companion.REG_STATE
-import kf.dict.IWordMetaModule
 import kf.VERSION_STRING
+import kf.dict.IWordMetaModule
 import kf.mem.appendWord
 import kf.words.mBaseInterp
 
@@ -72,7 +71,7 @@ open class InterpBase() : IInterp {
 
     /** Message shown on startup/reboot. */
     override fun banner() {
-        vm.io.info("\nWelcome to ${VERSION_STRING} ($name)\n")
+        vm.io.info("\nWelcome to $VERSION_STRING ($name)\n")
     }
 
     /** This would interpret a string token, but the base interpreter won't. */

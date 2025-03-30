@@ -10,14 +10,14 @@ import kf.mem.MemConfig
 import kf.IntBye
 import kf.IntEOF
 import kf.VERSION_STRING
-import kf.consoles.ForthConsole
-import kf.consoles.RecordingForthConsole
+import kf.consoles.Console
+import kf.consoles.RecordingConsole
 import kf.gateways.GatewayHttp
 import kf.gateways.GatewayWebsocket
 import kf.interps.InterpBase
 import kf.interps.InterpEval
 import kf.interps.InterpFast
-import kf.interps.InterpForth
+import kf.interps.InterpTraditional
 import kf.mem.largeMemConfig
 import kf.mem.medMemConfig
 import kf.mem.memConfigs
@@ -36,7 +36,7 @@ class ForthCLI : CliktCommand("PupForth") {
         .default(1)
         .help("verbosity level (default: 1)")
 
-    /** Should this use ANSI codes (colors, etc).
+    /** Should this use ANSI codes (colors, etc.)
      *
      * This is normally detected, but it can be forced.
      */
@@ -124,17 +124,17 @@ class ForthCLI : CliktCommand("PupForth") {
 
         val io =
             if (gateway != null) {
-                RecordingForthConsole()
+                RecordingConsole()
             } else {
-                ForthConsole(terminal.build())
+                Console(terminal.build())
             }
 
         val interp = when (interp) {
             "base" -> InterpBase()
             "eval" -> InterpEval()
             "fast" -> InterpFast()
-            "forth" -> InterpForth()
-            else -> throw RuntimeException("Unknown interpreter: ${interp}")
+            "forth" -> InterpTraditional()
+            else -> throw RuntimeException("Unknown interpreter: $interp")
         }
 
         // Build the ForthVM that everything from this point down uses.
@@ -188,7 +188,7 @@ class ForthCLI : CliktCommand("PupForth") {
             wrappedRun()
         } catch (_: IntEOF) {
             // just quit quietly
-        } catch (e: IntBye) {
+        } catch (_: IntBye) {
             // just quit quietly
         }
     }

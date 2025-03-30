@@ -2,13 +2,11 @@ package words.core
 
 import ForthTestCase
 import kf.ForthBufferError
-import kf.ForthIOError
 import kf.ForthVM
-import kf.sources.SourceFakeInteractive
+import kf.sources.SourceTestEvalInput
 import kf.words.core.wIO
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
-import kotlin.test.assertFails
 import kotlin.test.assertFailsWith
 
 class wIOTest : ForthTestCase() {
@@ -78,7 +76,7 @@ class wIOTest : ForthTestCase() {
         vm.dstk.push(vm.memConfig.padStart)
         vm.dstk.push(5)
         vm.sources.clear()
-        vm.sources.add(SourceFakeInteractive(vm, "ABC"))
+        vm.sources.add(SourceTestEvalInput(vm, "ABC"))
         vm.source.scanner.nextLine()
         mod.w_accept(vm)
         assertDStack(3)

@@ -51,7 +51,7 @@ const val VERSION_STRING = "KPupForth 0.1.0"
  *            ^---- not a word, and not parseable as an int = parsing error
  * */
 
-fun String.toForthInt(radix: Int): Int {
+fun String.toForthInt(base: Int): Int {
     var s = this
 
     // anywhere a number is parsed, you could also provide a char literal,
@@ -62,35 +62,35 @@ fun String.toForthInt(radix: Int): Int {
         return s[1].code
     }
 
-    var _radix = radix
+    var radix = base
     if (startsWith("0d")) {
         s = substring(2)
-        _radix = 10
+        radix = 10
     } else if (startsWith("0x")) {
         s = substring(2)
-        _radix = 16
+        radix = 16
     } else if (startsWith("0b")) {
         s = substring(2)
-        _radix = 2
+        radix = 2
     } else if (startsWith("0o")) {
         s = substring(2)
-        _radix = 8
+        radix = 8
     } else if (startsWith("%")) {
         s = substring(1)
-        _radix = 2
+        radix = 2
     } else if (startsWith("$")) {
         s = substring(1)
-        _radix = 16
+        radix = 16
     } else if (startsWith("#")) {
         s = substring(1)
-        _radix = 10
+        radix = 10
     } else if (startsWith("&")) {
         s = substring(1)
-        _radix = 10
+        radix = 10
     }
 
     return try {
-        s.toInt(_radix)
+        s.toInt(radix)
     } catch (_: NumberFormatException) {
         throw ParseError(s)
     }

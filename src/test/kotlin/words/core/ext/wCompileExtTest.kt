@@ -3,7 +3,6 @@ package words.core.ext
 import EvalForthTestCase
 import ForthTestCase
 import kf.interps.InterpBase
-import kf.interps.InterpForth
 import kf.words.core.ext.wCompileExt
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue

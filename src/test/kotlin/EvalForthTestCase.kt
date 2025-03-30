@@ -1,9 +1,9 @@
 import kf.ForthError
 import kf.IntEOF
 import kf.ForthVM
-import kf.consoles.RecordingForthConsole
+import kf.consoles.RecordingConsole
 import kf.interps.InterpFast
-import kf.sources.SourceFakeInteractive
+import kf.sources.SourceTestEvalInput
 import kf.sources.SourceTestNoInput
 import kf.words.custom.wToolsCustom._see
 import org.junit.jupiter.api.BeforeEach
@@ -17,7 +17,7 @@ fun dummyFn(vm: ForthVM) {
 /** Test cases that need a VM, but doesn't need to eval or load modules. */
 
 open class ForthTestCase() {
-    val testIO = RecordingForthConsole()
+    val testIO = RecordingConsole()
     val vm = ForthVM(
         io = testIO,
         interp = InterpFast(),
@@ -68,7 +68,7 @@ open class ForthTestCase() {
     }
 
     fun setInput(s: String) {
-        (vm.source as SourceFakeInteractive).content += s
+        (vm.source as SourceTestEvalInput).content += s
     }
 
     fun dump(start: Int, len: Int) {
@@ -92,7 +92,7 @@ open class EvalForthTestCase : ForthTestCase() {
     fun eval(s: String): String {
         with(vm) {
             vm.sources.clear()
-            vm.sources.add(SourceFakeInteractive(vm, s))
+            vm.sources.add(SourceTestEvalInput(vm, s))
             ip = cstart
             try {
                 vm.innerRunVM()

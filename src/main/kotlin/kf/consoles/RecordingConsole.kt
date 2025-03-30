@@ -5,7 +5,7 @@ import org.jline.utils.AttributedStyle
 /** A terminal interface for testing & gateways: it reads input from the
  * internal list of strings. These can be refilled.
  */
-class RecordingForthConsole() : IForthConsole {
+class RecordingConsole() : IConsole {
     override val termWidth = 80
 
     val outputList = mutableListOf<String>()

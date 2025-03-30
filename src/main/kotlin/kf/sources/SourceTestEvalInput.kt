@@ -8,6 +8,6 @@ import kf.ForthVM
  * the "input" here is a string that can be reset from the user.
  */
 
-class SourceFakeInteractive(
+class SourceTestEvalInput(
     vm: ForthVM, override var content: String
-) : SourceString(vm, 0, "<fake>")
+) : SourceBaseString(vm, 0, "<fake>")

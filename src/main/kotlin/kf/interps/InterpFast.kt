@@ -1,6 +1,5 @@
 package kf.interps
 
-import kf.ForthVM
 import kf.dict.Word
 import kf.words.mFastInterp
 
@@ -18,7 +17,7 @@ import kf.words.mFastInterp
  * This uses mostly ANS standard words except the big one:
  * INTERP-PROCESS-TOKEN.
  *
- * An alternative to this is the [InterForth], which is written in Forth,
+ * An alternative to this is the [InterpTraditional], which is written in Forth,
  * and doesn't use newfangled words and sticks with the classics.
  */
 

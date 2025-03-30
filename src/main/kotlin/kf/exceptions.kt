@@ -39,7 +39,7 @@ class DivisionByZero(m: String="Division by zero") : ForthError(m)
 /** Problem loading a binary word module. */
 class BloadError(m: String) : ForthError("Bload error: $m")
 
-/** Number outside of our range (32-bit signed) */
+/** Number out of our range (32-bit signed) */
 class NumOutOfRange(m: Long) : ForthError("Number out of range: $m")
 
 /** Buffer overruns, etc. */

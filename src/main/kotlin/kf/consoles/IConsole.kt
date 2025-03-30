@@ -7,7 +7,7 @@ import org.jline.utils.AttributedStyle
  * like the TerminalTestInterface, below.
  */
 
-interface IForthConsole {
+interface IConsole {
     val termWidth: Int
 
     // API

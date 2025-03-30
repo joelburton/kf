@@ -1,6 +1,5 @@
 package kf.interps
 
-import kf.ForthVM
 import kf.dict.IWordMetaModule
 import kf.words.mForthInterp
 
@@ -23,8 +22,8 @@ import kf.words.mForthInterp
  *
  */
 
-class InterpForth() : InterpEval() {
-    override val name = "Forth"
+class InterpTraditional() : InterpEval() {
+    override val name = "Traditional"
     override val module: IWordMetaModule = mForthInterp
     // fun fact: at the time I wrote this, it was the longest Forth program
     // I had ever written ;-)

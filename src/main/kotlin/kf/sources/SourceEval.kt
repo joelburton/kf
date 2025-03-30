@@ -6,4 +6,4 @@ import kf.ForthVM
 
 class SourceEval(
     vm: ForthVM, override var content: String
-) : SourceString(vm, -1, "<eval>")
+) : SourceBaseString(vm, -1, "<eval>")

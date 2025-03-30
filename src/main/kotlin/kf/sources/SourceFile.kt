@@ -16,7 +16,7 @@ import kotlin.io.path.Path
 
 class SourceFile(
     vm: ForthVM, id: Int, path: String
-) : SourceString(vm, id, path) {
+) : SourceBaseString(vm, id, path) {
     // slurp, slurp, slurp, that's tasty unicode
     override val content= Files.readString(Path(path)).toString()
 }

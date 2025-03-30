@@ -33,7 +33,7 @@ internal class ForthHighlighter(val vm: ForthVM) : Highlighter {
     val token = "(\\s+)|(\\\\\\s+.*)|(\\S+)".toRegex()
 
     override fun highlight(
-        reader: org.jline.reader.LineReader, buffer: String
+        reader: LineReader, buffer: String
     ): AttributedString {
         val base = vm.base
         var inComment = false
@@ -54,7 +54,7 @@ internal class ForthHighlighter(val vm: ForthVM) : Highlighter {
 
             // for words:
             // - recognize ( comments ) and make them grey
-            // - guess that any word ending with quote (." s" etc) starts string
+            // - guess that words ending with double-quote start string
             // - strings are green until a closing string
             // - if word is in dict: bold
             // - if not: try as number; if so: bold
@@ -76,7 +76,7 @@ internal class ForthHighlighter(val vm: ForthVM) : Highlighter {
                     inComment = true
                 } else if (vm.dict.getSafe(word) != null) {
                     sb.append(word, DEFAULT.bold()) // recognized word
-                    if (word.endsWith("\"")) inString = true // ." s" etc
+                    if (word.endsWith("\"")) inString = true // ." s" etc.
                 } else {
                     try {
                         word.toForthInt(base)
@@ -90,13 +90,7 @@ internal class ForthHighlighter(val vm: ForthVM) : Highlighter {
         return sb.toAttributedString()
     }
 
-    override fun refresh(reader: LineReader?) = super.refresh(reader)
-
-    // not really sure these would be called
-
-    override fun setErrorPattern(p0: Pattern?) =
-        throw Exception("Not yet implemented: setErrorPattern $p0")
-
-    override fun setErrorIndex(p0: Int) =
-        throw Exception("Not yet implemented: setErrorIndex $p0")
+    // not really sure that these could be called
+    override fun setErrorPattern(p0: Pattern?) = throw NotImplementedError()
+    override fun setErrorIndex(p0: Int) = throw NotImplementedError()
 }

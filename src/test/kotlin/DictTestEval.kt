@@ -1,5 +1,5 @@
 import kf.*
-import kf.consoles.RecordingForthConsole
+import kf.consoles.RecordingConsole
 import kf.dict.Dict
 import kf.dict.DictFullError
 import kf.dict.IWordModule
@@ -25,7 +25,7 @@ object FakeMod: IWordModule {
 
 class DictTestEval  : ForthTestCase() {
     val dict: Dict = Dict(
-        ForthVM(RecordingForthConsole(), InterpBase()), capacity = 3)
+        ForthVM(RecordingConsole(), InterpBase()), capacity = 3)
 
     @Test
     fun reset() {

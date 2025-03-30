@@ -1,17 +1,10 @@
 package kf.consoles
 
 import kf.ForthVM
-import kf.ParseError
 import org.jline.reader.EndOfFileException
 import org.jline.reader.impl.LineReaderImpl
 import org.jline.terminal.Terminal
-import org.jline.terminal.TerminalBuilder
-import org.jline.utils.AttributedString
-import org.jline.utils.AttributedStringBuilder
-import org.jline.utils.AttributedStyle
-import org.jline.utils.InfoCmp
-import org.jline.utils.ShutdownHooks
-import org.jline.utils.Status
+import org.jline.utils.*
 import org.jline.widget.AutosuggestionWidgets
 
 /** Terminal interfaces for non-standard terminals:
@@ -19,7 +12,7 @@ import org.jline.widget.AutosuggestionWidgets
  * - testing / gateways
  * - file input
  */
-class ForthConsole(val term: Terminal) : IForthConsole {
+class Console(val term: Terminal) : IConsole {
     lateinit var vm: ForthVM
     lateinit var reader: ForthLineReader
 
@@ -27,7 +20,7 @@ class ForthConsole(val term: Terminal) : IForthConsole {
     class ForthLineReader(vm: ForthVM, terminal: Terminal?) :
         LineReaderImpl(terminal, "kf") {
         init {
-            completer = ForthCompleter(vm.dict)
+            completer = ForthCompleter(vm.dict.words)
             highlighter = ForthHighlighter(vm)
             AutosuggestionWidgets(this).enable()
             setVariable(
@@ -91,12 +84,11 @@ class ForthConsole(val term: Terminal) : IForthConsole {
         } catch (_: IllegalArgumentException) {
             null
         }
-
     }
 
     override fun termInfo() = println("${term.type} width=${term.width}")
     override fun setXY(x: Int, y: Int) {
-        term.puts(InfoCmp.Capability.cursor_address, y, x);
+        term.puts(InfoCmp.Capability.cursor_address, y, x)
     }
 
     override fun clearScreen() {
@@ -120,19 +112,11 @@ class ForthConsole(val term: Terminal) : IForthConsole {
 
     override fun out(s: String) = p(mks(s, AttributedStyle.DEFAULT.italic()))
     override fun info(s: String) = nl(
-        mks(
-            s, AttributedStyle.DEFAULT.foreground(
-                AttributedStyle.YELLOW
-            )
-        )
+        mks(s, AttributedStyle.DEFAULT.foreground(AttributedStyle.YELLOW))
     )
 
     override fun danger(s: String) = nl(
-        mks(
-            s, AttributedStyle.DEFAULT.foreground(
-                AttributedStyle.RED
-            )
-        )
+        mks(s, AttributedStyle.DEFAULT.foreground(AttributedStyle.RED))
     )
 
     override fun muted(s: String) =

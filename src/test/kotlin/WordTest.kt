@@ -1,5 +1,5 @@
 import kf.ForthVM
-import kf.consoles.RecordingForthConsole
+import kf.consoles.RecordingConsole
 import kf.dict.Word
 import kf.interps.InterpBase
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -24,7 +24,7 @@ class WordTest {
     @Test
     fun invoke() {
         val vm = ForthVM(
-            io = RecordingForthConsole(),
+            io = RecordingConsole(),
             interp = InterpBase(),
         )
         val word = Word("test", ::dummyFn)
