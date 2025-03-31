@@ -1,3 +1,7 @@
+package dict
+
+import ForthTestCase
+import dummyFn
 import kf.*
 import kf.consoles.RecordingConsole
 import kf.dict.Dict
@@ -13,17 +17,16 @@ import kotlin.test.assertFailsWith
 
 
 
-object FakeMod: IWordModule {
-    override val name = "FakeMod"
-    override val description = "Fake"
-    override val words = arrayOf<Word>(
-        Word("word1", fn = ::dummyFn),
-        Word("word2", fn = ::dummyFn),
-    )
-}
+class DictTest  : ForthTestCase() {
+    object FakeMod: IWordModule {
+        override val name = "dict.FakeMod"
+        override val description = "Fake"
+        override val words = arrayOf<Word>(
+            Word("word1", fn = ::dummyFn),
+            Word("word2", fn = ::dummyFn),
+        )
+    }
 
-
-class DictTestEval  : ForthTestCase() {
     val dict: Dict = Dict(
         ForthVM(RecordingConsole(), InterpBase()), capacity = 3)
 

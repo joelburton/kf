@@ -1,4 +1,4 @@
-//import kf.Word
+package primitives//import kf.Word
 //import org.junit.jupiter.api.Assertions.assertEquals
 //import org.junit.jupiter.api.Test
 //

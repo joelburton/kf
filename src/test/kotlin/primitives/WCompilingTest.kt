@@ -1,4 +1,4 @@
-//import kf.InvalidState
+package primitives//import kf.InvalidState
 //import kf.ParseError
 //import kf.recorder
 //import kf.words.core.wCompiling

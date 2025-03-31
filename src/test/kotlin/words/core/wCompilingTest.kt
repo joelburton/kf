@@ -161,6 +161,7 @@ class wCompilingFuncTest : EvalForthTestCase() {
         assertDStack(20)
         assertRStack()
 
+        // messes up our ip pointer bc immediate do_ fucks up rstk
         eval(": do_ immediate postpone do ;")
         eval(": test 3 0 do_ brk-imm 10 loop ;")
         println(getOutput())

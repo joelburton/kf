@@ -27,7 +27,7 @@ import kotlin.text.iterator
  * If the input buffer is already exhausted (at the end), no error is raised--
  * it just returns the pair with len=0.
  *
- * To explicitly consume everything and ignore it (like for "\" comments,
+ * To explicitly consume everything and ignore it (like for "\" comments),
  * use `.nextLine()`.
  *
  * The parsing methods move to the pointer ONE BEYOND THE END when they have
@@ -115,8 +115,8 @@ class FScanner(val vm: ForthVM) {
      * - skip nothing at start
      * - get all non-term chars
      *
-     * with term="
-     *    ...hello"".
+     * with term='-'
+     *    ...hello--.
      *    ^        ^  = tokPtr & vm.inPtr
      *
      * This is used to parse things like `." hi"` and such. Note that, per the

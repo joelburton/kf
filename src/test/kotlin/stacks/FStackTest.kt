@@ -1,13 +1,15 @@
-import kf.*
+package stacks
+
+import ForthTestCase
 import kf.stacks.FStack
+import kf.stacks.StackOverflowError
 import kf.stacks.StackPtrInvalidError
 import kf.stacks.StackUnderflowError
-import kf.stacks.StackOverflowError
 import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 
-class FStackTestEval : ForthTestCase() {
+class FStackTest : ForthTestCase() {
     var stk = FStack(vm, "myStack", 100, 103)
 
     @Test
@@ -129,7 +131,8 @@ myStack[1] = $000000ff (       255)
 myStack[2] = $00000041 (        65) 'A'
 myStack[3] = $00000002 (         2)    <- top
 
-        """.trimIndent(), getOutput())
+        """.trimIndent(), getOutput()
+        )
     }
 
     @Test

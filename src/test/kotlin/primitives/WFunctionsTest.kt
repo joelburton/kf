@@ -1,4 +1,4 @@
-
+package primitives
 //    @Test
 //    fun w_callByAddr() {
 //        vm.dstk.push(w.cpos)
