@@ -217,10 +217,7 @@ object wToolsCustom : IWordModule {
     }
 
     fun w_tildeTilde(vm: ForthVM) {
-        vm.io.print(
-            "${vm.source} ${vm.dstk.simpleDumpStr()}",
-            DEFAULT.foreground(BLACK)
-        )
+        vm.io.muted("${vm.source} ${vm.dstk.simpleDumpStr()}")
     }
 
     fun w_dotReRun(vm: ForthVM) {
@@ -235,7 +232,7 @@ object wToolsCustom : IWordModule {
             throw ParseError("No history entry for: $prev")
         } else {
             vm.source.scanner.fill(command)
-            vm.io.println("Executing: $command", DEFAULT.foreground(BLACK))
+            vm.io.muted("Executing: $command")
         }
     }
 

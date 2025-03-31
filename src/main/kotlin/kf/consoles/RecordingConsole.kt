@@ -27,9 +27,7 @@ class RecordingConsole() : IConsole {
     // standard print
 
     override fun print(s: String) = add(s)
-    override fun print(s: String, style: AttributedStyle) = add(s)
     override fun println(s: String) = add("$s\n")
-    override fun println(s: String, style: AttributedStyle) = add("$s\n")
 
     // print a line stylized (all start on new line except "ok")
 
@@ -39,6 +37,7 @@ class RecordingConsole() : IConsole {
     override fun muted(s: String) = add("$s\n")
     override fun success(s: String) = add("$s\n")
     override fun ok(s: String) = add("$s\n")
+    override fun bold(s: String) = add(s)
     override fun warning(s: String) = add("$s\n")
     override fun debug(s: String) = add("$s\n")
     override fun debugSubtle(s: String) = add("$s\n")

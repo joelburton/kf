@@ -153,8 +153,7 @@ class Dict(val vm: ForthVM, val capacity: Int = 1024) {
         }
 
         val modName = mod.name.removePrefix("kf.words.")
-        if (vm.verbosity >= 2) vm.io.print(
-            "  $modName: ", AttributedStyle.DEFAULT.bold())
+        if (vm.verbosity >= 2) vm.io.bold("  $modName: ")
         val sb = mod.words.joinToString(" ") {
             add(it)
             it.name.removePrefix("kf.words.")

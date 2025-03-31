@@ -104,9 +104,7 @@ class Console(val term: Terminal) : IConsole {
     // standard print
 
     override fun print(s: String) = p(s)
-    override fun print(s: String, style: AttributedStyle) = p(mks(s, style))
     override fun println(s: String) = pl(s)
-    override fun println(s: String, style: AttributedStyle) = pl(mks(s, style))
 
     // print a line stylized (all start on new line except "ok")
 
@@ -130,6 +128,9 @@ class Console(val term: Terminal) : IConsole {
 
     override fun ok(s: String) =
         pl(mks(s, AttributedStyle.DEFAULT.foreground(120).bold()))
+
+    override fun bold(s: String) =
+        p(mks(s, AttributedStyle.DEFAULT.bold()))
 
     override fun debug(s: String) =
         nl(mks(s, AttributedStyle.DEFAULT.foreground(241)))

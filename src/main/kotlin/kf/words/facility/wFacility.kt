@@ -20,9 +20,11 @@ object wFacility : IWordModule {
 
     /** `page` `( -- : clear screen )` */
 
-    private fun w_page(vm: ForthVM) {
+     fun w_page(vm: ForthVM) {
         vm.io.clearScreen()
     }
+
+    /** `AT-XY` ( n1 n2 -- ) Move cursor to col n1 and row n2 */
 
     fun w_atXY(vm:ForthVM) {
         val row = vm.dstk.pop()

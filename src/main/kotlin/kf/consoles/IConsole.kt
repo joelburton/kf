@@ -1,7 +1,6 @@
 package kf.consoles
 
 import kf.ForthVM
-import org.jline.utils.AttributedStyle
 
 /** This is a global singleton; it holds the output of any recorder terminal,
  * like the TerminalTestInterface, below.
@@ -24,8 +23,6 @@ interface IConsole {
     // Standard print
     fun print(s: String)
     fun println(s: String = "")
-    fun print(s: String, style: AttributedStyle)
-    fun println(s: String, style: AttributedStyle)
 
     // Print stylized line (all start on new line except "ok")
     fun out(s: String)
@@ -34,6 +31,7 @@ interface IConsole {
     fun muted(s: String)
     fun warning(s: String)
     fun success(s: String)
+    fun bold(s: String)
     fun ok(s: String)
     fun debug(s: String)
     fun debugSubtle(s: String)
