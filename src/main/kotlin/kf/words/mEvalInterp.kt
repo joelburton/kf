@@ -1,7 +1,7 @@
 package kf.words
 
-import kf.dict.IWordMetaModule
-import kf.dict.IWordModule
+import kf.interfaces.IWordMetaModule
+import kf.interfaces.IWordModule
 import kf.words.core.wInterp
 import kf.words.core.wStackOps
 import kf.words.custom.wInterpCustom

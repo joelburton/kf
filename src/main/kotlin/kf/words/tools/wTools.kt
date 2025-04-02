@@ -1,8 +1,9 @@
 package kf.words.tools
 
 import kf.*
-import kf.dict.IWordModule
+import kf.interfaces.IWordModule
 import kf.dict.Word
+import kf.interfaces.IWord
 import kf.words.custom.wToolsCustom
 
 object wTools : IWordModule {
@@ -10,7 +11,7 @@ object wTools : IWordModule {
     override val description = "Programming tools"
 
     override val words
-        get() = arrayOf(
+        get() = arrayOf<IWord>(
             Word(".S", ::w_dotS),
             Word("?", ::w_question),
             Word("DUMP", ::w_dump),

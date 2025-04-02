@@ -1,14 +1,15 @@
 package kf.words.core.ext
 
 import kf.ForthVM
-import kf.dict.IWordModule
+import kf.interfaces.IWordModule
 import kf.dict.Word
+import kf.interfaces.IWord
 
 object wParseExt: IWordModule {
     override val name = "kf.words.core.ext.wParseExt"
     override val description = "Input/Output"
 
-    override val words = arrayOf<Word>(
+    override val words = arrayOf<IWord>(
         Word("PARSE", ::w_parse)
     )
 

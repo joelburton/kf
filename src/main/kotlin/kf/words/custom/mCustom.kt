@@ -1,6 +1,6 @@
 package kf.words.custom
 
-import kf.dict.IWordMetaModule
+import kf.interfaces.IWordMetaModule
 
 object mCustom: IWordMetaModule {
     override val name = "kf.words.custom.mCustom"

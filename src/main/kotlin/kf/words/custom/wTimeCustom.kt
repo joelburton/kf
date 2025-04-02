@@ -1,15 +1,16 @@
 package kf.words.custom
 
 import kf.ForthVM
-import kf.dict.IWordModule
+import kf.interfaces.IWordModule
 import kf.dict.Word
+import kf.interfaces.IWord
 
 
 object wTimeCustom : IWordModule {
     override val name = "kf.words.custom.wTimeCustom"
     override val description = "Time Extra words"
 
-    override val words get() = arrayOf(
+    override val words get() = arrayOf<IWord>(
         Word("MILLIS", ::w_millis),
     )
 

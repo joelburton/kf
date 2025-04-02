@@ -1,16 +1,16 @@
 package kf.words.core
 
-import kf.D
 import kf.ForthVM
-import kf.dict.IWordModule
+import kf.interfaces.IWordModule
 import kf.dict.Word
+import kf.interfaces.IWord
 
 
 object wFunctions: IWordModule {
     override val name = "kf.words.core.wFunctions"
     override val description = "Handling calling and exiting custom functions"
 
-    override val words = arrayOf(
+    override val words = arrayOf<IWord>(
         Word("EXECUTE", ::w_execute),
         Word("EXIT", ::w_exit),
     )

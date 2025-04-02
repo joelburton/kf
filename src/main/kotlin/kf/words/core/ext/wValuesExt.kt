@@ -1,16 +1,17 @@
 package kf.words.core.ext
 
 import kf.*
-import kf.dict.IWordModule
+import kf.interfaces.IWordModule
 import kf.dict.Word
+import kf.interfaces.IWord
 import kf.mem.CellMeta
 
 object wValuesExt: IWordModule {
     override val name = "kf.words.core.ext.wValuesExt"
     override val description = "Flexible variables"
 
-    override val words
-        get() = arrayOf<Word>(
+    override val words: Array<IWord>
+        get() = arrayOf(
             Word("VALUE", ::w_value),
             Word("TO", ::w_to)
         )

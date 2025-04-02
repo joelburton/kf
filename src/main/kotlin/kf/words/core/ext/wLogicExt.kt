@@ -3,14 +3,15 @@ package kf.words.core.ext
 import kf.ForthVM
 import kf.ForthVM.Companion.FALSE
 import kf.ForthVM.Companion.TRUE
-import kf.dict.IWordModule
+import kf.interfaces.IWordModule
 import kf.dict.Word
+import kf.interfaces.IWord
 
 object wLogicExt : IWordModule {
     override val name = "kf.words.core.ext.wLogicExt"
     override val description = "Comparison and logic words"
 
-    override val words
+    override val words: Array<IWord>
         get() = arrayOf(
             Word("0<>", ::w_zeroNotEquals),
             Word("0>", ::w_zeroGreater),

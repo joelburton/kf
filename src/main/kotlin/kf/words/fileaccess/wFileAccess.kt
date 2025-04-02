@@ -1,15 +1,16 @@
 package kf.words.fileaccess
 
 import kf.ForthVM
-import kf.dict.IWordModule
+import kf.interfaces.IWordModule
 import kf.dict.Word
 import kf.strFromAddrLen
 import kf.dict.w_notImpl
+import kf.interfaces.IWord
 
 object wFileAccess : IWordModule {
     override val name = "kf.words.fileaccess.wFileAccess"
     override val description = "File Access"
-    override val words = arrayOf<Word>(
+    override val words = arrayOf<IWord>(
         Word(" BIN", ::w_notImpl),
         Word("CLOSE-FILE", ::w_notImpl),
         Word("CREATE-FILE", ::w_notImpl),

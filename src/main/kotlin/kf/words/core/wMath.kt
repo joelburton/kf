@@ -2,8 +2,9 @@ package kf.words.core
 
 import kf.DivisionByZero
 import kf.ForthVM
-import kf.dict.IWordModule
+import kf.interfaces.IWordModule
 import kf.dict.Word
+import kf.interfaces.IWord
 import kotlin.math.absoluteValue
 
 object wMath : IWordModule {
@@ -11,7 +12,7 @@ object wMath : IWordModule {
     override val description = "Math operations"
 
     override val words
-        get() = arrayOf(
+        get() = arrayOf<IWord>(
             Word("+", ::w_plus),
             Word("-", ::w_minus),
             Word("*", ::w_star),

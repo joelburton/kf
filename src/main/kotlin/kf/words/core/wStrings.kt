@@ -1,11 +1,11 @@
 package kf.words.core
 
 import kf.ForthVM
-import kf.dict.IWordModule
+import kf.interfaces.IWordModule
 import kf.dict.Word
+import kf.interfaces.IWord
 import kf.mem.appendStr
 import kf.mem.appendStrToData
-import kf.mem.appendWord
 import kf.strFromAddrLen
 
 object wStrings : IWordModule {
@@ -13,7 +13,7 @@ object wStrings : IWordModule {
     override val description = "Strings"
 
     override val words
-        get() = arrayOf(
+        get() = arrayOf<IWord>(
             Word("COUNT", ::w_count),
             Word(".\"", ::w_dotQuote, imm = true),
             Word("S\"", ::w_sQuote, imm = true),

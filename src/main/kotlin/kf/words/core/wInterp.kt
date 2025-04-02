@@ -1,13 +1,13 @@
 package kf.words.core
 
 import kf.*
-import kf.dict.IWordModule
+import kf.interfaces.IWordModule
 import kf.dict.Word
+import kf.interfaces.IWord
 import kf.interps.InterpBase
 import kf.interps.InterpEval
 import kf.mem.appendJump
 import kf.mem.appendStr
-import kf.mem.appendWord
 import kf.sources.SourceEval
 
 object wInterp : IWordModule {
@@ -15,7 +15,7 @@ object wInterp : IWordModule {
     override val description = "Interpreter"
 
     override val words
-        get() = arrayOf(
+        get() = arrayOf<IWord>(
             Word("EVALUATE", ::w_evaluate),
 
             Word("QUIT", ::w_quit),

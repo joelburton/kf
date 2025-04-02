@@ -1,7 +1,7 @@
 package kf.words.doublenums
 
-import kf.dict.IWordMetaModule
-import kf.dict.IWordModule
+import kf.interfaces.IWordMetaModule
+import kf.interfaces.IWordModule
 
 object mDoubleNums: IWordMetaModule {
     override val name = "kf.words.doublenums.mDoubleNums"

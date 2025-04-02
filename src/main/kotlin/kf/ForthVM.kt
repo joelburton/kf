@@ -1,11 +1,13 @@
 package kf
 
 
-import kf.consoles.IConsole
+import kf.consoles.Console
+import kf.consoles.ConsoleBase
 import kf.dict.Dict
-import kf.dict.IWordModule
+import kf.interfaces.IWordModule
 import kf.dict.Word
-import kf.interps.IInterp
+import kf.interfaces.ICellMeta
+import kf.interfaces.IInterp
 import kf.mem.CellMeta
 import kf.mem.MemConfig
 import kf.mem.RegisterDelegate
@@ -21,6 +23,11 @@ import kf.words.facility.mFacility
 import kf.words.fileaccess.mFileAccess
 import kf.words.tools.mTools
 import kotlin.time.TimeSource
+import kf.interfaces.IForthVM
+import kf.interfaces.ISource
+import kf.interfaces.IWord
+import kf.interps.InterpBase
+import kf.mem.appendCode
 
 
 /**
@@ -38,13 +45,14 @@ import kotlin.time.TimeSource
  */
 
 class ForthVM(
-    val io: IConsole,
-    val interp: IInterp,
-    val memConfig: MemConfig = smallMemConfig,
-    val mem: IntArray = IntArray(memConfig.upperBound + 1),
+    override val io: ConsoleBase,
+    override val interp: InterpBase,
+    override val memConfig: MemConfig = smallMemConfig,
+    override val mem: IntArray = IntArray(memConfig.upperBound + 1),
     initVerbosity: Int = 1,
-    val initSourceMaker: (ForthVM) -> SourceBase = { SourceStdIn(it) },
-) {
+    private val initSourceMaker: (ForthVM) -> SourceBase = { SourceStdIn(it) },
+) : IForthVM {
+
 
     /** Which interpreter is active?
      *
@@ -57,7 +65,7 @@ class ForthVM(
     // *************************************************************** registers
 
     /** Base of math output (10 is for decimal and default) */
-    var base by RegisterDelegate(REG_BASE, this.mem)
+    override var base by RegisterDelegate(REG_BASE, this.mem)
 
     /** Verbosity of system:
      *
@@ -72,45 +80,48 @@ class ForthVM(
      *  To see any dev-debugging messages, the global variable [D] needs to
      *  be true.
      */
-    var verbosity by RegisterDelegate(REG_VERBOSITY, this.mem)
+    override var verbosity by RegisterDelegate(REG_VERBOSITY, this.mem)
 
     /** Current end of the CODE section. */
-    var cend by RegisterDelegate(REG_CEND, this.mem)
+    override var cend by RegisterDelegate(REG_CEND, this.mem)
 
     /** Current end of the DATA section. */
-    var dend by RegisterDelegate(REG_DEND, this.mem)
+    override var dend by RegisterDelegate(REG_DEND, this.mem)
 
     /** Start of the CODE section. This comes from the memory configuration
      * passed in, and normally wouldn't ever change. However, to hack around,
      * users *can* change this.
      */
-    var cstart by RegisterDelegate(REG_CSTART, this.mem)
+    override var cstart by RegisterDelegate(REG_CSTART, this.mem)
 
     /** Start of the DATA section. See [cstart]. */
-    var dstart by RegisterDelegate(REG_DSTART, this.mem)
+    override var dstart by RegisterDelegate(REG_DSTART, this.mem)
 
     /** The pointer the scanner is at in a line of input. */
-    var inPtr by RegisterDelegate(REG_IN_PTR, this.mem)
+    override var inPtr by RegisterDelegate(REG_IN_PTR, this.mem)
 
     // *************************************************************************
 
     /**  Word dictionary. */
-    val dict = Dict(this)
+    override val dict = Dict(this)
 
     /**  This is only needed to make see/simple-see commands more helpful. */
-    val cellMeta = Array(memConfig.upperBound + 1) { CellMeta.Unknown }
+    override val cellMeta: Array<ICellMeta> =
+        Array(memConfig.upperBound + 1) { CellMeta.Unknown }
 
     /** Data stack (the one normally used by end users) */
-    val dstk = FStack(this, "dstk", memConfig.dstackStart, memConfig.dstackEnd)
+    override val dstk =
+        FStack(this, "dstk", memConfig.dstackStart, memConfig.dstackEnd)
 
     /** Return stack (for calling/returning from fn calls */
-    val rstk = FStack(this, "rstk", memConfig.rstackStart, memConfig.rstackEnd)
+    override val rstk =
+        FStack(this, "rstk", memConfig.rstackStart, memConfig.rstackEnd)
 
     /** Current word being executed by the VM. */
-    lateinit var currentWord: Word
+    override lateinit var currentWord: IWord
 
     /** The instruction pointer; where is the VM executing next? */
-    var ip = memConfig.codeStart
+    override var ip = memConfig.codeStart
 
     /** List of {name: class} for all primitive modules loaded. */
     val modulesLoaded: HashMap<String, IWordModule> = HashMap()
@@ -119,7 +130,7 @@ class ForthVM(
     val includedFiles: ArrayList<String> = ArrayList()
 
     /** Stack of input sources, with the top being the active one. */
-    val sources = arrayListOf<SourceBase>()
+    override val sources = arrayListOf<ISource>()
 
     /** Convenient way to get the currently-active input source (or null)
      *
@@ -133,13 +144,13 @@ class ForthVM(
      * locations in the codebase that can be reached when there's no input
      * source.
      * */
-    val source: SourceBase get() = sources.last()
+    override val source: ISource get() = sources.last()
 
     /** Time mark for when VM started (the `millis` word reports # of millis
      * since server start, since it's not possible to return millis before the
      * 1970 epoch on a 32-bit machine.)
      */
-    val timeMarkCreated = TimeSource.Monotonic.markNow()
+    override val timeMarkCreated = TimeSource.Monotonic.markNow()
 
     init {
         verbosity = initVerbosity
@@ -192,7 +203,7 @@ class ForthVM(
      * The word to quit the interpreter is BYE.
      * */
 
-    fun quit() {
+    override fun quit() {
         if (D) dbg(2, "vm.quit")
 
         // Go to the interactive input, so peel off any inputs stacked on top
@@ -210,7 +221,7 @@ class ForthVM(
 
     /** Abort: this what `abort` does as well as any forth error */
 
-    fun abort() {
+    override fun abort() {
         if (D) dbg(2, "vm.abort")
 
         quit()
@@ -303,12 +314,18 @@ class ForthVM(
 
     /** Programmers get lonely and we love to get logs. */
     @Suppress("KotlinConstantConditions")
-    fun dbg(lvl: Int, s: String) {
+    override fun dbg(lvl: Int, s: String) {
         if (!D) throw Exception("FIX THIS: DBG called when D is false")
         when (lvl) {
             0, 1, 2 -> io.debug(s)
             else -> io.debugSubtle(s)
         }
+    }
+
+    override fun appendWord(s: String) {
+        if (D) dbg(4, "vm.appendWord: $s")
+        val wn = dict[s].wn
+        appendCode(wn, CellMeta.WordNum)
     }
 
     companion object {

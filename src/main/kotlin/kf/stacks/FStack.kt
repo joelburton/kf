@@ -1,6 +1,7 @@
 package kf.stacks
 
 import kf.*
+import kf.interfaces.IFStack
 
 class StackOverflowError(name: String) :
     StackError("${name}: Stack overflow")
@@ -19,20 +20,20 @@ class StackPtrInvalidError(name: String, n: Int) :
  */
 
 class FStack(
-    val vm: ForthVM,
-    val name: String,
+    override val vm: ForthVM,
+    override val name: String,
     /** Location in memory of start of stack. */
-    val startAt: Int,
+    override val startAt: Int,
     /** Location in memory of end of stack-space */
-    val endAt: Int,
-) {
+    override val endAt: Int,
+) : IFStack {
     /** Pointer to the current item. */
-    var sp: Int = endAt + 1
+    override var sp: Int = endAt + 1
     /** Number of items in the stack. */
-    val size: Int get() = endAt - sp + 1
+    override val size: Int get() = endAt - sp + 1
 
     /**  Get stack as array (for debugging). */
-    fun asArray() = vm.mem.copyOfRange(sp, endAt + 1).reversedArray()
+    override fun asArray() = vm.mem.copyOfRange(sp, endAt + 1).reversedArray()
 
     /**  Just useful for debuggers. */
     override fun toString(): String = "$name ${asArray().contentToString()}"
@@ -41,7 +42,7 @@ class FStack(
      *
      * getAt(0) would be the first item ever added to the stack.
      * */
-    internal fun getAt(n: Int): Int {
+    override fun getAt(n: Int): Int {
         if (n < 0 || n > endAt - sp) throw StackPtrInvalidError(name, n)
         return vm.mem[endAt - n]
     }
@@ -50,7 +51,7 @@ class FStack(
      *
      * getFrom(0) is the same as peek()
      * */
-    fun getFrom(n: Int): Int {
+    override fun getFrom(n: Int): Int {
         if (n < 0 || n > endAt - sp) throw StackPtrInvalidError(name, n)
         return vm.mem[sp + n]
     }
@@ -60,7 +61,7 @@ class FStack(
      * Used to implement `ROLL`
      * */
 
-    fun popFrom(n: Int): Int {
+    override fun popFrom(n: Int): Int {
         if (D) vm.dbg(3, "$name: popFrom $n")
 
         if (n < 0 || n >= size) throw StackPtrInvalidError(name, n)
@@ -74,7 +75,7 @@ class FStack(
 
 
     /** Add item. */
-    fun push(n: Int) {
+    override fun push(n: Int) {
         if (sp <= startAt) throw StackOverflowError(name)
         vm.mem[--sp] = n
     }
@@ -85,14 +86,14 @@ class FStack(
      * of separate function calls and will perform better than the truly
      * variadic version,below.
      */
-    fun push(a: Int, b: Int) {
+    override fun push(a: Int, b: Int) {
         if (sp - 1 <= startAt) throw StackOverflowError(name)
         vm.mem[--sp] = a
         vm.mem[--sp] = b
     }
 
     /** Add any number of items. */
-    fun push(vararg vs: Int) {
+    override fun push(vararg vs: Int) {
         if (sp - vs.size <= startAt) throw StackOverflowError(name)
         for (v in vs) vm.mem[--sp] = v
     }
@@ -104,13 +105,13 @@ class FStack(
      * API compatibility needed here. This takes a long, but only ever adds
      * the lower 32 bits and a 0 for the hi-cell.
      * */
-    fun dblPush(n: Long) {
+    override fun dblPush(n: Long) {
         if (n > ForthVM.Companion.MAX_INT) throw NumOutOfRange(n)
         push(n.toInt(), if (n < 0) -1 else 0)
     }
 
     /** Pop double num in two parts (high first, then lo) */
-    fun dblPop(): Long {
+    override fun dblPop(): Long {
         val hi = pop()
         if (hi != 0 && hi != -1) throw NumOutOfRange(hi.toLong())
 
@@ -120,20 +121,20 @@ class FStack(
     }
 
     /** Remove & return top item. */
-    fun pop(): Int {
+    override fun pop(): Int {
         if (sp > endAt) throw StackUnderflowError(name)
         return vm.mem[sp++]
     }
 
     /** Peek at top item. */
-    fun peek(): Int = vm.mem[sp]
+    override fun peek(): Int = vm.mem[sp]
 
     /** Reset the stack. */
     fun reset() {
         sp = endAt + 1
     }
 
-    fun simpleDumpStr(): String {
+    override fun simpleDumpStr(): String {
         val str = (endAt downTo sp).joinToString("") {
             "${vm.mem[it].numToStrPrefixed(vm.base)} "
         }
@@ -141,10 +142,10 @@ class FStack(
     }
 
     /** Dump a single line for the stack; this is used by `.S` */
-    fun simpleDump()  = vm.io.print(simpleDumpStr())
+    override fun simpleDump()  = vm.io.print(simpleDumpStr())
 
     /**  Print a verbose stack dump. */
-    fun dump() {
+    override fun dump() {
         if (D) vm.dbg(4, "$name: dump")
 
         for (i in 0..<size) {

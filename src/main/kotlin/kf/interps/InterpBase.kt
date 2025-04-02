@@ -4,8 +4,9 @@ import kf.D
 import kf.ForthVM
 import kf.ForthVM.Companion.REG_STATE
 import kf.VERSION_STRING
-import kf.dict.IWordMetaModule
-import kf.mem.appendWord
+import kf.interfaces.IWordMetaModule
+import kf.interfaces.IForthVM
+import kf.interfaces.IInterp
 import kf.words.mBaseInterp
 
 
@@ -21,15 +22,15 @@ import kf.words.mBaseInterp
  */
 
 open class InterpBase() : IInterp {
-    override lateinit var vm: ForthVM
+    lateinit var vm: ForthVM
     override val name: String = "Base"
     override val module: IWordMetaModule = mBaseInterp
     companion object {
         const val STATE_INTERPRETING: Int = 0
         const val STATE_COMPILING: Int = -1
     }
-    override fun setUp(vm: ForthVM) {
-        this.vm = vm
+    override fun setUp(vm: IForthVM) {
+        this.vm = vm as ForthVM
     }
 
     /** A register for interpreter use: state of interpreting/compiling. */

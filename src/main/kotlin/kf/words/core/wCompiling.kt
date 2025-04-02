@@ -1,11 +1,11 @@
 package kf.words.core
 
 import kf.ForthVM
-import kf.dict.IWordModule
+import kf.interfaces.IWordModule
 import kf.dict.Word
+import kf.interfaces.IWord
 import kf.interps.InterpBase
 import kf.mem.appendLit
-import kf.mem.appendWord
 import kf.strFromAddrLen
 
 object wCompiling : IWordModule {
@@ -13,7 +13,7 @@ object wCompiling : IWordModule {
     override val description = "Compiling colon words"
 
     override val words
-        get() = arrayOf(
+        get() = arrayOf<IWord>(
             Word(":", ::w_colon, interpO = true),
             Word(";", ::w_semicolon, imm = true, compO = true),
             Word("IMMEDIATE", ::w_immediate, imm = true),

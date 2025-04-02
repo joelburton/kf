@@ -1,8 +1,9 @@
 package kf.words.core.ext
 
 import kf.*
-import kf.dict.IWordModule
+import kf.interfaces.IWordModule
 import kf.dict.Word
+import kf.interfaces.IWord
 
 /** Deferrable words.
  *
@@ -15,7 +16,7 @@ object wDeferExt : IWordModule {
     override val name = "kf.words.core.ext.wDeferExt"
     override val description = "Deferred words"
 
-    override val words
+    override val words: Array<IWord>
         get() = arrayOf(
             Word("DEFER", ::w_defer),
             Word("(DEFERRED-WORD)", ::deferred),

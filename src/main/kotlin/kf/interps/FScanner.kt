@@ -2,6 +2,7 @@ package kf.interps
 
 import kf.ForthVM
 import kf.MemError
+import kf.interfaces.IFScanner
 import kf.strFromAddrLen
 import kotlin.text.iterator
 
@@ -35,14 +36,14 @@ import kotlin.text.iterator
  * the buffer.
  */
 
-class FScanner(val vm: ForthVM) {
-    val start = vm.memConfig.interpBufStart
-    val end = vm.memConfig.interpBufEnd
-    val size = end - start
+class FScanner(val vm: ForthVM): IFScanner {
+    override val start = vm.memConfig.interpBufStart
+    override val end = vm.memConfig.interpBufEnd
+    override val size = end - start
 
-    var nChars = 0  // # of chars in entire buffer
-    var tokIdx = 0  // start idx of most-recently-found token
-    var tokLen = 0  // length of same
+    override var nChars = 0  // # of chars in entire buffer
+    override var tokIdx = 0  // start idx of most-recently-found token
+    override var tokLen = 0  // length of same
 
     companion object {
         val whitespace = arrayOf(
@@ -53,11 +54,11 @@ class FScanner(val vm: ForthVM) {
         )
     }
 
-    val atEnd get() = vm.inPtr >= nChars
+    override val atEnd get() = vm.inPtr >= nChars
 
     /** Return string of most-recently-found token. */
 
-    fun curToken() = Pair(start + tokIdx, tokLen).strFromAddrLen(vm)
+    override fun curToken() = Pair(start + tokIdx, tokLen).strFromAddrLen(vm)
 
     /** Reset */
 
@@ -70,7 +71,7 @@ class FScanner(val vm: ForthVM) {
 
     /** Reset buffer and fill it from string. */
 
-    fun fill(str: String) {
+    override fun fill(str: String) {
         reset()
         for (char in str) {
             if (nChars > size) throw MemError("Buffer overflow")
@@ -96,7 +97,7 @@ class FScanner(val vm: ForthVM) {
      *
      **/
 
-    fun parseName(): Pair<Int, Int> {
+    override fun parseName(): Pair<Int, Int> {
         while (vm.inPtr < nChars && vm.mem[start + vm.inPtr] in whitespace)
             vm.inPtr += 1
         tokIdx = vm.inPtr
@@ -126,7 +127,7 @@ class FScanner(val vm: ForthVM) {
      *
      **/
 
-    fun parse(term: Char): Pair<Int, Int> {
+    override fun parse(term: Char): Pair<Int, Int> {
         tokIdx = vm.inPtr
         while (vm.inPtr < nChars && vm.mem[start + vm.inPtr] != term.code)
             vm.inPtr += 1
@@ -152,7 +153,7 @@ class FScanner(val vm: ForthVM) {
      *
      **/
 
-    fun wordParse(term: Char): Pair<Int, Int> {
+    override fun wordParse(term: Char): Pair<Int, Int> {
         var terms = if (term == ' ') whitespace else arrayOf(term.code)
 
         while (vm.inPtr < nChars && vm.mem[start + vm.inPtr] in terms)
@@ -174,7 +175,7 @@ class FScanner(val vm: ForthVM) {
      *
      **/
 
-    fun nextLine() {
+    override fun nextLine() {
         nChars = 0
     }
 }

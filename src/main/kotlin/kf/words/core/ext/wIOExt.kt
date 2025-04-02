@@ -1,15 +1,16 @@
 package kf.words.core.ext
 
 import kf.ForthVM
-import kf.dict.IWordModule
+import kf.interfaces.IWordModule
 import kf.dict.Word
 import kf.dict.w_notImpl
+import kf.interfaces.IWord
 
 object wIOExt: IWordModule {
     override val name = "kf.words.core.ext.wIOExt"
     override val description = "Input/Output"
 
-    override val words = arrayOf<Word>(
+    override val words = arrayOf<IWord>(
         Word("SOURCE-ID", ::w_sourceId),
         Word("RESTORE-INPUT", ::w_notImpl),
         Word("SAVE-INPUT", ::w_notImpl),

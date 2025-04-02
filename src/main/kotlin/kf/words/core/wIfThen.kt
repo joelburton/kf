@@ -2,17 +2,17 @@ package kf.words.core
 
 import kf.mem.CellMeta
 import kf.ForthVM
-import kf.dict.IWordModule
+import kf.interfaces.IWordModule
 import kf.dict.Word
+import kf.interfaces.IWord
 import kf.mem.appendCode
-import kf.mem.appendWord
 
 object wIfThen: IWordModule {
     override val name = "kf.words.core.wIfThen"
     override val description = "Conditionals"
 
     override val words
-        get() = arrayOf(
+        get() = arrayOf<IWord>(
             Word("IF", ::w_if, imm = true, compO = true),
             Word("ELSE", ::w_else, imm = true, compO = true),
             Word("THEN", ::w_then, imm = true, compO = true),

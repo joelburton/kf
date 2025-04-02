@@ -3,13 +3,14 @@ package kf.words.core.ext
 import kf.D
 import kf.ForthVM
 import kf.MemError
-import kf.dict.IWordModule
+import kf.interfaces.IWordModule
 import kf.dict.Word
+import kf.interfaces.IWord
 
 object wInterpExt : IWordModule {
     override val name = "kf.words.core.ext.wInterpExt"
     override val description = "Interpreter extra words"
-    override val words = arrayOf(
+    override val words = arrayOf<IWord>(
         Word("PARSE-NAME", ::w_parseName),
         Word("REFILL", ::w_refill),
 

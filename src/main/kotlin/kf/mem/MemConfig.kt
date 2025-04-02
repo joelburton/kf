@@ -21,26 +21,26 @@ import kf.addr
  * can easily trash the stack or interpreter code or such.
  */
 
-open class MemConfig(
-    val name: String,
-    val regsStart: Int,
-    val regsEnd: Int,
-    val scratchStart: Int, // mini-interpreter for bootstrapping
-    val scratchEnd: Int,
-    val padStart: Int, // user-facing pad
-    val padEnd: Int,
-    val codeStart: Int,
-    val codeEnd: Int,
-    val dataStart: Int,
-    val dataEnd: Int,
-    val interpBufStart: Int, // interp input buf
-    val interpBufEnd: Int,
-    val dstackStart: Int,
-    val dstackEnd: Int,
-    val rstackStart: Int,
-    val rstackEnd: Int,
-    val upperBound: Int,
-) {
+open class MemConfig (
+    override val name: String,
+    override val regsStart: Int,
+    override val regsEnd: Int,
+    override val scratchStart: Int, // mini-interpreter for bootstrapping
+    override val scratchEnd: Int,
+    override val padStart: Int, // user-facing pad
+    override val padEnd: Int,
+    override val codeStart: Int,
+    override val codeEnd: Int,
+    override val dataStart: Int,
+    override val dataEnd: Int,
+    override val interpBufStart: Int, // interp input buf
+    override val interpBufEnd: Int,
+    override val dstackStart: Int,
+    override val dstackEnd: Int,
+    override val rstackStart: Int,
+    override val rstackEnd: Int,
+    override val upperBound: Int,
+) : IMemConfig {
     fun show() {
         println("Mem start:     $0000-")
         println("Registers:     ${regsStart.addr}-${regsEnd.addr}")

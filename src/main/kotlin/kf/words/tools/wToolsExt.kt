@@ -2,17 +2,18 @@ package kf.words.tools
 
 import kf.IntBye
 import kf.ForthVM
-import kf.dict.IWordModule
+import kf.interfaces.IWordModule
 import kf.dict.Word
 import kf.strFromAddrLen
 import kf.dict.w_notImpl
+import kf.interfaces.IWord
 
 object wToolsExt: IWordModule {
     override val name = "kf.words.tools.wToolsExt"
     override val description = "Programming tools"
 
     override val words
-        get() = arrayOf(
+        get() = arrayOf<IWord>(
             Word("AHEAD", ::w_notImpl),
             Word("ASSEMBLER", ::w_notImpl),
             Word("BYE", ::w_bye),

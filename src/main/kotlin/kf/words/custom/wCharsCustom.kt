@@ -1,13 +1,14 @@
 package kf.words.custom
 
 import kf.ForthVM
-import kf.dict.IWordModule
+import kf.interfaces.IWordModule
 import kf.dict.Word
+import kf.interfaces.IWord
 
 object wCharsCustom: IWordModule {
     override val name = "kf.words.custom.wCharsCustom"
     override val description = "Custom words for characters"
-    override val words = arrayOf<Word>(
+    override val words = arrayOf<IWord>(
         Word("TOUPPER",::w_toUpper),
         Word("TOLOWER",::w_toLower),
         )

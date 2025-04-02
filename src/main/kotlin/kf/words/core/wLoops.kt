@@ -2,17 +2,17 @@ package kf.words.core
 
 import kf.D
 import kf.ForthVM
-import kf.dict.IWordModule
+import kf.interfaces.IWordModule
 import kf.dict.Word
+import kf.interfaces.IWord
 import kf.mem.appendJump
-import kf.mem.appendWord
 
 object wLoops : IWordModule {
     override val name = "kf.words.core.wLoops"
     override val description = "Looping words"
 
     override val words
-        get() = arrayOf(
+        get() = arrayOf<IWord>(
             // BEGIN...UNTIL
             // BEGIN...WHILE...REPEAT
             // BEGIN...AGAIN (not here, "AGAIN" is in wLoopsExt)

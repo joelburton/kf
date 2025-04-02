@@ -11,6 +11,7 @@ import kf.IntBye
 import kf.IntEOF
 import kf.VERSION_STRING
 import kf.consoles.Console
+import kf.consoles.ConsoleBase
 import kf.consoles.RecordingConsole
 import kf.gateways.GatewayHttp
 import kf.gateways.GatewayWebsocket
@@ -122,7 +123,7 @@ class ForthCLI : CliktCommand("PupForth") {
             return
         }
 
-        val io =
+        val io: ConsoleBase =
             if (gateway != null) {
                 RecordingConsole()
             } else {

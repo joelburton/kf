@@ -6,7 +6,7 @@ import kf.*
 import kf.consoles.RecordingConsole
 import kf.dict.Dict
 import kf.dict.DictFullError
-import kf.dict.IWordModule
+import kf.interfaces.IWordModule
 import kf.dict.Word
 import kf.dict.WordNotFoundError
 import kf.interps.InterpBase

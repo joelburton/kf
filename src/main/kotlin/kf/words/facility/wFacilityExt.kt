@@ -1,9 +1,10 @@
 package kf.words.facility
 
 import kf.ForthVM
-import kf.dict.IWordModule
+import kf.interfaces.IWordModule
 import kf.dict.Word
 import kf.dict.w_notImpl
+import kf.interfaces.IWord
 import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
 import kotlinx.datetime.TimeZone
@@ -12,7 +13,7 @@ import kotlinx.datetime.toLocalDateTime
 object wFacilityExt : IWordModule {
     override val name = "kf.words.facility.wFacilityExt"
     override val description = "Facility words"
-    override val words = arrayOf<Word>(
+    override val words = arrayOf<IWord>(
         Word("+FIELD", ::w_notImpl),
         Word("BEGIN-STRUCTURE", ::w_notImpl),
         Word("CFIELD:", ::w_notImpl),

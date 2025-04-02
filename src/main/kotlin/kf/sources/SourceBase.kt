@@ -43,19 +43,25 @@ package kf.sources
 import kf.interps.FScanner
 import kf.ForthVM
 import kf.IntEOF
+import kf.interfaces.IFScanner
+import kf.interfaces.ISource
 
 /** ABC of all input sources. */
 
-abstract class SourceBase(val vm: ForthVM, val id: Int, val path: String) {
+abstract class SourceBase(
+    override val vm: ForthVM,
+    override val id: Int,
+    override val path: String
+) : ISource {
     /** For sources like file-reading, what char (0 is first) are we at? */
-    var ptr: Int = 0
+    override var ptr: Int = 0
 
     /** For all sources, what "line number" are we at.
      *
      * For interactive sources, this is "what number prompt are we acting at?"
      * These are 1-based, as lines in files are.
      */
-    var lineCount: Int = 0
+    override var lineCount: Int = 0
 
     /** Copy stashed away of the scanner's pointer to where it's tokenized.
      *
@@ -67,21 +73,21 @@ abstract class SourceBase(val vm: ForthVM, val id: Int, val path: String) {
      * source is about to pushed over us (since it will have its own >IN,
      * overwriting ours. When that child is popped, this can be restored.
      * */
-    var storedInPtr: Int = 0
+    override var storedInPtr: Int = 0
 
-    abstract fun readLineOrNull(): String?
+    abstract override fun readLineOrNull(): String?
 
     /** Used in error messages, like '<0:stdin>:42` or `4:<foo.fth>:17` */
     override fun toString() = "$id:$path:$lineCount"
 
     /**  Scanner for reading and tokenizing input line. */
-    var scanner: FScanner = FScanner(vm)
+    override var scanner: IFScanner = FScanner(vm)
 
     /** Push a new input source on top of this one.
      *
      * Store on us the current in-line-scanner pointer (see above).
      */
-    fun push(newSrc: SourceBase) {
+    override fun push(newSrc: ISource) {
         if (vm.sources.isNotEmpty()) vm.source.storedInPtr = vm.inPtr
         vm.sources.add(newSrc)
         vm.inPtr = 0
@@ -98,13 +104,10 @@ abstract class SourceBase(val vm: ForthVM, val id: Int, val path: String) {
      * interp loop.
      */
 
-    fun pop() {
+    override fun pop() {
         vm.sources.removeLast()
         if (vm.sources.isEmpty()) throw IntEOF()
         vm.inPtr = vm.source.storedInPtr
         vm.ip = vm.cstart
     }
 }
-
-
-

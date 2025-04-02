@@ -1,8 +1,9 @@
 package kf.words.machine
 
 import kf.*
-import kf.dict.IWordModule
+import kf.interfaces.IWordModule
 import kf.dict.Word
+import kf.interfaces.IWord
 import kf.mem.appendLit
 
 
@@ -10,7 +11,7 @@ object wMachine : IWordModule {
     override val name = "kf.words.machine.wMachine"
     override val description = "Internal words needed for VM"
 
-    override val words = arrayOf<Word>(
+    override val words = arrayOf<IWord>(
         Word("BRK", ::w_brk),
         Word("BRK-IMM", ::w_brk, imm = true),
         Word("NOP", ::w_nop),

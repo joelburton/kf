@@ -1,15 +1,16 @@
 package kf.words.core
 
 import kf.ForthVM
-import kf.dict.IWordModule
+import kf.interfaces.IWordModule
 import kf.dict.Word
+import kf.interfaces.IWord
 
 object wMemory : IWordModule {
     override val name = "kf.words.core.wMemory"
     override val description = "High-level memory"
 
     override val words
-        get() = arrayOf(
+        get() = arrayOf<IWord>(
             Word("@", ::w_fetch),
             Word("!", ::w_store),
             Word("+!", ::w_plusStore),

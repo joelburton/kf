@@ -1,14 +1,15 @@
 package kf.words.machine
 
 import kf.ForthVM
-import kf.dict.IWordModule
+import kf.interfaces.IWordModule
 import kf.dict.Word
+import kf.interfaces.IWord
 
 object wMachineDebug : IWordModule {
     override val name = "kf.words.machine.wMachineDebug"
     override val description = "Custom internal words needed for VM"
 
-    override val words = arrayOf<Word>(
+    override val words = arrayOf<IWord>(
         Word("(FOO)", ::w_parenFoo),
         Word("(.)", ::w_parenDot),
         Word("(WORDS)", ::w_parenWords)

@@ -1,6 +1,8 @@
 package kf.consoles
 
 import kf.ForthVM
+import kf.interfaces.IConsole
+import kf.interfaces.IForthVM
 import org.jline.reader.EndOfFileException
 import org.jline.reader.impl.LineReaderImpl
 import org.jline.terminal.Terminal
@@ -12,12 +14,12 @@ import org.jline.widget.AutosuggestionWidgets
  * - testing / gateways
  * - file input
  */
-class Console(val term: Terminal) : IConsole {
+class Console(val term: Terminal) : ConsoleBase() {
     lateinit var vm: ForthVM
     lateinit var reader: ForthLineReader
 
     /** LineReader that doesn't print newline after accepting. */
-    class ForthLineReader(vm: ForthVM, terminal: Terminal?) :
+    class ForthLineReader(vm: IForthVM, terminal: Terminal?) :
         LineReaderImpl(terminal, "kf") {
         init {
             completer = ForthCompleter(vm.dict.words)

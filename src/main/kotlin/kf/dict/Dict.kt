@@ -3,8 +3,11 @@ package kf.dict
 import kf.D
 import kf.DictError
 import kf.ForthVM
+import kf.interfaces.IDict
+import kf.interfaces.IWord
+import kf.interfaces.IWordMetaModule
+import kf.interfaces.IWordModule
 import kf.wrap
-import org.jline.utils.AttributedStyle
 
 class WordNotFoundError(m: String) : DictError("Word not found: $m")
 class DictFullError() : DictError("Dictionary full")
@@ -18,7 +21,8 @@ class DictFullError() : DictError("Dictionary full")
  * TODO: could we just not add a word until its complete?
  */
 
-class Dict(val vm: ForthVM, val capacity: Int = 1024) {
+class Dict(override val vm: ForthVM, override val capacity: Int = 1024) :
+    IDict {
     /** The real array of words, private to this class.
      *
      * It is arranged in order such that the word with wn=1 will be at array
@@ -45,16 +49,16 @@ class Dict(val vm: ForthVM, val capacity: Int = 1024) {
      * overhead. It isn't needed for this project.
      *
      */
-    val words: List<Word> = _words
+    override val words: List<IWord> = _words
 
     /** The word, if any, that is currently being defined.
      *
      * This is cleared after a definition has succeeded or failed.
      */
-    var currentlyDefining: Word? = null
+    override var currentlyDefining: IWord? = null
 
-    val size: Int get() = _words.size
-    val last: Word get() = _words.last()
+    override val size: Int get() = _words.size
+    override val last: Word get() = _words.last()
 
     /** Reset the entire dictionary after a system restart.
      *
@@ -69,26 +73,26 @@ class Dict(val vm: ForthVM, val capacity: Int = 1024) {
 
     /** Get word by wn, like ```dict[wn]```. Throws error if not found. */
 
-    operator fun get(wn: Int): Word {
+    override operator fun get(wn: Int): Word {
         if (wn < 0 || wn > _words.lastIndex) throw WordNotFoundError("$wn")
         return _words[wn]
     }
 
     /** Get word by name, like ```dict["dup"]```. Throws err if not found. */
 
-    operator fun get(name: String): Word =
+    override operator fun get(name: String): Word =
         _words.asReversed()
             .firstOrNull { it.name.equals(name, ignoreCase = true) }
             ?: throw WordNotFoundError(name)
 
     /** Get word by name, but returns null if word-not-found.
-     * 
+     *
      * Almost always, trying to refer to a non-existant word should be an error,
      * but there are specific use cases, like `FIND`, etc, where a missing word
      * shouldn't be an error.
      */
-    
-    fun getSafe(name: String): Word? =
+
+    override fun getSafe(name: String): Word? =
         _words.asReversed().find { it.name.equals(name, ignoreCase = true) }
 
     /**  Get word for if it uses this address.
@@ -103,18 +107,18 @@ class Dict(val vm: ForthVM, val capacity: Int = 1024) {
     fun getByMem(n: Int): Word? =
         _words.asReversed().find { it.dpos == n || it.cpos == n }
 
-    /**  Get word by name (null for not found) 
-     * 
+    /**  Get word by name (null for not found)
+     *
      * Normally, words cannot call themselves until they've finished
-     * being added to the system. 
-     * 
+     * being added to the system.
+     *
      * This is handled in the typical cases by ignoring the currently-def word
      * until it is completed and then using this method for the compilation
      * code.
-     * 
+     *
      * It will skip the currently-defined word unless it is marked as recursive
      * with the `RECURSIVE` extension.
-     ** 
+     **
      * */
 
     fun getSafeChkRecursion(name: String?): Word? {
@@ -124,17 +128,18 @@ class Dict(val vm: ForthVM, val capacity: Int = 1024) {
         }?.also {
             if (currentlyDefining === it && !it.recursive) {
                 vm.io.warning(
-                    "Skipping currently-defining word because it isn't recursive")
+                    "Skipping currently-defining word because it isn't recursive"
+                )
             }
         }
     }
 
     /** Add a word to the dictionary. */
 
-    fun add(word: Word) {
+    override fun add(word: IWord) {
         if (D) vm.dbg(3, "dict.add: ${word.name}")
         if (_words.size >= capacity) throw DictFullError()
-        _words.add(word)
+        _words.add(word as Word)
         word.wn = _words.lastIndex
     }
 
@@ -162,7 +167,7 @@ class Dict(val vm: ForthVM, val capacity: Int = 1024) {
             if (mod.name.length + sb.length + 3 < vm.io.termWidth)
                 vm.io.println(sb)
             else
-                vm.io.println("\n" + sb.wrap(vm.io.termWidth, indent=4))
+                vm.io.println("\n" + sb.wrap(vm.io.termWidth, indent = 4))
         }
 
         vm.modulesLoaded.put(mod.name, mod)

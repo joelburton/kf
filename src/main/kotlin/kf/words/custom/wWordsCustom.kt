@@ -1,14 +1,15 @@
 package kf.words.custom
 
 import kf.ForthVM
-import kf.dict.IWordModule
+import kf.interfaces.IWordModule
 import kf.dict.Word
+import kf.interfaces.IWord
 import kf.strFromAddrLen
 
 object wWordsCustom : IWordModule {
     override val name = "kf.words.custom.wWordsCustom"
     override val description = "Words Extension"
-    override val words get() = arrayOf(
+    override val words get() = arrayOf<IWord>(
         Word(".WN-FORGET", ::w_wnForget ) ,
         Word(".WN-HIDE", ::w_hideWord ) ,
         Word(".WN-UNHIDE", ::w_unhideWord ) ,

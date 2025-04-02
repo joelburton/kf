@@ -1,6 +1,6 @@
 package kf.words.tools
 
-import kf.dict.IWordMetaModule
+import kf.interfaces.IWordMetaModule
 
 object mTools: IWordMetaModule {
     override val name = "tools.mTools"

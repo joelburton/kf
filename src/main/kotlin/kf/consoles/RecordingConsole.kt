@@ -1,11 +1,13 @@
 package kf.consoles
 
+import kf.interfaces.IConsole
+import kf.interfaces.IForthVM
 import org.jline.utils.AttributedStyle
 
 /** A terminal interface for testing & gateways: it reads input from the
  * internal list of strings. These can be refilled.
  */
-class RecordingConsole() : IConsole {
+class RecordingConsole() : ConsoleBase() {
     override val termWidth = 80
 
     val outputList = mutableListOf<String>()
@@ -14,7 +16,6 @@ class RecordingConsole() : IConsole {
     }
 
     // API
-    override fun setUp(vm: kf.ForthVM) {}
     override fun keyAvail() = 0
     override fun readKey() = -1
     override fun readLine() = throw RuntimeException("Can't read w/o term")

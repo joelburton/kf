@@ -1,13 +1,14 @@
 package kf.words.core.ext
 
 import kf.ForthVM
-import kf.dict.IWordModule
+import kf.interfaces.IWordModule
 import kf.dict.Word
+import kf.interfaces.IWord
 
 object wNumIOExt : IWordModule {
     override val name = "kf.words.core.ext.wNumIOExt"
     override val description = "Numerical input/output"
-    override val words = arrayOf<Word>(
+    override val words = arrayOf<IWord>(
         Word("HEX", ::w_hex),
         Word("U.R", ::w_dotR),
         Word(".R", ::w_dotR),

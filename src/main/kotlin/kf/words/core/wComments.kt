@@ -1,15 +1,16 @@
 package kf.words.core
 
 import kf.ForthVM
-import kf.dict.IWordModule
+import kf.interfaces.IWordModule
 import kf.dict.Word
+import kf.interfaces.IWord
 
 object wComments: IWordModule {
     override val name = "kf.words.core.wComments"
     override val description = "Comments"
 
     override val words
-        get() = arrayOf(
+        get() = arrayOf<IWord>(
             Word("(", imm = true, fn = ::w_parenComment),
         )
 

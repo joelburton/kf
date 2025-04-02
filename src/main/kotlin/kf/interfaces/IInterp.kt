@@ -1,7 +1,4 @@
-package kf.interps
-
-import kf.ForthVM
-import kf.dict.IWordMetaModule
+package kf.interfaces
 
 /** Interface for any "interpreter".
  *
@@ -11,8 +8,8 @@ import kf.dict.IWordMetaModule
  */
 
 interface IInterp {
-    var vm: ForthVM
-    fun setUp(vm: ForthVM)
+    // var vm: IForthVM
+    fun setUp(vm: IForthVM)
 
     /** Name of interpreter. Purely informational. */
     val name: String

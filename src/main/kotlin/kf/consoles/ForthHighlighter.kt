@@ -2,6 +2,7 @@ package kf.consoles
 
 import kf.ForthVM
 import kf.ParseError
+import kf.interfaces.IForthVM
 import kf.toForthInt
 import org.jline.reader.Highlighter
 import org.jline.reader.LineReader
@@ -29,7 +30,7 @@ import java.util.regex.Pattern
  *
  * */
 
-internal class ForthHighlighter(val vm: ForthVM) : Highlighter {
+internal class ForthHighlighter(val vm: IForthVM) : Highlighter {
     val token = "(\\s+)|(\\\\\\s+.*)|(\\S+)".toRegex()
 
     override fun highlight(

@@ -1,8 +1,9 @@
 package kf.words.core.ext
 
 import kf.ForthVM
-import kf.dict.IWordModule
+import kf.interfaces.IWordModule
 import kf.dict.Word
+import kf.interfaces.IWord
 import kf.words.core.wCreate.w_create
 
 
@@ -10,7 +11,7 @@ object wMemoryExt : IWordModule {
     override val name = "kf.words.core.ext.wMemoryExt"
     override val description = "High-level memory"
 
-    override val words
+    override val words: Array<IWord>
         get() = arrayOf(
             Word("BUFFER:", ::w_bufferColon),
             Word("PAD", ::w_pad),

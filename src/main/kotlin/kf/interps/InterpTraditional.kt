@@ -1,6 +1,6 @@
 package kf.interps
 
-import kf.dict.IWordMetaModule
+import kf.interfaces.IWordMetaModule
 import kf.words.mForthInterp
 
 /** The "classic" Forth interpreter.

@@ -1,16 +1,16 @@
 package kf.words.custom
 
 import kf.ForthVM
-import kf.dict.IWordModule
+import kf.interfaces.IWordModule
 import kf.dict.Word
-import kf.mem.appendWord
+import kf.interfaces.IWord
 import kf.strFromAddrLen
 
 object wCompilingCustom : IWordModule {
     override val name = "kf.words.custom.wCompilingCustom"
     override val description = "Compiling custom words"
 
-    override val words get() = arrayOf(
+    override val words get() = arrayOf<IWord>(
         Word("RECURSIVE", ::w_recursive, imm = true, compO = true),
     )
 
@@ -36,7 +36,7 @@ object wCompilingCustom : IWordModule {
     /** `recursive` CI ( -- : from this point onward, word can recurse )
      */
     fun w_recursive(vm: ForthVM) {
-        val w: Word = vm.dict.currentlyDefining!!
+        val w = vm.dict.currentlyDefining!!
         w.recursive = true
     }
 

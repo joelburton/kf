@@ -1,7 +1,8 @@
 package kf.words.core
 
-import kf.dict.IWordModule
+import kf.interfaces.IWordModule
 import kf.dict.Word
+import kf.interfaces.IWord
 import kf.words.core.wDoubleCell.w_mStar
 import kf.words.core.wLogic.w_lessThan
 import kf.words.core.wMath.w_fmSlashMod
@@ -18,7 +19,7 @@ object wUnsigned: IWordModule {
     // There are unsigned ints for Kotlin; maybe I'll investigate these.
 
     override val words
-        get() = arrayOf(
+        get() = arrayOf<IWord>(
             Word("U.", ::w_dot),
             Word("UM*", ::w_mStar),
             Word("UM/MOD", ::w_fmSlashMod),

@@ -2,8 +2,9 @@ package kf.words.custom
 
 import kf.IntQuitNonInteractive
 import kf.ForthVM
-import kf.dict.IWordModule
+import kf.interfaces.IWordModule
 import kf.dict.Word
+import kf.interfaces.IWord
 
 /** The interpreter primitives.
  *
@@ -14,7 +15,7 @@ object wInterpCustom : IWordModule {
     override val name = "kf.words.custom.wInterpCustom"
     override val description = "Old interpreter primitives"
     override val words
-        get() = arrayOf(
+        get() = arrayOf<IWord>(
             Word("INTERP-PROMPT", ::w_interpPrompt),
             Word("INTERP-OK", ::w_interpOk),
 

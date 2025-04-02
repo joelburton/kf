@@ -1,8 +1,9 @@
 package kf.interps
 
 import kf.*
-import kf.dict.IWordMetaModule
+import kf.interfaces.IWordMetaModule
 import kf.dict.Word
+import kf.interfaces.IForthVM
 import kf.mem.*
 import kf.words.core.ext.wInterpExt.w_parseName
 import kf.words.custom.wToolsCustom
@@ -46,6 +47,7 @@ import kf.words.mEvalInterp
  * Good times.
  *
  * */
+
 
 open class InterpEval() : InterpBase() {
     override val name = "Eval"

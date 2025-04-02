@@ -1,15 +1,16 @@
 package kf.words.core.ext
 
 import kf.ForthVM
-import kf.dict.IWordModule
+import kf.interfaces.IWordModule
 import kf.dict.Word
+import kf.interfaces.IWord
 
 
 object wStacksExt: IWordModule {
     override val name = "kf.words.core.ext.wRStackExt"
     override val description = "Handling calling and exiting custom functions"
 
-    override val words = arrayOf(
+    override val words: Array<IWord> = arrayOf(
         Word("2>R", ::w_twoToR),
         Word("2R>", ::w_twoRFrom),
         Word("2R@", ::w_twoRFetch),

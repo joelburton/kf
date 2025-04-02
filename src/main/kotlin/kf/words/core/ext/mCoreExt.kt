@@ -1,6 +1,6 @@
 package kf.words.core.ext
 
-import kf.dict.IWordMetaModule
+import kf.interfaces.IWordMetaModule
 
 object mCoreExt: IWordMetaModule {
     override val name = "kf.words.core.ext.mCoreExt"

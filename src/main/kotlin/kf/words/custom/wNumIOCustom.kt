@@ -1,13 +1,14 @@
 package kf.words.custom
 
 import kf.ForthVM
-import kf.dict.IWordModule
+import kf.interfaces.IWordModule
 import kf.dict.Word
+import kf.interfaces.IWord
 
 object wNumIOCustom: IWordModule {
     override val name = "kf.words.custom.wNumIOCustom"
     override val description = "Custom words for numbers and IO"
-    override val words = arrayOf<Word>(
+    override val words = arrayOf<IWord>(
         Word("OCTAL",::w_octal),
         Word("BINARY",::w_binary),
         Word("DEC.",::w_decDot),

@@ -1,6 +1,6 @@
 package kf.words.fileaccess
 
-import kf.dict.IWordMetaModule
+import kf.interfaces.IWordMetaModule
 
 object mFileAccess: IWordMetaModule {
     override val name = "kf.words.fileaccess.mFileAccess"

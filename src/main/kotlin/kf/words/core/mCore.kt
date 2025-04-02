@@ -1,6 +1,6 @@
 package kf.words.core
 
-import kf.dict.IWordMetaModule
+import kf.interfaces.IWordMetaModule
 
 object mCore: IWordMetaModule {
     override val name = "kf.words.core.mCore"

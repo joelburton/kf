@@ -4,6 +4,8 @@ import kf.ForthVM
 import kf.addr
 import kf.charRepr
 import kf.hex
+import kf.interfaces.ICellMeta
+import kf.interfaces.IForthVM
 
 /** What sort of information does this cell in memory hold?
  *
@@ -11,7 +13,7 @@ import kf.hex
  * However, it helps the smart disassembler (`SEE`) to show more useful info.
  *
  */
-enum class CellMeta {
+enum class CellMeta: ICellMeta {
     Unknown,
     WordNum,
     JumpLoc,
@@ -24,7 +26,8 @@ enum class CellMeta {
     StringLen,
     NumLit;
 
-    fun getExplanation(vm: ForthVM, v: Int, k: Int): String {
+    override fun getExplanation(vm: IForthVM, v: Int, k: Int): String {
+        val realVM = vm as ForthVM
         return when (this) {
             WordNum -> vm.dict[v].name
             JumpLoc -> "  --> $v to ${(k + v).addr}"

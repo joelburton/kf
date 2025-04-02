@@ -3,8 +3,9 @@ package kf.words.core
 import kf.CharLitError
 import kf.ForthVM
 import kf.ForthVM.Companion.CHAR_SIZE
-import kf.dict.IWordModule
+import kf.interfaces.IWordModule
 import kf.dict.Word
+import kf.interfaces.IWord
 import kf.mem.appendLit
 import kf.strFromAddrLen
 
@@ -13,7 +14,7 @@ object wChars: IWordModule {
     override val description = "Characters & char memory"
 
     override val words
-        get() = arrayOf(
+        get() = arrayOf<IWord>(
             Word("C!", ::w_cStore),
             Word("C,", ::w_cComma),
             Word("C@", ::w_cFetch),

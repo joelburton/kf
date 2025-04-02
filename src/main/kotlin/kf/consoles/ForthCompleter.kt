@@ -1,6 +1,7 @@
 package kf.consoles
 
 import kf.dict.Word
+import kf.interfaces.IWord
 import org.jline.reader.Candidate
 import org.jline.reader.Completer
 import org.jline.reader.LineReader
@@ -8,7 +9,7 @@ import org.jline.reader.ParsedLine
 
 /** JLine completer that uses the Forth dictionary to complete. */
 
-internal class ForthCompleter(val words: List<Word>) : Completer {
+internal class ForthCompleter(val words: List<IWord>) : Completer {
     override fun complete(
         reader: LineReader,
         line: ParsedLine,

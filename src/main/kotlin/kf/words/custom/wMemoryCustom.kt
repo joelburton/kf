@@ -1,14 +1,15 @@
 package kf.words.custom
 
 import kf.ForthVM
-import kf.dict.IWordModule
+import kf.interfaces.IWordModule
 import kf.dict.Word
+import kf.interfaces.IWord
 
 
 object wMemoryCustom : IWordModule {
     override val name = "kf.words.custom.wMemoryCustom"
     override val description = "Memory management"
-    override val words = arrayOf(
+    override val words = arrayOf<IWord>(
         Word(",,", ::w_commaComma),
         Word("CELL", ::w_cell),
         Word("ON", ::w_on),

@@ -1,11 +1,10 @@
 package kf.words.custom
 
 import kf.*
-import kf.dict.IWordModule
+import kf.interfaces.IWordModule
 import kf.dict.Word
+import kf.interfaces.IWord
 import kf.mem.CellMeta
-import org.jline.utils.AttributedStyle.DEFAULT
-import org.jline.utils.AttributedStyle.BLACK
 import org.jline.utils.ExecHelper.exec
 import java.io.IOException
 
@@ -14,7 +13,7 @@ object wToolsCustom : IWordModule {
     override val name = "kf.words.custom.wToolsCustom"
     override val description = "Tools specific to KF"
     override val words
-        get() = arrayOf(
+        get() = arrayOf<IWord>(
             Word(".DSTK", ::w_dotDstk),
             Word(".RSTK", ::w_dotRstk),
             Word(".CODE", ::w_dotCode),

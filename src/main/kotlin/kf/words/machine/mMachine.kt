@@ -1,6 +1,6 @@
 package kf.words.machine
 
-import kf.dict.IWordMetaModule
+import kf.interfaces.IWordMetaModule
 
 object mMachine: IWordMetaModule {
     override val name = "kf.words.machine.mMachine"

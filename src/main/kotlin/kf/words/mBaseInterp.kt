@@ -1,7 +1,7 @@
 package kf.words
 
-import kf.dict.IWordMetaModule
-import kf.dict.IWordModule
+import kf.interfaces.IWordMetaModule
+import kf.interfaces.IWordModule
 import kf.words.machine.wMachine
 import kf.words.machine.wMachineDebug
 

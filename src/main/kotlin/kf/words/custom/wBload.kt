@@ -1,13 +1,14 @@
 package kf.words.custom
 
 import kf.*
-import kf.dict.IWordModule
+import kf.interfaces.IWordModule
 import kf.dict.Word
+import kf.interfaces.IWord
 
 object wBload : IWordModule {
     override val name = "kf.words.custom.wBload"
     override val description = "Include binary files"
-    override val words get() = arrayOf(
+    override val words get(): Array<IWord> = arrayOf(
         // including new primitives and forth files
         Word("BLOAD", ::w_bload),
         Word("BLOAD-AGAIN", ::w_bloadAgain),

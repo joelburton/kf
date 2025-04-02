@@ -4,9 +4,10 @@ import kf.D
 import kf.ForthVM
 import kf.WordLengthError
 import kf.addr
+import kf.interfaces.IForthVM
+import kf.interfaces.IWord
 
 
-typealias StaticFunc = (ForthVM) -> Unit
 
 
 
@@ -38,18 +39,20 @@ typealias StaticFunc = (ForthVM) -> Unit
  *   what `DOES>` gives you.
  */
 
+typealias StaticFunc = (ForthVM) -> Unit
+
 class Word(
     /** Word name. Stored in lowercase, but lookup in case-insensitive. */
     name: String,
 
     /** Function to run; all words have one; pure-data words just use (ADDR) */
-    var fn: StaticFunc,
+    override var fn: StaticFunc,
 
     /** Location of code-start for colon words with code. */
-    var cpos: Int = NO_ADDR,
+    override var cpos: Int = NO_ADDR,
 
     /** Location of data-start for Forth-created words with data. */
-    var dpos: Int = NO_ADDR,
+    override var dpos: Int = NO_ADDR,
 
     /** Should this word be hidden from casual users?
      *
@@ -59,10 +62,10 @@ class Word(
      *
      * You can always see ALL words with `.DICT`
      */
-    var hidden: Boolean = false,
+    override var hidden: Boolean = false,
 
     /** Is this word IMMEDIATE (ie, executes in compilation mode) */
-    var imm: Boolean = false,
+    override var imm: Boolean = false,
 
     /** Is this word compile-only?
      *
@@ -70,14 +73,14 @@ class Word(
      * in one, like IF or ; are marked as such, so the system can throw a
      * helpful error if the user tries to use them.
      */
-    var compO: Boolean = false,
+    override var compO: Boolean = false,
 
     /** Is word interpreter-only?
      *
      * These are words that shouldn't be used in a word definition and would
      * confuse the system. Users are given an error if they try to do so.
      */
-    var interpO: Boolean = false,
+    override var interpO: Boolean = false,
 
     /** Is this word marked as recursive?
      *
@@ -88,7 +91,7 @@ class Word(
      * ANS-standard way of doing the same thing would be
      * `: a recurse 42 recurse ;`
      */
-    var recursive: Boolean = false,
+    override var recursive: Boolean = false,
 
     /** Does this word "defer" to another (if so, this is their word num)
      *
@@ -98,7 +101,7 @@ class Word(
      * Different from the standard: this support ANY word being able to be
      * deferred. That is both cool and breaks the rules.
      */
-    var deferToWn: Int? = null,
+    override var deferToWn: Int? = null,
 
     /** The unique, sequential, unchanging word number.
      *
@@ -114,8 +117,8 @@ class Word(
      *
      * Somewhere Tony Hoare is smiling.
      * */
-     var wn: Int = 0 // look ma, not null ;-)
-) {
+    override var wn: Int = 0 // look ma, not null ;-)
+) : IWord {
 
     init {
         if (name.length > 32) throw WordLengthError("Word name too long: $name")
@@ -123,7 +126,7 @@ class Word(
 
     // Everything works if this is set to uppercase or not change the case;
     // all lookups for the words are done case-insensitively.
-    val name = name.lowercase()
+    override val name = name.lowercase()
 
     companion object {
         // A marker to make it easy to recognize that a word doesn't have a
@@ -133,7 +136,7 @@ class Word(
         const val NO_ADDR: Int = 0xffff
 
         // A word to put in place where needed when "no word" is a value.
-        fun noWordFn(vm: ForthVM) {
+        fun noWordFn(vm: IForthVM) {
             vm.io.warning("No Word Fn ran")
         }
         val noWord = Word("noWord", ::noWordFn, hidden = true)
@@ -147,7 +150,7 @@ class Word(
 
     /** What executing word does: this is what `word()` runs */
 
-    operator fun invoke(vm: ForthVM) {
+    override operator fun invoke(vm: IForthVM) {
         vm.currentWord = this
         if (D) vm.dbg(2, "x@ ${(vm.ip - 1).addr} -> $name ${getFnName()}")
         fn(vm)
@@ -164,7 +167,7 @@ class Word(
     }
 
     /**  Useful for debugging and to support `w_see` and `w_simple-see`. */
-    fun getHeaderStr(): String {
+    override fun getHeaderStr(): String {
         return java.lang.String.format(
             "%s %-36s %-2s %-2s %-2s %-2s %-2s C:%-5s D:%-5s",
             String.format("(%3d)", wn),

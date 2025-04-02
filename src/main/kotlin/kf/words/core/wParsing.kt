@@ -3,8 +3,9 @@ package kf.words.core
 import kf.mem.CellMeta
 import kf.D
 import kf.ForthVM
-import kf.dict.IWordModule
+import kf.interfaces.IWordModule
 import kf.dict.Word
+import kf.interfaces.IWord
 import kf.strFromAddrLen
 import kf.toForthInt
 
@@ -13,7 +14,7 @@ object wParsing : IWordModule {
     override val description = "Parsing buffers"
 
     override val words
-        get() = arrayOf(
+        get() = arrayOf<IWord>(
             Word("WORD", ::w_word),
             Word("SOURCE", ::w_source),
             Word(">IN", ::w_toIn),

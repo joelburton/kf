@@ -1,15 +1,16 @@
 package kf.words.core
 
 import kf.ForthVM
-import kf.dict.IWordModule
+import kf.interfaces.IWordModule
 import kf.dict.Word
+import kf.interfaces.IWord
 
 
 object wStacks: IWordModule {
     override val name = "kf.words.core.RStack"
     override val description = "Working with the return stack."
 
-    override val words = arrayOf(
+    override val words = arrayOf<IWord>(
         Word(">R", ::w_toR),
         Word("R>", ::w_rFrom),
         Word("R@", ::w_rFetch),

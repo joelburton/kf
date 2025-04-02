@@ -1,6 +1,4 @@
-package kf.dict
-
-import kf.dict.IWordModule
+package kf.interfaces
 
 /** A class that brings together several modules.
  *

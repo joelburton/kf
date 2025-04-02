@@ -1,14 +1,15 @@
 package kf.words.core.ext
 
 import kf.ForthVM
-import kf.dict.IWordModule
+import kf.interfaces.IWordModule
 import kf.dict.Word
+import kf.interfaces.IWord
 import kf.mem.appendJump
 
 object wLoopsExt : IWordModule {
     override val name = "kf.words.core.ext.wLoopsExt"
     override val description = "Loops Extension"
-    override val words
+    override val words: Array<IWord>
         get() = arrayOf(
             Word("AGAIN", ::w_again, imm = true, compO = true),
             Word("?DO", ::w_questionDo, imm=true, compO = true),
