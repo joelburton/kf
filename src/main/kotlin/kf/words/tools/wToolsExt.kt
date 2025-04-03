@@ -3,6 +3,7 @@ package kf.words.tools
 import kf.IntBye
 import kf.ForthVM
 import kf.dict.Dict
+import kf.dict.NO_ADDR
 import kf.interfaces.IWordModule
 import kf.dict.Word
 import kf.strFromAddrLen
@@ -81,7 +82,7 @@ object wToolsExt: IWordModule {
         val newName: String =  vm.source.scanner.parseName().strFromAddrLen(vm)
         val w = vm.dict[newName]
         (vm.dict as Dict).truncateAt(w.wn)
-        if (w.cpos != 0xffff) vm.cend = w.cpos
+        if (w.cpos != NO_ADDR) vm.cend = w.cpos
     }
 
 

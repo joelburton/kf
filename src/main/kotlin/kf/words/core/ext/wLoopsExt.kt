@@ -1,10 +1,10 @@
 package kf.words.core.ext
 
-import kf.ForthVM
-import kf.interfaces.IWordModule
+import kf.dict.NO_ADDR
 import kf.dict.Word
 import kf.interfaces.IForthVM
 import kf.interfaces.IWord
+import kf.interfaces.IWordModule
 import kf.mem.appendJump
 
 object wLoopsExt : IWordModule {
@@ -37,7 +37,7 @@ object wLoopsExt : IWordModule {
      * */
 
     fun w_questionDo(vm: IForthVM) {
-        vm.appendJump("(?DO)", 0xffff)
+        vm.appendJump("(?DO)", NO_ADDR)
         vm.rstk.push(vm.cend) // start of do loop, so end can come back to us
         vm.rstk.push(vm.cend - 1) // push branch loc so loop/+loop can fix
         vm.rstk.push(1)  // how many forward refs we'll need to fix (LEAVE)L

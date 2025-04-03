@@ -1,11 +1,11 @@
 package kf.words.core
 
-import kf.mem.CellMeta
-import kf.ForthVM
-import kf.interfaces.IWordModule
+import kf.dict.NO_ADDR
 import kf.dict.Word
 import kf.interfaces.IForthVM
 import kf.interfaces.IWord
+import kf.interfaces.IWordModule
+import kf.mem.CellMeta
 import kf.mem.appendCode
 
 object wIfThen: IWordModule {
@@ -25,7 +25,7 @@ object wIfThen: IWordModule {
         vm.appendWord("0branch")
         vm.dstk.push(vm.cend)
         // "THEN" will fix this fake address
-        vm.appendCode(0xffff, CellMeta.JumpLoc)
+        vm.appendCode(NO_ADDR, CellMeta.JumpLoc)
     }
 
     /** `ELSE` IM CO ( -- ) If provided, if IF fails, start exec here */

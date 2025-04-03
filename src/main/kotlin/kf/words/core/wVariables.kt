@@ -1,11 +1,11 @@
 package kf.words.core
 
-import kf.mem.CellMeta
-import kf.ForthVM
-import kf.interfaces.IWordModule
+import kf.dict.NO_ADDR
 import kf.dict.Word
 import kf.interfaces.IForthVM
 import kf.interfaces.IWord
+import kf.interfaces.IWordModule
+import kf.mem.CellMeta
 import kf.strFromAddrLen
 
 object wVariables: IWordModule {
@@ -29,7 +29,7 @@ object wVariables: IWordModule {
         val name =  vm.source.scanner.parseName().strFromAddrLen(vm)
         val w = Word(
             name,
-            cpos = 0xffff,
+            cpos = NO_ADDR,
             dpos = vm.dend,
             fn = ::parenConstant)
         vm.dict.add(w)

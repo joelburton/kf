@@ -3,6 +3,7 @@ package kf.dict
 import kf.interfaces.IForthVM
 import kf.interfaces.IWord
 
+const val NO_ADDR = 0xffff
 
 
 /** A Forth word.
@@ -65,14 +66,14 @@ class Word(
      * in one, like IF or ; are marked as such, so the system can throw a
      * helpful error if the user tries to use them.
      */
-    override var compO: Boolean = false,
+    override val compO: Boolean = false,
 
     /** Is word interpreter-only?
      *
      * These are words that shouldn't be used in a word definition and would
      * confuse the system. Users are given an error if they try to do so.
      */
-    override var interpO: Boolean = false,
+    override val interpO: Boolean = false,
 
     /** Is this word marked as recursive?
      *
@@ -112,34 +113,9 @@ class Word(
     override var wn: Int = 0 // look ma, not null ;-)
 ) : IWord {
 
-    // fixme: add back
-//    init {
-//        if (name.length > 32) throw WordLengthError("Word name too long: $name")
-//    }
-
     // Everything works if this is set to uppercase or not change the case;
     // all lookups for the words are done case-insensitively.
     override val name = name.lowercase()
 
     override fun toString() = name
-
-    /** What executing word does: this is what `word()` runs */
-
-//    override operator fun invoke(vm: IForthVM) {
-//        vm.currentWord = this
-//        if (D) vm.dbg(2, "x@ ${(vm.ip - 1).addr} -> $name ${getFnName()}")
-//        fn(vm)
-//        if (D) vm.dbg(3, "x@ ${vm.ip.addr} <- $name")
-//    }
-
-
-
-
-
-    // not currently using, but keeping it around in case its useful
-
-//    fun isSameExec(other: Word): Boolean =
-//        this.fn == other.fn
-//                && this.cpos == other.cpos
-//                && this.dpos == other.dpos
 }

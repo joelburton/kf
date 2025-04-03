@@ -1,11 +1,11 @@
 package kf.words.core
 
 import kf.D
-import kf.ForthVM
-import kf.interfaces.IWordModule
+import kf.dict.NO_ADDR
 import kf.dict.Word
 import kf.interfaces.IForthVM
 import kf.interfaces.IWord
+import kf.interfaces.IWordModule
 import kf.mem.appendJump
 
 object wLoops : IWordModule {
@@ -91,7 +91,7 @@ object wLoops : IWordModule {
      */
 
     fun w_while(vm: IForthVM) {
-        vm.appendJump("0branch", 0xffff)
+        vm.appendJump("0branch", NO_ADDR)
         vm.rstk.push(vm.cend) // location of while
     }
 
@@ -254,7 +254,7 @@ object wLoops : IWordModule {
 //        vm.appendWord("R>")
 //        vm.appendWord("R>")
 //        vm.appendWord("2drop")
-        vm.appendJump("(leave)", 0xffff)
+        vm.appendJump("(leave)", NO_ADDR)
         val count = vm.rstk.pop()
         vm.rstk.push(vm.cend - 1, count + 1)
     }

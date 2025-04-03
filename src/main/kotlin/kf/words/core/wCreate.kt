@@ -1,10 +1,10 @@
 package kf.words.core
 
-import kf.ForthVM
-import kf.interfaces.IWordModule
+import kf.dict.NO_ADDR
 import kf.dict.Word
 import kf.interfaces.IForthVM
 import kf.interfaces.IWord
+import kf.interfaces.IWordModule
 import kf.strFromAddrLen
 import kf.words.core.wFunctions.w_call
 
@@ -33,7 +33,7 @@ object wCreate: IWordModule {
         val name =  vm.source.scanner.parseName().strFromAddrLen(vm)
         val w = Word(
             name,
-            cpos = 0xffff,
+            cpos = NO_ADDR,
             dpos = vm.dend,
             fn = vm.dict["(ADDR)"].fn)
         vm.dict.add(w)

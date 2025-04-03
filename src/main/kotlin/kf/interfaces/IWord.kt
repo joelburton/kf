@@ -1,17 +1,14 @@
 package kf.interfaces
 
-typealias StaticFunc = (IForthVM) -> Unit
-
-
 interface IWord {
     val name: String
-    var fn: StaticFunc
+    var fn: (IForthVM) -> Unit
     var cpos: Int
     var dpos: Int
     var hidden: Boolean
     var imm: Boolean
-    var compO: Boolean
-    var interpO: Boolean
+    val compO: Boolean
+    val interpO: Boolean
     var recursive: Boolean
     var deferToWn: Int?
     var wn: Int

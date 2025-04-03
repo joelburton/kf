@@ -3,6 +3,7 @@ package kf.dict
 import kf.D
 import kf.DictError
 import kf.ForthVM
+import kf.WordLengthError
 import kf.addr
 
 import kf.interfaces.IDict
@@ -24,7 +25,10 @@ class DictFullError() : DictError("Dictionary full")
  * TODO: could we just not add a word until its complete?
  */
 
-class Dict(override val vm: ForthVM, override val capacity: Int = 1024) :
+class Dict(
+    override val vm: ForthVM,
+    override val capacity: Int = 1024
+) :
     IDict {
     /** The real array of words, private to this class.
      *
@@ -142,6 +146,8 @@ class Dict(override val vm: ForthVM, override val capacity: Int = 1024) :
     override fun add(word: IWord) {
         if (D) vm.dbg(3, "dict.add: ${word.name}")
         if (_words.size >= capacity) throw DictFullError()
+        if (word.name.length > 32)
+            throw WordLengthError("Word name too long: ${word.name}")
         _words.add(word as Word)
         word.wn = _words.lastIndex
     }
@@ -239,6 +245,7 @@ class Dict(override val vm: ForthVM, override val capacity: Int = 1024) :
         fun noWordFn(vm: IForthVM) {
             vm.io.warning("No Word Fn ran")
         }
+
         val noWord = Word("noWord", ::noWordFn, hidden = true)
 
         /**  Explanation for header strings */

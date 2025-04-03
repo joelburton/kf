@@ -1,10 +1,10 @@
 package kf.words.core.ext
 
-import kf.ForthVM
-import kf.interfaces.IWordModule
+import kf.dict.NO_ADDR
 import kf.dict.Word
 import kf.interfaces.IForthVM
 import kf.interfaces.IWord
+import kf.interfaces.IWordModule
 import kf.interps.InterpBase
 import kf.strFromAddrLen
 import kf.words.core.wFunctions
@@ -65,7 +65,7 @@ object wCompileExt: IWordModule {
         val newWord = Word(
             "(ANON)",
             cpos = vm.cend,
-            dpos = 0xffff,
+            dpos = NO_ADDR,
             fn = wFunctions::w_call,
             hidden = true,
         )

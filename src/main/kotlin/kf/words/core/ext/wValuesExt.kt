@@ -1,6 +1,7 @@
 package kf.words.core.ext
 
 import kf.*
+import kf.dict.NO_ADDR
 import kf.interfaces.IWordModule
 import kf.dict.Word
 import kf.interfaces.IForthVM
@@ -34,7 +35,7 @@ object wValuesExt: IWordModule {
         val name =  vm.source.scanner.parseName().strFromAddrLen(vm)
         val w = Word(
             name,
-            cpos = 0xffff,
+            cpos = NO_ADDR,
             dpos = vm.dend,
             fn = ::parenValue
         )

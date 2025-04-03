@@ -1,10 +1,10 @@
 package kf.words.core
 
-import kf.ForthVM
-import kf.interfaces.IWordModule
+import kf.dict.NO_ADDR
 import kf.dict.Word
 import kf.interfaces.IForthVM
 import kf.interfaces.IWord
+import kf.interfaces.IWordModule
 import kf.interps.InterpBase
 import kf.mem.appendLit
 import kf.strFromAddrLen
@@ -38,7 +38,7 @@ object wCompiling : IWordModule {
         val newWord = Word(
             name,
             cpos = vm.cend,
-            dpos = 0xffff,
+            dpos = NO_ADDR,
             fn = wFunctions::w_call,
             hidden = true,
         )

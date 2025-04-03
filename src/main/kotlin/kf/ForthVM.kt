@@ -300,6 +300,12 @@ class ForthVM(
         }
     }
 
+//    fun invokeWord(name: String) {
+//        if (D) dbg(3, "vm.invokeWord: $name")
+//        val wn = dict[name]
+//        currentWord = wn
+//        wn.fn(this)
+//    }
 
     /** Programmers get lonely and we love to get logs. */
     @Suppress("KotlinConstantConditions")

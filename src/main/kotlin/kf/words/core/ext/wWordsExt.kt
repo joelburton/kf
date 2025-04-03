@@ -1,10 +1,10 @@
 package kf.words.core.ext
 
-import kf.ForthVM
-import kf.interfaces.IWordModule
+import kf.dict.NO_ADDR
 import kf.dict.Word
 import kf.interfaces.IForthVM
 import kf.interfaces.IWord
+import kf.interfaces.IWordModule
 import kf.mem.appendLit
 import kf.strFromAddrLen
 import kf.words.core.wFunctions
@@ -36,7 +36,7 @@ object wWordsExt : IWordModule {
             newName,
             fn = wFunctions::w_call,
             cpos = vm.cend,
-            dpos = 0xffff,
+            dpos = NO_ADDR,
         )
         vm.dict.add(w)
         vm.appendLit(w.wn)

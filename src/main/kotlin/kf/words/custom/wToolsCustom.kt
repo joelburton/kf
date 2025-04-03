@@ -2,6 +2,7 @@ package kf.words.custom
 
 import kf.*
 import kf.dict.Dict
+import kf.dict.NO_ADDR
 import kf.interfaces.IWordModule
 import kf.dict.Word
 import kf.interfaces.IForthVM
@@ -51,9 +52,9 @@ object wToolsCustom : IWordModule {
             val src = vm.dict[it]
             vm.io.println(" (deferrable word pointing to $src (${src.wn}))")
         }
-        if (w.cpos == 0xffff) {
+        if (w.cpos == NO_ADDR) {
             vm.io.println(" (built-in, cannot show code: ${vm.dict.getFnName(w)})")
-        } else if (w.dpos != 0xffff) {
+        } else if (w.dpos != NO_ADDR) {
             _dump(vm, w.dpos, simple)
         } else {
 //                val ret_n: Int = vm.dict.getNum("return")
