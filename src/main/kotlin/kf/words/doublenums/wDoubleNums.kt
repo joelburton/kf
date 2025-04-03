@@ -3,6 +3,7 @@ package kf.words.doublenums
 import kf.ForthVM
 import kf.interfaces.IWordModule
 import kf.dict.Word
+import kf.interfaces.IForthVM
 import kf.interfaces.IWord
 
 // 8.6.1.0360 2CONSTANT
@@ -51,7 +52,7 @@ object wDoubleNums : IWordModule {
      * followed by a space.
      */
 
-    fun w_dDot(vm: ForthVM) {
+    fun w_dDot(vm: IForthVM) {
         val dbl = vm.dstk.dblPop()
         vm.io.print(dbl.toString(vm.base) + " ")
     }

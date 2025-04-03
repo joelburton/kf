@@ -4,6 +4,7 @@ import kf.DivisionByZero
 import kf.ForthVM
 import kf.interfaces.IWordModule
 import kf.dict.Word
+import kf.interfaces.IForthVM
 import kf.interfaces.IWord
 import kotlin.math.absoluteValue
 
@@ -39,25 +40,25 @@ object wMath : IWordModule {
 
     /** `+` ( n1 n2 -- n3 ) add */
 
-    fun w_plus(vm: ForthVM) {
+    fun w_plus(vm: IForthVM) {
         vm.dstk.push(vm.dstk.pop() + vm.dstk.pop())
     }
 
     /** `-` ( n1 n2 -- n3 ) n1 - n2 => n3 */
 
-    fun w_minus(vm: ForthVM) {
+    fun w_minus(vm: IForthVM) {
         vm.dstk.push(-vm.dstk.pop() + vm.dstk.pop())
     }
 
     /** `*` ( n1 n2 -- n3 ) Multiply n1 by n2 giving the product u3 */
 
-    fun w_star(vm: ForthVM) {
+    fun w_star(vm: IForthVM) {
         vm.dstk.push(vm.dstk.pop() * vm.dstk.pop())
     }
 
     /** `/` ( n1 n2 -- n3 ) */
 
-    fun w_slash(vm: ForthVM) {
+    fun w_slash(vm: IForthVM) {
         val n2 = vm.dstk.pop()
         val n1 = vm.dstk.pop()
         if (n2 == 0) throw DivisionByZero()
@@ -67,13 +68,13 @@ object wMath : IWordModule {
 
     /** `NEGATE` ( n1 -- n2 ) -n1 */
 
-    fun w_negate(vm: ForthVM) {
+    fun w_negate(vm: IForthVM) {
         vm.dstk.push(-vm.dstk.pop())
     }
 
     /** `LSHIFT` ( x1 u -- x2 ) logical left shift x1 u times */
 
-    fun w_lshift(vm: ForthVM) {
+    fun w_lshift(vm: IForthVM) {
         val u = vm.dstk.pop()
         val x1 = vm.dstk.pop()
         vm.dstk.push(x1 shl u)
@@ -81,7 +82,7 @@ object wMath : IWordModule {
 
     /** `RSHIFT` ( x1 u -- x2 ) logical right shift u places */
 
-    fun w_rshift(vm: ForthVM) {
+    fun w_rshift(vm: IForthVM) {
         val u = vm.dstk.pop()
         val x1 = vm.dstk.pop()
         vm.dstk.push(x1 ushr u)
@@ -89,26 +90,26 @@ object wMath : IWordModule {
 
     /** `ABS` ( n -- u ) u is the absolute value of n */
 
-    fun w_abs(vm: ForthVM) {
+    fun w_abs(vm: IForthVM) {
         vm.dstk.push(vm.dstk.pop().absoluteValue)
     }
 
 
     /** `2*` ( x1 -- x2 ) shift left (mult by 2) */
 
-    fun w_twoStar(vm: ForthVM) {
+    fun w_twoStar(vm: IForthVM) {
         vm.dstk.push(vm.dstk.pop() shl 1)
     }
 
     /** `2/`  ( x1 -- x2 ) shift right (div by 2) */
 
-    fun w_twoSlash(vm: ForthVM) {
+    fun w_twoSlash(vm: IForthVM) {
         vm.dstk.push(vm.dstk.pop() ushr 1)
     }
 
     /**  `* /` ( n1 n2 n3 -- n4 ) n1 * n2 / n3 => n4 */
 
-    fun w_starSlash(vm: ForthVM) {
+    fun w_starSlash(vm: IForthVM) {
         val divBy = vm.dstk.pop()
         if (divBy == 0) throw DivisionByZero()
         val n2 = vm.dstk.pop().toLong()
@@ -119,7 +120,7 @@ object wMath : IWordModule {
 
     /** `MOD` ( n1 n2 -- n3 ) remainder of n1 / n2 */
 
-    fun w_mod(vm: ForthVM) {
+    fun w_mod(vm: IForthVM) {
         val n2 = vm.dstk.pop()
         if (n2 == 0) throw DivisionByZero()
         val n1 = vm.dstk.pop()
@@ -128,7 +129,7 @@ object wMath : IWordModule {
 
     /** `/MOD` ( n1 n2 -- n3 n4 ) n1 divmod d2 => remainder quotient */
 
-    fun w_slashMod(vm: ForthVM) {
+    fun w_slashMod(vm: IForthVM) {
         val n2 = vm.dstk.pop()
         if (n2 == 0) throw DivisionByZero()
         val n1 = vm.dstk.pop()
@@ -137,7 +138,7 @@ object wMath : IWordModule {
 
     /** `* /MOD` ( n1 n2 n3 -- n4 n5 ) n1 * n2 / n3 => remainder quotient */
 
-    fun w_starSlashMod(vm: ForthVM) {
+    fun w_starSlashMod(vm: IForthVM) {
         val divBy = vm.dstk.pop()
         if (divBy == 0) throw DivisionByZero()
         val n2 = vm.dstk.pop().toLong()
@@ -150,7 +151,7 @@ object wMath : IWordModule {
 
     /** FM/MOD ( d1 n1 -- n2 n3 ) Floored quotient and remainder of d1/n1 */
 
-    fun w_fmSlashMod(vm: ForthVM) {  // -7 fm/mod 3 = -3, 2
+    fun w_fmSlashMod(vm: IForthVM) {  // -7 fm/mod 3 = -3, 2
         val n1 = vm.dstk.pop().toLong()
         if (n1 == 0L) throw DivisionByZero()
         val d1 = vm.dstk.dblPop()
@@ -161,7 +162,7 @@ object wMath : IWordModule {
 
     /** SM/REM ( d1 n1 -- n2 n3 ) Symmetric quotient and remainder of d1/n1 */
 
-    fun w_smSlashRem(vm: ForthVM) { // -7 sm/mod 3 = -2, -1
+    fun w_smSlashRem(vm: IForthVM) { // -7 sm/mod 3 = -2, -1
         val n1 = vm.dstk.pop().toLong()
         if (n1 == 0L) throw DivisionByZero()
         val d1 = vm.dstk.dblPop()
@@ -171,13 +172,13 @@ object wMath : IWordModule {
 
     /** `1+` ( n1 -- n2 ) add 1 to n1 */
 
-    fun w_onePlus(vm: ForthVM) {
+    fun w_onePlus(vm: IForthVM) {
         vm.dstk.push(vm.dstk.pop() + 1)
     }
 
     /** `1-` ( n1 -- n2 ) subtract 1 from n1 */
 
-    fun w_oneMinus(vm: ForthVM) {
+    fun w_oneMinus(vm: IForthVM) {
         vm.dstk.push(vm.dstk.pop() - 1)
     }
 }

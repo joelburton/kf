@@ -3,6 +3,7 @@ package kf.words.core.ext
 import kf.ForthVM
 import kf.interfaces.IWordModule
 import kf.dict.Word
+import kf.interfaces.IForthVM
 import kf.interfaces.IWord
 import kf.interps.InterpBase
 import kf.strFromAddrLen
@@ -21,7 +22,7 @@ object wCompileExt: IWordModule {
 
     /** Compile a word (used by `compile,` and ```[compile]```, below.) */
 
-    private fun compile(vm: ForthVM, wn: Int) {
+    private fun compile(vm: IForthVM, wn: Int) {
         val w = vm.dict[wn]
 
         if (vm.interp.isInterpreting) {
@@ -35,7 +36,7 @@ object wCompileExt: IWordModule {
 
     /** ```[compile]``` ( "name" -- compile this word ) */
 
-    fun w_bracketCompile(vm: ForthVM) {
+    fun w_bracketCompile(vm: IForthVM) {
         compile(vm, vm.mem[vm.ip++])
     }
 
@@ -47,24 +48,24 @@ object wCompileExt: IWordModule {
     // fixme: i think this is wrong -- real compile, is just "," ---
     //   doesn't check imm mode, etc
 
-    fun w_compileComma(vm: ForthVM) {
+    fun w_compileComma(vm: IForthVM) {
         compile(vm, vm.dstk.pop())
     }
 
     /** `.(` IM CO ( -- ) Print message immediately */
 
-    fun w_dotParen(vm: ForthVM) {
+    fun w_dotParen(vm: IForthVM) {
         var msg = vm.source.scanner.parse(')').strFromAddrLen(vm)
         vm.io.print(msg)
     }
 
     /** `:NONAME` ( -- xt ) Make anonymous name and put xt on stack */
 
-    fun w_colonNoName(vm: ForthVM) {
+    fun w_colonNoName(vm: IForthVM) {
         val newWord = Word(
             "(ANON)",
             cpos = vm.cend,
-            dpos = Word.NO_ADDR,
+            dpos = 0xffff,
             fn = wFunctions::w_call,
             hidden = true,
         )

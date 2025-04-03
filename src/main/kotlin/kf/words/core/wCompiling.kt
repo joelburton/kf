@@ -3,6 +3,7 @@ package kf.words.core
 import kf.ForthVM
 import kf.interfaces.IWordModule
 import kf.dict.Word
+import kf.interfaces.IForthVM
 import kf.interfaces.IWord
 import kf.interps.InterpBase
 import kf.mem.appendLit
@@ -31,13 +32,13 @@ object wCompiling : IWordModule {
      * is ended (or until the execution of DOES> in some systems).
      */
 
-    fun w_colon(vm: ForthVM) {
+    fun w_colon(vm: IForthVM) {
         val name: String = vm.source.scanner.parseName().strFromAddrLen(vm)
 
         val newWord = Word(
             name,
             cpos = vm.cend,
-            dpos = Word.NO_ADDR,
+            dpos = 0xffff,
             fn = wFunctions::w_call,
             hidden = true,
         )
@@ -48,7 +49,7 @@ object wCompiling : IWordModule {
 
     /** `;` IM CO ( C: colon-sys -- ) Mark def as done and append exit  */
 
-    fun w_semicolon(vm: ForthVM) {
+    fun w_semicolon(vm: IForthVM) {
         vm.appendWord(";S")
         if (vm.dict.currentlyDefining?.name
             .equals("(ANON)", ignoreCase = true)) {
@@ -72,7 +73,7 @@ object wCompiling : IWordModule {
      *  between thw one they wanted to make immediate)
      */
 
-    fun w_immediate(vm: ForthVM) {
+    fun w_immediate(vm: IForthVM) {
         vm.dict.last.imm = true
         if (vm.dict.currentlyDefining == null) {
             vm.io.muted(
@@ -84,7 +85,7 @@ object wCompiling : IWordModule {
 
     /** `RECURSE` IM CO ( -- ) Append call to self to current def */
 
-    fun w_recurse(vm: ForthVM) {
+    fun w_recurse(vm: IForthVM) {
         vm.appendWord(vm.dict.last.name)
     }
 
@@ -107,7 +108,7 @@ object wCompiling : IWordModule {
      * Which compiles to the same thing as if "test" used "if" directly.
      */
 
-    fun w_postpone(vm: ForthVM) {
+    fun w_postpone(vm: IForthVM) {
         val token: String = vm.source.scanner.parseName().strFromAddrLen(vm)
         vm.appendWord("[compile]")
         vm.appendWord(token)
@@ -115,7 +116,7 @@ object wCompiling : IWordModule {
 
     /** `LITERAL` IM CO ( x -- ) Append "lit" and literal x to current def. */
 
-    fun w_literal(vm: ForthVM) {
+    fun w_literal(vm: IForthVM) {
         vm.appendLit(vm.dstk.pop())
     }
 }

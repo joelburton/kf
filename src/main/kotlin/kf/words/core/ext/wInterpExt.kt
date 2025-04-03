@@ -5,6 +5,7 @@ import kf.ForthVM
 import kf.MemError
 import kf.interfaces.IWordModule
 import kf.dict.Word
+import kf.interfaces.IForthVM
 import kf.interfaces.IWord
 
 object wInterpExt : IWordModule {
@@ -25,7 +26,7 @@ object wInterpExt : IWordModule {
      * only white space, the resulting string has length zero.
      */
 
-    fun w_parseName(vm: ForthVM) {
+    fun w_parseName(vm: IForthVM) {
         val (addr, len) = vm.source.scanner.parseName()
         if (D) vm.dbg(3, "w_parseName: addr=$addr len=$len")
         vm.dstk.push(addr, len)
@@ -40,7 +41,7 @@ object wInterpExt : IWordModule {
      * from the current input source, return false.
      */
 
-    fun w_refill(vm: ForthVM) {
+    fun w_refill(vm: IForthVM) {
         val nChars = vm.source.scanner.nChars
 
         if (D) vm.dbg(3, "w_refill: $nChars at ${vm.inPtr} ")

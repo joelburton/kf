@@ -3,6 +3,7 @@ package kf.words.core
 import kf.ForthVM
 import kf.interfaces.IWordModule
 import kf.dict.Word
+import kf.interfaces.IForthVM
 import kf.interfaces.IWord
 
 object wMemory : IWordModule {
@@ -32,7 +33,7 @@ object wMemory : IWordModule {
 
     /** `@` ( a-addr -- x ) x is the value stored at a-addr */
 
-    fun w_fetch(vm: ForthVM) {
+    fun w_fetch(vm: IForthVM) {
         val addr = vm.dstk.pop()
         val num = vm.mem[addr]
         vm.dstk.push(num)
@@ -40,7 +41,7 @@ object wMemory : IWordModule {
 
     /** `!` ( x a-addr -- ) Store x at a-addr */
 
-    fun w_store(vm: ForthVM) {
+    fun w_store(vm: IForthVM) {
         val addr: Int = vm.dstk.pop()
         val num: Int = vm.dstk.pop()
         vm.mem[addr] = num
@@ -48,7 +49,7 @@ object wMemory : IWordModule {
 
     /** `+!` ( n a-addr -- ) Add n to the single-cell number at a-addr */
 
-    fun w_plusStore(vm: ForthVM) {
+    fun w_plusStore(vm: IForthVM) {
         val addr: Int = vm.dstk.pop()
         val incr = vm.dstk.pop()
         vm.mem[addr] = vm.mem[addr] + incr
@@ -56,14 +57,14 @@ object wMemory : IWordModule {
 
     /** `2@` ( a-addr -- x1 x2 ) Fetch pair x1 (addr) x2 (addr+1)  */
 
-    fun w_twoFetch(vm: ForthVM) {
+    fun w_twoFetch(vm: IForthVM) {
         val addr = vm.dstk.pop()
         vm.dstk.push(vm.mem[addr], vm.mem[addr + 1])
     }
 
     /** `2!` ( x1 x2 a-addr -- ) Store pair x1 (to addr+1) x2 (to addr) */
 
-    fun w_twoStore(vm: ForthVM) {
+    fun w_twoStore(vm: IForthVM) {
         val addr = vm.dstk.pop()
         val x2 = vm.dstk.pop()
         val x1 = vm.dstk.pop()
@@ -74,13 +75,13 @@ object wMemory : IWordModule {
 
     /** `,` ( x -- ) Write x to data-end */
 
-    fun w_comma(vm: ForthVM) {
+    fun w_comma(vm: IForthVM) {
         vm.mem[vm.dend++] = vm.dstk.pop()
     }
 
     /** `HERE` ( -- addr ) Addr is dend address */
 
-    fun w_here(vm: ForthVM) {
+    fun w_here(vm: IForthVM) {
         vm.dstk.push(vm.dend)
     }
 
@@ -88,7 +89,7 @@ object wMemory : IWordModule {
 
     /** `FILL` ( c-addr u char -- ) Store char in u cells starting a c-addr */
 
-    fun w_fill(vm: ForthVM) {
+    fun w_fill(vm: IForthVM) {
         val char = vm.dstk.pop()
         val count = vm.dstk.pop()
         val addr = vm.dstk.pop()
@@ -102,7 +103,7 @@ object wMemory : IWordModule {
      * Needs to handle overlapping memory ranges.
      * */
 
-    fun w_move(vm: ForthVM) {
+    fun w_move(vm: IForthVM) {
         val count = vm.dstk.pop()
         val addr2 = vm.dstk.pop()
         val addr1 = vm.dstk.pop()
@@ -113,7 +114,7 @@ object wMemory : IWordModule {
 
     /** `ALLOT` ( n -- ) Get n spaces in data section. */
 
-    fun w_allot(vm: ForthVM) {
+    fun w_allot(vm: IForthVM) {
         val d = vm.dstk.pop()
         vm.dend += d
     }
@@ -121,14 +122,14 @@ object wMemory : IWordModule {
 
     /** `CELL+` ( a-addr1 -- a-addr2 ) Add size of addr to addr1 => addr2 */
 
-    fun w_cellPlus(vm: ForthVM) {
+    fun w_cellPlus(vm: IForthVM) {
         val addr = vm.dstk.pop()
         vm.dstk.push(addr + 1)
     }
 
     /** `CELLS` ( n1 -- n2 ) n2 is size of n1 cells */
 
-    fun w_cells(vm: ForthVM) {
+    fun w_cells(vm: IForthVM) {
         val num = vm.dstk.pop()
         vm.dstk.push(num)
     }
@@ -138,7 +139,7 @@ object wMemory : IWordModule {
      * Given that our cells (char or regular) are size-1, they always are.
      * */
 
-    fun w_align(vm: ForthVM) {
+    fun w_align(vm: IForthVM) {
         /* always aligned */
     }
 
@@ -147,7 +148,7 @@ object wMemory : IWordModule {
      * Given that our cells (char or regular) are size-1, these are same.
      */
 
-    fun w_aligned(vm: ForthVM) {
+    fun w_aligned(vm: IForthVM) {
         /* always aligned */
     }
 }

@@ -4,6 +4,7 @@ import kf.mem.CellMeta
 import kf.ForthVM
 import kf.interfaces.IWordModule
 import kf.dict.Word
+import kf.interfaces.IForthVM
 import kf.interfaces.IWord
 import kf.strFromAddrLen
 
@@ -23,12 +24,12 @@ object wVariables: IWordModule {
      * Execution: ( -- x ) Place x on stack
      */
 
-    fun w_constant(vm: ForthVM) {
+    fun w_constant(vm: IForthVM) {
         val data = vm.dstk.pop()
         val name =  vm.source.scanner.parseName().strFromAddrLen(vm)
         val w = Word(
             name,
-            cpos = Word.NO_ADDR,
+            cpos = 0xffff,
             dpos = vm.dend,
             fn = ::parenConstant)
         vm.dict.add(w)
@@ -38,7 +39,7 @@ object wVariables: IWordModule {
 
     /** Return the data for the constant at currentWord */
 
-    private fun parenConstant(vm: ForthVM) {
+    private fun parenConstant(vm: IForthVM) {
         val data = vm.mem[vm.currentWord.dpos]
         vm.dstk.push(data)
     }
@@ -49,7 +50,7 @@ object wVariables: IWordModule {
      * Execution: ( -- a-addr ) a-addr is the address of the reserved cell.
      */
 
-    fun w_variable(vm: ForthVM) {
+    fun w_variable(vm: IForthVM) {
         wCreate.w_create(vm)
         vm.dend += 1
     }

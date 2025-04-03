@@ -3,6 +3,7 @@ package kf.words.custom
 import kf.ForthVM
 import kf.interfaces.IWordModule
 import kf.dict.Word
+import kf.interfaces.IForthVM
 import kf.interfaces.IWord
 
 object wRegisters : IWordModule {
@@ -18,31 +19,31 @@ object wRegisters : IWordModule {
         Word("R:STATE", ::w_state),
     )
 
-    fun w_cstart(vm: ForthVM) {
+    fun w_cstart(vm: IForthVM) {
         vm.dstk.push(ForthVM.Companion.REG_CSTART)
     }
 
-    fun w_cend(vm: ForthVM) {
+    fun w_cend(vm: IForthVM) {
         vm.dstk.push(ForthVM.Companion.REG_CEND)
     }
 
-    fun w_dstart(vm: ForthVM) {
+    fun w_dstart(vm: IForthVM) {
         vm.dstk.push(ForthVM.Companion.REG_DSTART)
     }
 
-    fun w_dend(vm: ForthVM) {
+    fun w_dend(vm: IForthVM) {
         vm.dstk.push(ForthVM.Companion.REG_DEND)
     }
 
-    fun w_base(vm: ForthVM) {
+    fun w_base(vm: IForthVM) {
         vm.dstk.push(ForthVM.Companion.REG_BASE)
     }
 
-    fun w_verbosity(vm: ForthVM) {
+    fun w_verbosity(vm: IForthVM) {
         vm.dstk.push(ForthVM.Companion.REG_VERBOSITY)
     }
 
-    fun w_state(vm: ForthVM) {
+    fun w_state(vm: IForthVM) {
         vm.dstk.push(ForthVM.Companion.REG_STATE)
     }
 

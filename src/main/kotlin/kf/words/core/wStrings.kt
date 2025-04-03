@@ -3,6 +3,7 @@ package kf.words.core
 import kf.ForthVM
 import kf.interfaces.IWordModule
 import kf.dict.Word
+import kf.interfaces.IForthVM
 import kf.interfaces.IWord
 import kf.mem.appendStr
 import kf.mem.appendStrToData
@@ -22,14 +23,14 @@ object wStrings : IWordModule {
 
     /** `COUNT` ( c-addr1 -- c-addr2 u ) First char, length of counted str */
 
-    fun w_count(vm: ForthVM) {
+    fun w_count(vm: IForthVM) {
         val addr = vm.dstk.pop()
         vm.dstk.push(addr + 1, vm.mem[addr])
     }
 
     /** `."` ( -- ) Display string */
 
-     fun w_dotQuote(vm: ForthVM) {
+     fun w_dotQuote(vm: IForthVM) {
         val s = vm.source.scanner.parse('"').strFromAddrLen(vm)
 
         if (vm.interp.isInterpreting) {
@@ -42,7 +43,7 @@ object wStrings : IWordModule {
 
     /** `S"` ( -- c-addr u ) Get address and length of string */
 
-    fun w_sQuote(vm: ForthVM) {
+    fun w_sQuote(vm: IForthVM) {
             val s = vm.source.scanner.parse('"').strFromAddrLen(vm)
 
         if (vm.interp.isInterpreting) {
@@ -55,7 +56,7 @@ object wStrings : IWordModule {
 
     /** `TYPE` ( c-addr u -- ) Display string */
 
-    fun w_type(vm: ForthVM) {
+    fun w_type(vm: IForthVM) {
         val len = vm.dstk.pop()
         val addr = vm.dstk.pop()
         val output = (0 until len)

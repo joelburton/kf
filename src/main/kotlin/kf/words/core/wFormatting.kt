@@ -3,6 +3,7 @@ package kf.words.core
 import kf.ForthVM
 import kf.interfaces.IWordModule
 import kf.dict.Word
+import kf.interfaces.IForthVM
 import kf.interfaces.IWord
 import kotlin.math.absoluteValue
 
@@ -23,7 +24,7 @@ object wFormatting: IWordModule {
 
     /** `#` ( d1 -- d2 ) d1 / base (-> d2) and add remainder to string */
 
-    fun w_numberSign(vm: ForthVM) {
+    fun w_numberSign(vm: IForthVM) {
         val n = vm.dstk.dblPop()
         val rem = n % vm.base
         val quot = n / vm.base
@@ -33,7 +34,7 @@ object wFormatting: IWordModule {
 
     /** `#>` ( d -- c-addr u ) Push address of formatted string */
 
-    fun w_numberSignGreater(vm: ForthVM) {
+    fun w_numberSignGreater(vm: IForthVM) {
         val s = pict.toString().reversed()
         var addr = vm.memConfig.scratchStart
         for (c in s) {
@@ -45,7 +46,7 @@ object wFormatting: IWordModule {
 
     /** `#S` ( d1 -- d2 ) Add d1 to pict string (in base) and return 0 */
 
-    fun w_numberSignS(vm: ForthVM) {
+    fun w_numberSignS(vm: IForthVM) {
         val n = vm.dstk.dblPop()
         pict.append(n.absoluteValue.toString(vm.base).reversed())
         vm.dstk.dblPush(0)
@@ -53,20 +54,20 @@ object wFormatting: IWordModule {
 
     /** `<#` ( -- ) Start creating pict number */
 
-    fun w_lessNumberSign(@Suppress("unused") vm: ForthVM) {
+    fun w_lessNumberSign(@Suppress("unused") vm: IForthVM) {
         pict.clear()
     }
 
     /** `HOLD` ( n -- ) Add char to pict number */
 
-    fun w_hold(vm: ForthVM) {
+    fun w_hold(vm: IForthVM) {
         val char = vm.dstk.pop()
         pict.append(char.toChar())
     }
 
     /** `SIGN` ( n -- ) If num is negative, add "-" to pict string */
 
-    fun w_sign(vm: ForthVM) {
+    fun w_sign(vm: IForthVM) {
         val n = vm.dstk.pop()
         if (n < 0) pict.append("-")
     }

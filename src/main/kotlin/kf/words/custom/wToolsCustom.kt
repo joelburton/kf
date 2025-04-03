@@ -1,10 +1,13 @@
 package kf.words.custom
 
 import kf.*
+import kf.dict.Dict
 import kf.interfaces.IWordModule
 import kf.dict.Word
+import kf.interfaces.IForthVM
 import kf.interfaces.IWord
 import kf.mem.CellMeta
+import kf.stacks.FStack
 import org.jline.utils.ExecHelper.exec
 import java.io.IOException
 
@@ -43,14 +46,14 @@ object wToolsCustom : IWordModule {
 
     fun _see(vm: ForthVM, w: Word, simple: Boolean) {
         val semiS = vm.dict[";s"]
-        vm.io.info(w.getHeaderStr())
+        vm.io.info(vm.dict.getHeaderStr(w))
         w.deferToWn?.let {
-            val src: Word = vm.dict[it]
+            val src = vm.dict[it]
             vm.io.println(" (deferrable word pointing to $src (${src.wn}))")
         }
-        if (w.cpos == Word.Companion.NO_ADDR) {
-            vm.io.println(" (built-in, cannot show code: ${w.getFnName()})")
-        } else if (w.dpos != Word.Companion.NO_ADDR) {
+        if (w.cpos == 0xffff) {
+            vm.io.println(" (built-in, cannot show code: ${vm.dict.getFnName(w)})")
+        } else if (w.dpos != 0xffff) {
             _dump(vm, w.dpos, simple)
         } else {
 //                val ret_n: Int = vm.dict.getNum("return")
@@ -63,7 +66,8 @@ object wToolsCustom : IWordModule {
         }
     }
 
-    private fun _dump(vm: ForthVM, k: Int, simple: Boolean) {
+    private fun _dump(inVm: IForthVM, k: Int, simple: Boolean) {
+        val vm = inVm as ForthVM
         val v: Int = vm.mem[k]
         val exp = vm.cellMeta[k].getExplanation(vm, v, k)
             .apply { padEnd(20 - length) }
@@ -75,65 +79,65 @@ object wToolsCustom : IWordModule {
     }
 
     /**  ( -- ) Dump the data stack. */
-    fun w_dotDstk(vm: ForthVM) {
+    fun w_dotDstk(vm: IForthVM) {
         vm.dstk.dump()
     }
 
     /**  ( -- ) Dump the return stack. */
-    fun w_dotRstk(vm: ForthVM) {
+    fun w_dotRstk(vm: IForthVM) {
         vm.rstk.dump()
     }
 
 
     /** Dump code area; this powers the ".text" word. */
-    fun w_dotCode(vm: ForthVM) {
+    fun w_dotCode(vm: IForthVM) {
         for (k in vm.cstart..<vm.cend) {
             _dump(vm, k, false)
         }
     }
 
-    fun w_dotRegs(vm: ForthVM) {
+    fun w_dotRegs(vm: IForthVM) {
         for (k in vm.memConfig.regsStart..vm.memConfig.regsEnd) {
             _dump(vm, k, false)
         }
     }
 
     /** Dumps data area; this powers the ".data" word. */
-    fun w_dotData(vm: ForthVM) {
+    fun w_dotData(vm: IForthVM) {
         for (k in vm.dstart..<vm.dend) {
             _dump(vm, k, false)
         }
     }
 
-    fun w_dotXTSee(vm: ForthVM) {
-        val w: Word = vm.dict[vm.dstk.pop()]
-        _see(vm, w, false)
+    fun w_dotXTSee(vm: IForthVM) {
+        val w = vm.dict[vm.dstk.pop()]
+        _see(vm as ForthVM, w as Word, false)
     }
 
 
-    fun w_dotXTSeeSimple(vm: ForthVM) {
-        val w: Word = vm.dict[vm.dstk.pop()]
-        _see(vm, w, true)
+    fun w_dotXTSeeSimple(vm: IForthVM) {
+        val w = vm.dict[vm.dstk.pop()]
+        _see(vm as ForthVM, w as Word, true)
     }
 
-    fun w_dotSeeSimple(vm: ForthVM) {
+    fun w_dotSeeSimple(vm: IForthVM) {
         val w = vm.dict[vm.source.scanner.parseName().strFromAddrLen(vm)]
-        _see(vm, w, true)
+        _see(vm as ForthVM, w as Word, true)
     }
 
-    fun w_dotIPFetch(vm: ForthVM) {
+    fun w_dotIPFetch(vm: IForthVM) {
         vm.dstk.push(vm.ip)
     }
 
-    fun w_dotIPStore(vm: ForthVM) {
+    fun w_dotIPStore(vm: IForthVM) {
         vm.ip = vm.dstk.pop()
     }
 
-    fun w_dotMemConfig(vm: ForthVM) {
+    fun w_dotMemConfig(vm: IForthVM) {
         vm.memConfig.show()
     }
 
-    fun w_dotStackTrace(vm: ForthVM) {
+    fun w_dotStackTrace(vm: IForthVM) {
         val stackTraceElements = Thread.currentThread().stackTrace
         vm.io.warning("Stack trace:")
         stackTraceElements.forEach {
@@ -143,18 +147,18 @@ object wToolsCustom : IWordModule {
 
     /**  `.dict` ( -- : list all words with internal info )
      */
-    fun w_dotDict(vm: ForthVM) {
+    fun w_dotDict(vm: IForthVM) {
         vm.io.println()
         for (i in 0..<vm.dict.size) {
-            val w: Word = vm.dict[i]
-            vm.io.info(w.getHeaderStr())
+            val w = vm.dict[i]
+            vm.io.info((vm.dict as Dict).getHeaderStr(w))
         }
-        vm.io.muted(Word.Companion.HEADER_STR)
+        vm.io.muted(Dict.Companion.HEADER_STR)
     }
 
     /** `.SIMILAR` ( -- ) Find similar words */
 
-    fun w_dotSimilar(vm: ForthVM) {
+    fun w_dotSimilar(vm: IForthVM) {
         val term = vm.source.scanner.parseName().strFromAddrLen(vm).lowercase()
 
         vm.io.println(
@@ -166,22 +170,22 @@ object wToolsCustom : IWordModule {
 
     /** `./WORDS` ( -- n ) Get number of words */
 
-    fun w_dotSlashWords(vm: ForthVM) {
+    fun w_dotSlashWords(vm: IForthVM) {
         vm.dstk.push(vm.dict.size)
     }
 
     /** `.CS` ( ??? --- ) show and clear data stack */
 
-    fun w_dotCS(vm: ForthVM) {
+    fun w_dotCS(vm: IForthVM) {
         vm.dstk.simpleDump()
-        vm.dstk.reset()
+        (vm.dstk as FStack).reset()
     }
 
-    fun w_dotHistory(vm: ForthVM) {
+    fun w_dotHistory(vm: IForthVM) {
         vm.io.showHistory()
     }
 
-    fun w_dotLess(vm: ForthVM) {
+    fun w_dotLess(vm: IForthVM) {
         val fname = vm.source.scanner.parseName().strFromAddrLen(vm)
         val path = java.nio.file.Path.of(fname)
 //        val term = vm.io.term as Terminal
@@ -198,7 +202,7 @@ object wToolsCustom : IWordModule {
 //        )
     }
 
-    fun w_dotShell(vm: ForthVM) {
+    fun w_dotShell(vm: IForthVM) {
         val possibleArgs = generateSequence {
             vm.source.scanner.parseName().strFromAddrLen(vm)
         }
@@ -215,11 +219,11 @@ object wToolsCustom : IWordModule {
         vm.io.print(out)
     }
 
-    fun w_tildeTilde(vm: ForthVM) {
+    fun w_tildeTilde(vm: IForthVM) {
         vm.io.muted("${vm.source} ${vm.dstk.simpleDumpStr()}")
     }
 
-    fun w_dotReRun(vm: ForthVM) {
+    fun w_dotReRun(vm: IForthVM) {
         val prev = vm.source.scanner.parseName().strFromAddrLen(vm)
         val num = try {
             prev.toInt()
@@ -235,7 +239,7 @@ object wToolsCustom : IWordModule {
         }
     }
 
-    fun w_dotTermInfo(vm: ForthVM) {
+    fun w_dotTermInfo(vm: IForthVM) {
         vm.io.termInfo()
     }
 }

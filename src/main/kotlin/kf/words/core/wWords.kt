@@ -4,6 +4,7 @@ import kf.D
 import kf.ForthVM
 import kf.interfaces.IWordModule
 import kf.dict.Word
+import kf.interfaces.IForthVM
 import kf.interfaces.IWord
 import kf.mem.appendLit
 import kf.strFromAddrLen
@@ -33,7 +34,7 @@ object wWords : IWordModule {
      * "' X" outside of compilation state.
      */
 
-    fun w_bracketTick(vm: ForthVM) {
+    fun w_bracketTick(vm: IForthVM) {
         val token = vm.source.scanner.parseName().strFromAddrLen(vm)
         if (D) vm.dbg(3, "w_bracketTick: token='$token'")
         val wn: Int = vm.dict[token].wn
@@ -42,7 +43,7 @@ object wWords : IWordModule {
 
     /** `'` ( "<spaces>name" -- xt ) Get xt of word */
 
-    fun w_tick(vm: ForthVM) {
+    fun w_tick(vm: IForthVM) {
         val token = vm.source.scanner.parseName().strFromAddrLen(vm)
         val wn = vm.dict[token].wn
         vm.dstk.push(wn)
@@ -59,7 +60,7 @@ object wWords : IWordModule {
      * returned while not compiling.
      */
 
-    fun w_find(vm: ForthVM) {
+    fun w_find(vm: IForthVM) {
         val addr = vm.dstk.pop()
         val token = addr.strFromCSAddr(vm)
         if (D) vm.dbg(3, "w_find: token='$token'")
@@ -80,7 +81,7 @@ object wWords : IWordModule {
 
     /** `>BODY` ( xt -- a-addr ) Get data-field address corresponding to xt. */
 
-    fun w_toBody(vm: ForthVM) {
+    fun w_toBody(vm: IForthVM) {
         val w = vm.dict[vm.dstk.pop()]
         vm.dstk.push(w.dpos)
     }

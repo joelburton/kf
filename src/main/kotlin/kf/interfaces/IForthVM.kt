@@ -1,6 +1,5 @@
 package kf.interfaces
 
-import kf.mem.IMemConfig
 import kotlin.time.TimeSource
 
 interface IForthVM {
@@ -35,6 +34,4 @@ interface IForthVM {
     fun dbg(lvl: Int, s: String)
 
     fun appendWord(s: String)
-
-
 }

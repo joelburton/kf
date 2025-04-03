@@ -3,6 +3,7 @@ package kf.words.core.ext
 import kf.ForthVM
 import kf.interfaces.IWordModule
 import kf.dict.Word
+import kf.interfaces.IForthVM
 import kf.interfaces.IWord
 import kf.mem.appendCStr
 import kf.mem.appendCStrToData
@@ -21,7 +22,7 @@ object wStringsExt: IWordModule {
         )
 
     /** `C"` (in:ccc" -- cs-addr ) */
-    fun w_cQuote(vm: ForthVM) {
+    fun w_cQuote(vm: IForthVM) {
         val s = vm.source.scanner.parse('"').strFromAddrLen(vm)
 
         if (vm.interp.isInterpreting) {
@@ -52,7 +53,7 @@ object wStringsExt: IWordModule {
      *
      * */
 
-    fun w_sBackSlashQuote(vm: ForthVM) {
+    fun w_sBackSlashQuote(vm: IForthVM) {
         // non-urgent, but: don't implement \xXX form
         val s = vm.source.scanner.parse('"').strFromAddrLen(vm)
         val newS = s

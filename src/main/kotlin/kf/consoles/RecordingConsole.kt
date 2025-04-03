@@ -1,19 +1,19 @@
 package kf.consoles
 
+import kf.ForthVM
 import kf.interfaces.IConsole
-import kf.interfaces.IForthVM
-import org.jline.utils.AttributedStyle
 
 /** A terminal interface for testing & gateways: it reads input from the
  * internal list of strings. These can be refilled.
  */
-class RecordingConsole() : ConsoleBase() {
+class RecordingConsole() : IConsole {
     override val termWidth = 80
 
     val outputList = mutableListOf<String>()
     private fun add(s: String) {
         outputList.add(s)
     }
+    override fun setUp(vm: ForthVM) {}
 
     // API
     override fun keyAvail() = 0
@@ -29,6 +29,7 @@ class RecordingConsole() : ConsoleBase() {
 
     override fun print(s: String) = add(s)
     override fun println(s: String) = add("$s\n")
+    override fun println() = add("\n")
 
     // print a line stylized (all start on new line except "ok")
 

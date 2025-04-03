@@ -3,6 +3,7 @@ package kf.words.core.ext
 import kf.ForthVM
 import kf.interfaces.IWordModule
 import kf.dict.Word
+import kf.interfaces.IForthVM
 import kf.interfaces.IWord
 import kf.mem.appendJump
 
@@ -24,7 +25,7 @@ object wLoopsExt : IWordModule {
      * and adds the jump to there to the definition.
      * */
 
-    fun w_again(vm: ForthVM) {
+    fun w_again(vm: IForthVM) {
         val bwref = vm.rstk.pop()
         vm.appendJump("branch", bwref - vm.cend - 1)
     }
@@ -35,7 +36,7 @@ object wLoopsExt : IWordModule {
      * and emits `(?DO)`, not `(DO)` for runtime.
      * */
 
-    fun w_questionDo(vm: ForthVM) {
+    fun w_questionDo(vm: IForthVM) {
         vm.appendJump("(?DO)", 0xffff)
         vm.rstk.push(vm.cend) // start of do loop, so end can come back to us
         vm.rstk.push(vm.cend - 1) // push branch loc so loop/+loop can fix
@@ -48,7 +49,7 @@ object wLoopsExt : IWordModule {
      * first iteration. It skips looping if limit-start; otherwise, it acts
      * just like `(DO)` */
 
-    fun w_parenQuestionDo(vm: ForthVM) {
+    fun w_parenQuestionDo(vm: IForthVM) {
         val limit = vm.dstk.pop()
         val start = vm.dstk.pop()
 

@@ -5,6 +5,7 @@ import kf.interfaces.IWordModule
 import kf.dict.Word
 import kf.strFromAddrLen
 import kf.dict.w_notImpl
+import kf.interfaces.IForthVM
 import kf.interfaces.IWord
 
 object wFileAccess : IWordModule {
@@ -57,13 +58,13 @@ object wFileAccess : IWordModule {
      * of any files that were being interpreted is implementation-defined.
      */
 
-    fun w_includeFile(vm: ForthVM) {
+    fun w_includeFile(vm: IForthVM) {
 
     }
 
     /** `INCLUDED` ( i * x c-addr u -- j * x ) Include file (c-addr + u) */
 
-    fun w_included(vm: ForthVM) {
+    fun w_included(vm: IForthVM) {
         val len = vm.dstk.pop()
         val addr = vm.dstk.pop()
         val path = Pair(addr, len).strFromAddrLen(vm)

@@ -1,17 +1,10 @@
 package kf
 
 
-import kf.consoles.Console
-import kf.consoles.ConsoleBase
 import kf.dict.Dict
-import kf.interfaces.IWordModule
-import kf.dict.Word
-import kf.interfaces.ICellMeta
-import kf.interfaces.IInterp
-import kf.mem.CellMeta
-import kf.mem.MemConfig
-import kf.mem.RegisterDelegate
-import kf.mem.smallMemConfig
+import kf.interfaces.*
+import kf.interps.InterpBase
+import kf.mem.*
 import kf.sources.SourceBase
 import kf.sources.SourceStdIn
 import kf.stacks.FStack
@@ -23,11 +16,6 @@ import kf.words.facility.mFacility
 import kf.words.fileaccess.mFileAccess
 import kf.words.tools.mTools
 import kotlin.time.TimeSource
-import kf.interfaces.IForthVM
-import kf.interfaces.ISource
-import kf.interfaces.IWord
-import kf.interps.InterpBase
-import kf.mem.appendCode
 
 
 /**
@@ -45,7 +33,7 @@ import kf.mem.appendCode
  */
 
 class ForthVM(
-    override val io: ConsoleBase,
+    override val io: IConsole,
     override val interp: InterpBase,
     override val memConfig: MemConfig = smallMemConfig,
     override val mem: IntArray = IntArray(memConfig.upperBound + 1),
@@ -180,7 +168,7 @@ class ForthVM(
         dend = memConfig.dataStart
 
         ip = cstart
-        currentWord = Word.noWord
+        currentWord = Dict.noWord
 
         dict.reset()
         modulesLoaded.clear()
@@ -307,7 +295,8 @@ class ForthVM(
             val wn = mem[ip++]
             val w = dict[wn]
             // run it
-            w(this)
+            currentWord = w
+            w.fn(this)
         }
     }
 

@@ -1,4 +1,4 @@
-package kf.mem
+package kf.interfaces
 
 /** Sets of compatible choice for memory size and memory regions:
  *
@@ -38,4 +38,6 @@ interface IMemConfig {
     val rstackStart: Int
     val rstackEnd: Int
     val upperBound: Int
+
+    fun show()
 }

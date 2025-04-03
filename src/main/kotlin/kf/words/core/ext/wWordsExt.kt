@@ -3,6 +3,7 @@ package kf.words.core.ext
 import kf.ForthVM
 import kf.interfaces.IWordModule
 import kf.dict.Word
+import kf.interfaces.IForthVM
 import kf.interfaces.IWord
 import kf.mem.appendLit
 import kf.strFromAddrLen
@@ -29,13 +30,13 @@ object wWordsExt : IWordModule {
      *
      * Will forget back to (and including) when the "foo" marker was made.
      */
-    fun w_marker(vm: ForthVM) {
+    fun w_marker(vm: IForthVM) {
         val newName: String =  vm.source.scanner.parseName().strFromAddrLen(vm)
         val w = Word(
             newName,
             fn = wFunctions::w_call,
             cpos = vm.cend,
-            dpos = Word.Companion.NO_ADDR
+            dpos = 0xffff,
         )
         vm.dict.add(w)
         vm.appendLit(w.wn)

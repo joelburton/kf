@@ -3,7 +3,10 @@ package kf.dict
 import kf.D
 import kf.DictError
 import kf.ForthVM
+import kf.addr
+
 import kf.interfaces.IDict
+import kf.interfaces.IForthVM
 import kf.interfaces.IWord
 import kf.interfaces.IWordMetaModule
 import kf.interfaces.IWordModule
@@ -199,4 +202,49 @@ class Dict(override val vm: ForthVM, override val capacity: Int = 1024) :
         if (D) vm.dbg(3, "dict.removeLast")
         _words.removeLast()
     }
+
+    /**  Useful for debugging and to support `w_see` and `w_simple-see`. */
+    fun getHeaderStr(w: IWord): String {
+        return java.lang.String.format(
+            "%s %-36s %-2s %-2s %-2s %-2s %-2s C:%-5s D:%-5s",
+            String.format("(%3d)", w.wn),
+            w.name,
+            if (w.imm) "IM" else "",
+            if (w.compO) "CO" else "",
+            if (w.interpO) "IO" else "",
+            if (w.recursive) "RE" else "",
+            if (w.hidden) "HI" else "",
+            if (w.cpos != NO_ADDR) w.cpos.addr else "",
+            if (w.dpos != NO_ADDR) w.dpos.addr else ""
+        )
+    }
+
+    // Purely internal: normalize a function name to remove noisy cruft.
+    // This appears in debugging logs to show the function name:
+    internal fun getFnName(w: Word): String {
+        return w.fn.toString()
+            .removeSuffix("(kf.ForthVM): kotlin.Unit")
+            .removePrefix("fun ")
+    }
+
+    companion object {
+
+        // A marker to make it easy to recognize that a word doesn't have a
+        // real CPOS or DPOS. In Kotlin-land, we could make this null instead,
+        // but since Forth-level code doesn't know what "null" is, we use
+        // this instead.
+        const val NO_ADDR: Int = 0xffff
+
+        // A word to put in place where needed when "no word" is a value.
+        fun noWordFn(vm: IForthVM) {
+            vm.io.warning("No Word Fn ran")
+        }
+        val noWord = Word("noWord", ::noWordFn, hidden = true)
+
+        /**  Explanation for header strings */
+        const val HEADER_STR: String =
+            " IMmediate Compile-Only Interp-Only REcurse HIdden Code Data"
+    }
+
+
 }

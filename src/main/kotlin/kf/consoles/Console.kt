@@ -14,7 +14,7 @@ import org.jline.widget.AutosuggestionWidgets
  * - testing / gateways
  * - file input
  */
-class Console(val term: Terminal) : ConsoleBase() {
+class Console(val term: Terminal) : IConsole {
     lateinit var vm: ForthVM
     lateinit var reader: ForthLineReader
 
@@ -107,6 +107,7 @@ class Console(val term: Terminal) : ConsoleBase() {
 
     override fun print(s: String) = p(s)
     override fun println(s: String) = pl(s)
+    override fun println() = pl("")
 
     // print a line stylized (all start on new line except "ok")
 

@@ -4,6 +4,7 @@ import kf.mem.CellMeta
 import kf.ForthVM
 import kf.interfaces.IWordModule
 import kf.dict.Word
+import kf.interfaces.IForthVM
 import kf.interfaces.IWord
 import kf.mem.appendCode
 
@@ -20,7 +21,7 @@ object wIfThen: IWordModule {
 
     /** `IF` IM CO ( f -- ) If flag is false, skip to ELSE (or THEN) */
 
-    fun w_if(vm: ForthVM) {
+    fun w_if(vm: IForthVM) {
         vm.appendWord("0branch")
         vm.dstk.push(vm.cend)
         // "THEN" will fix this fake address
@@ -29,7 +30,7 @@ object wIfThen: IWordModule {
 
     /** `ELSE` IM CO ( -- ) If provided, if IF fails, start exec here */
 
-    fun w_else(vm: ForthVM) {
+    fun w_else(vm: IForthVM) {
         val ifRef = vm.dstk.pop()
         vm.appendWord("branch")
         vm.dstk.push(vm.cend)
@@ -41,7 +42,7 @@ object wIfThen: IWordModule {
 
     /** THEN ( -- ) Finish the IF/ELSE/THEN */
 
-    fun w_then(vm: ForthVM) {
+    fun w_then(vm: IForthVM) {
         val ifRef: Int = vm.dstk.pop()
         // Fix the fake ref of ELSE (or if no ELSE, the one for IF)
         vm.mem[ifRef] = vm.cend - ifRef

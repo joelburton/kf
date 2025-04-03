@@ -5,6 +5,7 @@ import kf.D
 import kf.ForthVM
 import kf.interfaces.IWordModule
 import kf.dict.Word
+import kf.interfaces.IForthVM
 import kf.interfaces.IWord
 import kf.strFromAddrLen
 import kf.toForthInt
@@ -31,7 +32,7 @@ object wParsing : IWordModule {
      * length.
      */
 
-    fun w_word(vm: ForthVM) {
+    fun w_word(vm: IForthVM) {
         val char = vm.dstk.pop().toChar()
         val (addr, len) = vm.source.scanner.wordParse(char)
 
@@ -49,14 +50,14 @@ object wParsing : IWordModule {
 
     /** SOURCE ( -- c-addr u ) Address of # of chars in input buffer */
 
-    fun w_source(vm: ForthVM) {
+    fun w_source(vm: IForthVM) {
         vm.dstk.push(vm.source.scanner.start)
         vm.dstk.push(vm.source.scanner.nChars)
     }
 
     /** >IN ( -- a-addr ) a-addr is addr of cells with bufPtr - bufStart */
 
-    fun w_toIn(vm: ForthVM) {
+    fun w_toIn(vm: IForthVM) {
         vm.dstk.push(ForthVM.Companion.REG_IN_PTR)
     }
 
@@ -77,7 +78,7 @@ object wParsing : IWordModule {
      * during the conversion.
      */
 
-    fun w_toNumber(vm: ForthVM) {
+    fun w_toNumber(vm: IForthVM) {
         // This implementation is limited --- it throws an error on failure,
         // rather than returning addr-of-string and len-of-unconverted.
 

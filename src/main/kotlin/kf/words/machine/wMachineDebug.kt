@@ -3,6 +3,7 @@ package kf.words.machine
 import kf.ForthVM
 import kf.interfaces.IWordModule
 import kf.dict.Word
+import kf.interfaces.IForthVM
 import kf.interfaces.IWord
 
 object wMachineDebug : IWordModule {
@@ -15,16 +16,16 @@ object wMachineDebug : IWordModule {
         Word("(WORDS)", ::w_parenWords)
     )
 
-    fun w_parenWords(vm: ForthVM) {
+    fun w_parenWords(vm: IForthVM) {
         for (word in vm.dict.words) {
             print("${word.name} ")
         }
     }
-    fun w_parenFoo(vm: ForthVM) {
+    fun w_parenFoo(vm: IForthVM) {
         vm.io.print("foo")
     }
 
-    fun w_parenDot(vm: ForthVM) {
+    fun w_parenDot(vm: IForthVM) {
         vm.io.print("${vm.dstk.pop()} ")
     }
 }

@@ -9,11 +9,6 @@ import org.junit.jupiter.api.Test
 class WordTest {
 
     @Test
-    fun companion() {
-        assertEquals(0xffff, Word.NO_ADDR)
-    }
-
-    @Test
     fun testToString() {
         assertEquals(
             "test",
@@ -28,7 +23,7 @@ class WordTest {
             interp = InterpBase(),
         )
         val word = Word("test", ::dummyFn)
-        word.invoke(vm)
+        word.fn(vm)
         assertEquals(2, vm.ip)
     }
 }

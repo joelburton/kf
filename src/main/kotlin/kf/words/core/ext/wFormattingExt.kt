@@ -3,6 +3,7 @@ package kf.words.core.ext
 import kf.ForthVM
 import kf.interfaces.IWordModule
 import kf.dict.Word
+import kf.interfaces.IForthVM
 import kf.interfaces.IWord
 import kf.strFromLenAddr
 import kf.words.core.wFormatting
@@ -18,7 +19,7 @@ object wFormattingExt: IWordModule {
 
     /** `HOLDS` ( c-addr u -- ) Add string to pictured number */
 
-    fun w_holds(vm: ForthVM) {
+    fun w_holds(vm: IForthVM) {
         val s = Pair(vm.dstk.pop(), vm.dstk.pop()).strFromLenAddr(vm)
         wFormatting.pict.append(s.reversed())
     }

@@ -1,11 +1,14 @@
 package kf.interfaces
 
+import kf.ForthVM
+
 /** This is a global singleton; it holds the output of any recorder terminal,
  * like the TerminalTestInterface, below.
  */
 
 interface IConsole {
     val termWidth: Int
+    fun setUp(vm: ForthVM)
 
     // API
     fun keyAvail(): Int
@@ -19,7 +22,8 @@ interface IConsole {
 
     // Standard print
     fun print(s: String)
-    fun println(s: String = "")
+    fun println(s: String)
+    fun println()
 
     // Print stylized line (all start on new line except "ok")
     fun out(s: String)

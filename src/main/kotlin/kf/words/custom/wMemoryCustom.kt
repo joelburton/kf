@@ -3,6 +3,7 @@ package kf.words.custom
 import kf.ForthVM
 import kf.interfaces.IWordModule
 import kf.dict.Word
+import kf.interfaces.IForthVM
 import kf.interfaces.IWord
 
 
@@ -18,25 +19,25 @@ object wMemoryCustom : IWordModule {
 
         )
 
-    fun w_commaComma(vm: ForthVM) {
+    fun w_commaComma(vm: IForthVM) {
         vm.mem[vm.cend++] = vm.dstk.pop()
     }
 
-    fun w_cell(vm: ForthVM) {
+    fun w_cell(vm: IForthVM) {
         vm.dstk.push(1)
     }
 
     // addr on  = set to true
-    fun w_on(vm: ForthVM) {
+    fun w_on(vm: IForthVM) {
         vm.mem[vm.dstk.pop()] = ForthVM.Companion.TRUE
     }
 
     // addr off = set to false
-    fun w_off(vm: ForthVM) {
+    fun w_off(vm: IForthVM) {
         vm.mem[vm.dstk.pop()] = ForthVM.Companion.FALSE
     }
 
-    fun w_cellsPlus(vm: ForthVM) {
+    fun w_cellsPlus(vm: IForthVM) {
         val addr = vm.dstk.pop()
         val num = vm.dstk.pop()
         vm.dstk.push(addr + num)

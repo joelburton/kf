@@ -3,6 +3,7 @@ package kf.words.custom
 import kf.ForthVM
 import kf.interfaces.IWordModule
 import kf.dict.Word
+import kf.interfaces.IForthVM
 import kf.interfaces.IWord
 
 object wCharsCustom: IWordModule {
@@ -17,14 +18,14 @@ object wCharsCustom: IWordModule {
 
     /** `toupper` `( n : n1 : convert n to uppercase if lowercase char )` */
 
-    fun w_toUpper(vm: ForthVM) {
+    fun w_toUpper(vm: IForthVM) {
         val c: Int = vm.dstk.pop()
         vm.dstk.push(c.toChar().uppercaseChar().code)
     }
 
     /** `tolower` `( n : n1 : convert n to lowercase if uppercase char )` */
 
-    fun w_toLower(vm: ForthVM) {
+    fun w_toLower(vm: IForthVM) {
         val c: Int = vm.dstk.pop()
         vm.dstk.push(c.toChar().lowercaseChar().code)
     }

@@ -3,6 +3,7 @@ package kf.words.custom
 import kf.ForthVM
 import kf.interfaces.IWordModule
 import kf.dict.Word
+import kf.interfaces.IForthVM
 import kf.interfaces.IWord
 
 object wIOCustom : IWordModule {
@@ -16,17 +17,17 @@ object wIOCustom : IWordModule {
 
     /** `nl` ( -- nlChar : return newline char )` */
 
-    fun w_nl(vm: ForthVM) {
+    fun w_nl(vm: IForthVM) {
         vm.dstk.push(0x0a)
     }
 
     /** `.INCLUDED-FILES` ( -- ) Print included files list */
 
-    fun w_dotIncludedFiles(vm: ForthVM) {
-        print(vm.includedFiles.joinToString("\n"))
+    fun w_dotIncludedFiles(vm: IForthVM) {
+        print((vm as ForthVM).includedFiles.joinToString("\n"))
     }
 
-    fun w_dotInputSources(vm: ForthVM) {
+    fun w_dotInputSources(vm: IForthVM) {
         println("Input sources:")
         println(vm.sources.joinToString("\n") { "${it.id}: ${it.path}" })
     }

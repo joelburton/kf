@@ -4,7 +4,9 @@ import kf.ForthVM
 import kf.interfaces.IWordModule
 import kf.stacks.StackPtrInvalidError
 import kf.dict.Word
+import kf.interfaces.IForthVM
 import kf.interfaces.IWord
+import kf.stacks.FStack
 import kf.words.machine.wMachine.w_nop
 
 object wStacksCustom: IWordModule {
@@ -29,32 +31,32 @@ object wStacksCustom: IWordModule {
 
     /**  `sp0` ( -- addr : address of start of stack )
      */
-    private fun w_sp0(vm: ForthVM) {
+    private fun w_sp0(vm: IForthVM) {
         vm.dstk.push(vm.dstk.startAt - 1)
     }
 
     /**  `sp0` ( -- addr : address of start of stack )
      */
-    private fun w_rp0(vm: ForthVM) {
+    private fun w_rp0(vm: IForthVM) {
         vm.dstk.push(vm.rstk.startAt - 1)
     }
 
     /**  `clearstack` ( ? ? -- : clear entire data stack )
      */
-    private fun w_clearStack(vm: ForthVM) {
-        vm.dstk.reset()
+    private fun w_clearStack(vm: IForthVM) {
+        (vm.dstk as FStack).reset()
     }
 
 
     /**  `sp@` ( -- addr : pushes dstk sp to stack )
      */
-    fun w_spFetch(vm: ForthVM) {
+    fun w_spFetch(vm: IForthVM) {
         vm.dstk.push(vm.dstk.sp)
     }
 
     /**  `sp!` ( addr -- : sets dstk sp to addr )
      */
-    fun w_spStore(vm: ForthVM) {
+    fun w_spStore(vm: IForthVM) {
         val sp: Int = vm.dstk.pop()
         if (sp < -1 || sp >= vm.dstk.endAt) {
             throw StackPtrInvalidError(vm.dstk.name, sp)
@@ -64,13 +66,13 @@ object wStacksCustom: IWordModule {
 
     /**  `rp@` ( -- addr : pushes rstk sp to stack )
      */
-    fun w_rpFetch(vm: ForthVM) {
+    fun w_rpFetch(vm: IForthVM) {
         vm.dstk.push(vm.rstk.sp)
     }
 
     /**  `rp!` ( addr -- : sets rstk sp to addr )
      */
-    fun w_rpStore(vm: ForthVM) {
+    fun w_rpStore(vm: IForthVM) {
         val sp: Int = vm.dstk.pop()
         if (sp < -1 || sp >= vm.rstk.endAt) {
             throw StackPtrInvalidError(vm.rstk.name, sp)

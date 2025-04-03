@@ -3,6 +3,7 @@ package kf.words.core
 import kf.ForthVM
 import kf.interfaces.IWordModule
 import kf.dict.Word
+import kf.interfaces.IForthVM
 import kf.interfaces.IWord
 
 object wComments: IWordModule {
@@ -27,7 +28,7 @@ object wComments: IWordModule {
      * in the parse area.
      */
 
-    fun w_parenComment(vm: ForthVM) {
+    fun w_parenComment(vm: IForthVM) {
         vm.source.scanner.parse(')')
     }
 

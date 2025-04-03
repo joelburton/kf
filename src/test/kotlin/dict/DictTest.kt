@@ -9,6 +9,7 @@ import kf.dict.DictFullError
 import kf.interfaces.IWordModule
 import kf.dict.Word
 import kf.dict.WordNotFoundError
+import kf.interfaces.IWord
 import kf.interps.InterpBase
 import org.junit.jupiter.api.Test
 
@@ -21,7 +22,7 @@ class DictTest  : ForthTestCase() {
     object FakeMod: IWordModule {
         override val name = "dict.FakeMod"
         override val description = "Fake"
-        override val words = arrayOf<Word>(
+        override val words = arrayOf<IWord>(
             Word("word1", fn = ::dummyFn),
             Word("word2", fn = ::dummyFn),
         )

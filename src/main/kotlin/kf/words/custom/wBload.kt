@@ -3,6 +3,7 @@ package kf.words.custom
 import kf.*
 import kf.interfaces.IWordModule
 import kf.dict.Word
+import kf.interfaces.IForthVM
 import kf.interfaces.IWord
 
 object wBload : IWordModule {
@@ -16,9 +17,10 @@ object wBload : IWordModule {
 
     /**  Read in a primitive class dynamically
      */
-    fun readPrimitiveClass(vm: ForthVM,
+    fun readPrimitiveClass(inVm: IForthVM,
                            name: String,
                            reloadOk: Boolean = false) {
+        val vm = inVm as ForthVM
         if (D) vm.dbg(3, "vm.readPrimitiveClass: $name")
         if (!reloadOk && name in vm.modulesLoaded) {
             vm.io.warning("Already loaded: $name (use BLOAD-AGAIN to reload)")
@@ -27,7 +29,7 @@ object wBload : IWordModule {
         val mod = try {
             Class.forName(name).kotlin.objectInstance!! as IWordModule
         } catch (e: ClassNotFoundException) {
-            throw BloadError("Can't find: $name")
+            throw BloadError("Can't find: $name $e")
         } catch (e: NoSuchFieldException) {
             throw BloadError("Not an object")
         } catch (e: ClassCastException) {
@@ -41,7 +43,7 @@ object wBload : IWordModule {
      * These can be anything the JVM can understand: Java, Kotlin, Groovy, etc.
      * */
 
-    fun w_bload(vm: ForthVM) {
+    fun w_bload(vm: IForthVM) {
         val path =  vm.source.scanner.parseName().strFromAddrLen(vm)
         readPrimitiveClass(vm, path, reloadOk=false)
     }
@@ -51,7 +53,7 @@ object wBload : IWordModule {
      * These can be anything the JVM can understand: Java, Kotlin, Groovy, etc.
      * */
 
-    fun w_bloadAgain(vm: ForthVM) {
+    fun w_bloadAgain(vm: IForthVM) {
         val path =  vm.source.scanner.parseName().strFromAddrLen(vm)
         readPrimitiveClass(vm, path, reloadOk=true)
     }

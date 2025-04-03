@@ -3,6 +3,7 @@ package kf.words.custom
 import kf.ForthVM
 import kf.interfaces.IWordModule
 import kf.dict.Word
+import kf.interfaces.IForthVM
 import kf.interfaces.IWord
 import kf.strFromAddrLen
 
@@ -35,7 +36,7 @@ object wCompilingCustom : IWordModule {
 
     /** `recursive` CI ( -- : from this point onward, word can recurse )
      */
-    fun w_recursive(vm: ForthVM) {
+    fun w_recursive(vm: IForthVM) {
         val w = vm.dict.currentlyDefining!!
         w.recursive = true
     }
@@ -59,7 +60,7 @@ object wCompilingCustom : IWordModule {
      * Which compiles to the same thing as if "test" used "if" directly.
      */
 
-    fun w_postpone(vm: ForthVM) {
+    fun w_postpone(vm: IForthVM) {
         val token: String =  vm.source.scanner.parseName().strFromAddrLen(vm)
         val w = vm.dict[token]
         val cw = vm.dict.last

@@ -3,6 +3,7 @@ package kf.words.custom
 import kf.ForthVM
 import kf.interfaces.IWordModule
 import kf.dict.Word
+import kf.interfaces.IForthVM
 import kf.interfaces.IWord
 
 object wFunctionsCustom : IWordModule {
@@ -15,7 +16,7 @@ object wFunctionsCustom : IWordModule {
 
     /**  `call-by-addr` ( addr -- : call addr )
      */
-    fun w_callByAddr(vm: ForthVM) {
+    fun w_callByAddr(vm: IForthVM) {
         val addr: Int = vm.dstk.pop()
         vm.rstk.push(vm.ip)
         vm.ip = addr

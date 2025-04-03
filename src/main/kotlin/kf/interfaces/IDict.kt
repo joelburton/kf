@@ -8,7 +8,7 @@ interface IDict {
     val size: Int
     val last: IWord
     fun add(word: IWord)
-    fun get(wn: Int): IWord
-    fun get(name: String): IWord
+    operator fun get(wn: Int): IWord
+    operator fun get(name: String): IWord
     fun getSafe(name: String): IWord?
 }

@@ -4,6 +4,7 @@ import kf.ForthVM
 import kf.interfaces.IWordModule
 import kf.dict.Word
 import kf.dict.w_notImpl
+import kf.interfaces.IForthVM
 import kf.interfaces.IWord
 import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
@@ -56,7 +57,7 @@ object wFacilityExt : IWordModule {
 
     /** `time&date` ( -- secs minutes hours dayOfMonth monthNum year : get now )
      */
-    fun w_timeAmpDate(vm: ForthVM, now: Instant = Clock.System.now()) {
+    fun w_timeAmpDate(vm: IForthVM, now: Instant = Clock.System.now()) {
         val lt = now.toLocalDateTime(TimeZone.currentSystemDefault())
         vm.dstk.push(
             lt.second,
@@ -70,7 +71,7 @@ object wFacilityExt : IWordModule {
 
     /** `ms` ( n -- : pause VM for n milliseconds )
      */
-    fun w_ms(vm: ForthVM) {
+    fun w_ms(vm: IForthVM) {
         Thread.sleep(vm.dstk.pop().toLong())
     }
 

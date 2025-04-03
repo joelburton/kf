@@ -81,7 +81,7 @@ abstract class SourceBase(
     override fun toString() = "$id:$path:$lineCount"
 
     /**  Scanner for reading and tokenizing input line. */
-    override var scanner: IFScanner = FScanner(vm)
+    override val scanner: FScanner = FScanner(vm)
 
     /** Push a new input source on top of this one.
      *

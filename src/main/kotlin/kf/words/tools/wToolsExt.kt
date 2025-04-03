@@ -2,10 +2,12 @@ package kf.words.tools
 
 import kf.IntBye
 import kf.ForthVM
+import kf.dict.Dict
 import kf.interfaces.IWordModule
 import kf.dict.Word
 import kf.strFromAddrLen
 import kf.dict.w_notImpl
+import kf.interfaces.IForthVM
 import kf.interfaces.IWord
 
 object wToolsExt: IWordModule {
@@ -40,7 +42,7 @@ object wToolsExt: IWordModule {
 
     /**  `\[defined\]` I ( in:"name" -- f : is this word defined? )
      */
-    private fun w_bracketDefined(vm: ForthVM) {
+    private fun w_bracketDefined(vm: IForthVM) {
         val token: String =  vm.source.scanner.parseName().strFromAddrLen(vm)
         val def = vm.dict.getSafe(token) != null
         vm.dstk.push(if (def) ForthVM.Companion.TRUE else ForthVM.Companion.FALSE)
@@ -48,7 +50,7 @@ object wToolsExt: IWordModule {
 
     /**  `\[undefined\]` I ( in:"name" -- f : is this word undefined? )
      */
-    private fun w_bracketUndefined(vm: ForthVM) {
+    private fun w_bracketUndefined(vm: IForthVM) {
         val token: String =  vm.source.scanner.parseName().strFromAddrLen(vm)
         val def = vm.dict.getSafe(token) != null
         vm.dstk.push(if (def) ForthVM.Companion.FALSE else ForthVM.Companion.TRUE)
@@ -57,10 +59,10 @@ object wToolsExt: IWordModule {
     // newname old-name
     /** `synonym` ( in:"new" in:"old" -- : makes new word as alias of old )
      */
-    fun w_synonym(vm: ForthVM) {
+    fun w_synonym(vm: IForthVM) {
         val newName: String =  vm.source.scanner.parseName().strFromAddrLen(vm)
         val oldName: String =  vm.source.scanner.parseName().strFromAddrLen(vm)
-        val curWord: Word = vm.dict[oldName]
+        val curWord = vm.dict[oldName]
         val nw = Word(
             newName,
             fn = curWord.fn,
@@ -75,11 +77,11 @@ object wToolsExt: IWordModule {
 
     /**  `forget` ( in:"name" -- : delete word and all following words )
      */
-    fun w_forget(vm: ForthVM) {
+    fun w_forget(vm: IForthVM) {
         val newName: String =  vm.source.scanner.parseName().strFromAddrLen(vm)
-        val w: Word = vm.dict[newName]
-        vm.dict.truncateAt(w.wn)
-        if (w.cpos != Word.Companion.NO_ADDR) vm.cend = w.cpos
+        val w = vm.dict[newName]
+        (vm.dict as Dict).truncateAt(w.wn)
+        if (w.cpos != 0xffff) vm.cend = w.cpos
     }
 
 
@@ -95,7 +97,7 @@ object wToolsExt: IWordModule {
      * just reboots the machine, starting a new interpreter.
      */
 
-    fun w_bye(vm: ForthVM) {
+    fun w_bye(vm: IForthVM) {
         throw IntBye()
     }
 

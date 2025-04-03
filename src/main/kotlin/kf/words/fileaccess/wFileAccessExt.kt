@@ -6,6 +6,7 @@ import kf.interfaces.IWordModule
 import kf.dict.Word
 import kf.strFromAddrLen
 import kf.dict.w_notImpl
+import kf.interfaces.IForthVM
 import kf.interfaces.IWord
 
 object wFileAccessExt: IWordModule {
@@ -23,14 +24,14 @@ object wFileAccessExt: IWordModule {
 
     // *************************************************************************
 
-    fun include(vm: ForthVM, path: String) {
-        vm.includedFiles.add(path)
+    fun include(vm: IForthVM, path: String) {
+        (vm as ForthVM).includedFiles.add(path)
         vm.source.push(SourceFile(vm, vm.sources.lastIndex + 1, path))
     }
 
     /**  `include` `( in:"file" -- : read Forth file in )` */
 
-    fun w_include(vm: ForthVM) {
+    fun w_include(vm: IForthVM) {
         val path =  vm.source.scanner.parseName().strFromAddrLen(vm)
         include(vm, path)
     }

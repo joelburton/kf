@@ -3,6 +3,7 @@ package kf.words.core.ext
 import kf.ForthVM
 import kf.interfaces.IWordModule
 import kf.dict.Word
+import kf.interfaces.IForthVM
 import kf.interfaces.IWord
 
 object wNumIOExt : IWordModule {
@@ -16,13 +17,13 @@ object wNumIOExt : IWordModule {
 
     /** `HEX` `( -- : set base to 16 )` */
 
-    fun w_hex(vm: ForthVM) {
+    fun w_hex(vm: IForthVM) {
         vm.base = 16
     }
 
     /** `.R` ( n1 n2 -- ) Display n1 right-aligned in a n2-wide field */
 
-    fun w_dotR(vm: ForthVM) {
+    fun w_dotR(vm: IForthVM) {
         val width: Int = vm.dstk.pop()
         val v: Int = vm.dstk.pop()
         vm.io.print(v.toString(vm.base).padStart(width))

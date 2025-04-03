@@ -4,6 +4,7 @@ import kf.IntQuitNonInteractive
 import kf.ForthVM
 import kf.interfaces.IWordModule
 import kf.dict.Word
+import kf.interfaces.IForthVM
 import kf.interfaces.IWord
 
 /** The interpreter primitives.
@@ -30,7 +31,7 @@ object wInterpCustom : IWordModule {
     // ********************************************** words for interpreter loop
 
     /** `interp-prompt` ( -- : show prompt for interpreter ) */
-    fun w_interpPrompt(vm: ForthVM) {
+    fun w_interpPrompt(vm: IForthVM) {
         if (vm.verbosity >= -1 && vm.source.id == 0) {
             val stkLen: Int = vm.dstk.size
             if (vm.interp.isInterpreting) {
@@ -47,7 +48,7 @@ object wInterpCustom : IWordModule {
      *
      * This doesn't do anything useful when already in console io (though it
      * does push 0 to stack, because that's what GForth does :) ). */
-    private fun w_tripleBackSlash(vm: ForthVM) {
+    private fun w_tripleBackSlash(vm: IForthVM) {
         if (vm.source.id > 0) {
             vm.source.pop()
             if (vm.sources.isEmpty()) throw IntQuitNonInteractive()
@@ -61,7 +62,7 @@ object wInterpCustom : IWordModule {
      * In the console, this exits the interp (it's what Control-D does in
      * the interp). When reading a file, it stops reading that file, and
      * moves to the next (exiting if there are no more). */
-    private fun w_eof(vm: ForthVM) {
+    private fun w_eof(vm: IForthVM) {
         vm.source.pop()
     }
 
@@ -93,12 +94,12 @@ object wInterpCustom : IWordModule {
      * This is useful to hack on the interpreter without having to change the
      * real one --- if something is wrong with the new one, a `reset` will
      * state running back at code state, running the original interpreter. */
-    private fun w_interpReloadCode(vm: ForthVM) {
+    private fun w_interpReloadCode(vm: IForthVM) {
         vm.interp.addInterpreterCode()
     }
 
 
-    fun w_interpOk(vm: ForthVM) {
+    fun w_interpOk(vm: IForthVM) {
         if (vm.verbosity >= 0)
             vm.io.ok("  ok${if (vm.dstk.size > 0) "-" + vm.dstk.size else ""}")
     }

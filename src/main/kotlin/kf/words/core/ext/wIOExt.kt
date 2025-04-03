@@ -4,6 +4,7 @@ import kf.ForthVM
 import kf.interfaces.IWordModule
 import kf.dict.Word
 import kf.dict.w_notImpl
+import kf.interfaces.IForthVM
 import kf.interfaces.IWord
 
 object wIOExt: IWordModule {
@@ -24,15 +25,15 @@ object wIOExt: IWordModule {
      *
      */
 
-    fun w_sourceId(vm: ForthVM) {
+    fun w_sourceId(vm: IForthVM) {
         vm.dstk.push(vm.source.id)
     }
 
-    fun w_restoreInput(vm: ForthVM) {
+    fun w_restoreInput(vm: IForthVM) {
         TODO()
     }
 
-    fun w_saveInput(vm: ForthVM) {
+    fun w_saveInput(vm: IForthVM) {
         TODO()
     }
 }

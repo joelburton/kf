@@ -3,6 +3,7 @@ package kf.words.custom
 import kf.ForthVM
 import kf.interfaces.IWordModule
 import kf.dict.Word
+import kf.interfaces.IForthVM
 import kf.interfaces.IWord
 
 object wNumIOCustom: IWordModule {
@@ -20,31 +21,31 @@ object wNumIOCustom: IWordModule {
 
     /** `binary` `( -- : set base to 2 )` */
 
-    fun w_binary(vm: ForthVM) {
+    fun w_binary(vm: IForthVM) {
         vm.base = 2
     }
 
     /** `octal` `( -- : set base to 8 )` */
 
-    fun w_octal(vm: ForthVM) {
+    fun w_octal(vm: IForthVM) {
         vm.base = 8
     }
 
     /** `dec.` `( n -- out:"n" : print n in decimal, regardless of base )` */
 
-    private fun w_decDot(vm: ForthVM) {
+    private fun w_decDot(vm: IForthVM) {
         vm.io.print(vm.dstk.pop().toString(10) + " ")
     }
 
     /** `hex.` `( n -- out:"hex(n)" : print n in hex, regardless of base )` */
 
-    private fun w_hexDot(vm: ForthVM) {
+    private fun w_hexDot(vm: IForthVM) {
         vm.io.print("$" + vm.dstk.pop().toString(16) + " ")
     }
 
     /** `bin.` `( n -- out:"hex(n)" : print n in hex, regardless of base )` */
 
-    private fun w_binDot(vm: ForthVM) {
+    private fun w_binDot(vm: IForthVM) {
         vm.io.print("%" + vm.dstk.pop().toString(2) + " ")
     }
 }

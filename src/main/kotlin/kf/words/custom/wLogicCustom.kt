@@ -5,6 +5,7 @@ import kf.ForthVM.Companion.FALSE
 import kf.ForthVM.Companion.TRUE
 import kf.interfaces.IWordModule
 import kf.dict.Word
+import kf.interfaces.IForthVM
 import kf.interfaces.IWord
 import kotlin.math.sqrt
 
@@ -19,19 +20,19 @@ object wLogicCustom : IWordModule {
     )
 
     /**  ( n1 -- ~n1 : bitwise NOT ) */
-    fun w_not(vm: ForthVM) {
+    fun w_not(vm: IForthVM) {
         vm.dstk.push(vm.dstk.pop().inv() and ForthVM.Companion.MAX_INT)
     }
 
     /**  ( n1 n2 -- n1>=n2? : greater-than-or-equal ) */
-    fun w_gte(vm: ForthVM) {
+    fun w_gte(vm: IForthVM) {
         val a = vm.dstk.pop()
         val b = vm.dstk.pop()
         vm.dstk.push(if (b >= a) TRUE else FALSE)
     }
 
     /**  ( n1 n2 -- n1<=n2? : less-than-or-equal ) */
-    fun w_lte(vm: ForthVM) {
+    fun w_lte(vm: IForthVM) {
         val a = vm.dstk.pop()
         val b = vm.dstk.pop()
         vm.dstk.push(if (b <= a) TRUE else FALSE)
@@ -40,7 +41,7 @@ object wLogicCustom : IWordModule {
 
 
     /**  ( n -- int(sqrt(n)) : square root ) */
-    fun w_sqrt(vm: ForthVM) {
+    fun w_sqrt(vm: IForthVM) {
         val res = sqrt(vm.dstk.pop().toDouble())
         vm.dstk.push(res.toInt())
     }

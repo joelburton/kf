@@ -3,6 +3,7 @@ package kf.words.core.ext
 import kf.ForthVM
 import kf.interfaces.IWordModule
 import kf.dict.Word
+import kf.interfaces.IForthVM
 import kf.interfaces.IWord
 import kf.words.core.wCreate.w_create
 
@@ -20,18 +21,18 @@ object wMemoryExt : IWordModule {
         )
 
     /** `BUFFER:` ( u "<spaces>name" -- ) Create & allot u spaces in DATA */
-    fun w_bufferColon(vm: ForthVM) {
+    fun w_bufferColon(vm: IForthVM) {
         w_create(vm)
         vm.dend += vm.dstk.pop()
     }
 
     /** `PAD` ( -- c-addr ) Return address of PAD */
-    fun w_pad(vm: ForthVM) {
+    fun w_pad(vm: IForthVM) {
         vm.dstk.push(vm.memConfig.padStart)
     }
 
     /** `ERASE` ( addr u -- ) Erase u cells starting at addr */
-    fun w_erase(vm: ForthVM) {
+    fun w_erase(vm: IForthVM) {
         val len: Int = vm.dstk.pop()
         val startAt: Int = vm.dstk.pop()
         for (i in 0 until len) {
@@ -40,7 +41,7 @@ object wMemoryExt : IWordModule {
     }
 
     /** `UNUSED` ( -- n ) Return # cells of unused DATA */
-    fun w_unused(vm: ForthVM) {
+    fun w_unused(vm: IForthVM) {
         vm.dstk.push(vm.memConfig.dataEnd - vm.dend)
     }
 }

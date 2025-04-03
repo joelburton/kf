@@ -5,6 +5,7 @@ import kf.ForthVM
 import kf.ForthVM.Companion.CHAR_SIZE
 import kf.interfaces.IWordModule
 import kf.dict.Word
+import kf.interfaces.IForthVM
 import kf.interfaces.IWord
 import kf.mem.appendLit
 import kf.strFromAddrLen
@@ -28,7 +29,7 @@ object wChars: IWordModule {
 
     /** `C!` `( char c-addr -- )` Store char at c-addr */
 
-    fun w_cStore(vm: ForthVM) {
+    fun w_cStore(vm: IForthVM) {
         val addr = vm.dstk.pop()
         val char = vm.dstk.pop()
         vm.mem[addr] = char
@@ -36,21 +37,21 @@ object wChars: IWordModule {
 
     /** `C,` `( char -- )` Store  char at next available space in DATA */
 
-    fun w_cComma(vm: ForthVM) {
+    fun w_cComma(vm: IForthVM) {
         val char = vm.dstk.pop()
         vm.mem[vm.dend++] = char
     }
 
     /** `C@` `( c-addr -- char )` Fetch char stored at c-addr */
 
-    fun w_cFetch(vm: ForthVM) {
+    fun w_cFetch(vm: IForthVM) {
         val addr = vm.dstk.pop()
         vm.dstk.push(vm.mem[addr])
     }
 
     /** `CHAR` `( "<spaces>name" -- char )` Push first letter of name */
 
-    fun w_char(vm: ForthVM) {
+    fun w_char(vm: IForthVM) {
         val token =  vm.source.scanner.parseName().strFromAddrLen(vm)
         if (token.isEmpty()) throw CharLitError("Empty")
         vm.dstk.push(token[0].code)
@@ -69,7 +70,7 @@ object wChars: IWordModule {
      *   Place char, the value of the first character of name, on the stack.
      */
 
-    fun w_bracketChar(vm: ForthVM) {
+    fun w_bracketChar(vm: IForthVM) {
         val token = vm.source.scanner.parseName().strFromAddrLen(vm)
         if (token.isEmpty()) throw CharLitError("Empty")
         vm.appendLit(token[0].code)
@@ -77,14 +78,14 @@ object wChars: IWordModule {
 
     /** `CHAR+` `( c-addr1 -- c-addr2 )` Add size of a char to c-addr1 */
 
-    fun w_charPlus(vm: ForthVM) {
+    fun w_charPlus(vm: IForthVM) {
         val addr1 = vm.dstk.pop()
         vm.dstk.push(addr1 + CHAR_SIZE)
     }
 
     /** `CHARS` ( n1 -- n2 ) n2 is the size in address units of n1 chars */
 
-    fun w_chars(vm: ForthVM) {
+    fun w_chars(vm: IForthVM) {
         val n1 = vm.dstk.pop()
         vm.dstk.push(n1 * CHAR_SIZE)
     }

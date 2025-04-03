@@ -4,6 +4,7 @@ import kf.D
 import kf.ForthVM
 import kf.interfaces.IWordModule
 import kf.dict.Word
+import kf.interfaces.IForthVM
 import kf.interfaces.IWord
 import kf.mem.appendJump
 
@@ -63,7 +64,7 @@ object wLoops : IWordModule {
      * later points in the loop-creation, the addr can be found.
      * */
 
-    fun w_begin(vm: ForthVM) {
+    fun w_begin(vm: IForthVM) {
         vm.rstk.push(vm.cend)
     }
 
@@ -74,7 +75,7 @@ object wLoops : IWordModule {
      * Same as again, but jump written out for runtime is a conditional one.
      * */
 
-    fun w_until(vm: ForthVM) {
+    fun w_until(vm: IForthVM) {
         val bwref = vm.rstk.pop()
         vm.appendJump("0branch", bwref - vm.cend - 1)
     }
@@ -89,7 +90,7 @@ object wLoops : IWordModule {
      * to fix the jump.
      */
 
-    fun w_while(vm: ForthVM) {
+    fun w_while(vm: IForthVM) {
         vm.appendJump("0branch", 0xffff)
         vm.rstk.push(vm.cend) // location of while
     }
@@ -101,7 +102,7 @@ object wLoops : IWordModule {
      * to it.
      *
      */
-    fun w_repeat(vm: ForthVM) {
+    fun w_repeat(vm: IForthVM) {
         val whileRef = vm.rstk.pop()
         val bwref = vm.rstk.pop()
         vm.appendJump("branch", (bwref - vm.cend) - 1)
@@ -113,7 +114,7 @@ object wLoops : IWordModule {
 
     /** `DO` IM CO (C: -- addr 0 ) Start loop compilation */
 
-    fun w_do(vm: ForthVM) {
+    fun w_do(vm: IForthVM) {
         vm.appendWord("(DO)")
         vm.rstk.push(vm.cend) // start of do loop, so end can come back to us
         vm.rstk.push(0)  // how many forward refs we'll need to fix (LEAVE)L
@@ -121,7 +122,7 @@ object wLoops : IWordModule {
 
     /** This is the runtime part --- move the limit/start vars to the Lstack */
 
-    fun w_parenDo(vm: ForthVM) {
+    fun w_parenDo(vm: IForthVM) {
         vm.rstk.push(vm.dstk.pop(), vm.dstk.pop()) // limit, start
     }
 
@@ -134,7 +135,7 @@ object wLoops : IWordModule {
     // - done looping: skip past the jump-address for start of loop
     // - more looping: put the index/limit back on stack and loop
 
-    private fun runtimeLoop(vm: ForthVM, incrementBy: Int) {
+    private fun runtimeLoop(vm: IForthVM, incrementBy: Int) {
         val limit = vm.rstk.pop()
         val index = vm.rstk.pop() + incrementBy
         if (index >= limit) {
@@ -156,7 +157,7 @@ object wLoops : IWordModule {
      *
      * */
 
-    fun w_loop(vm: ForthVM) {
+    fun w_loop(vm: IForthVM) {
         val numExits = vm.rstk.pop()
         vm.appendJump("(LOOP)", vm.rstk.popFrom(numExits) - vm.cend - 1)
 
@@ -168,7 +169,7 @@ object wLoops : IWordModule {
 
     /** (LOOP) CO : the runtime part */
 
-    fun w_parenLoop(vm: ForthVM) {  // dstk is index limit inc-by
+    fun w_parenLoop(vm: IForthVM) {  // dstk is index limit inc-by
         runtimeLoop(vm, incrementBy = 1)
     }
 
@@ -180,7 +181,7 @@ object wLoops : IWordModule {
      *
      * */
 
-    fun w_plusLoop(vm: ForthVM) {
+    fun w_plusLoop(vm: IForthVM) {
         val numExits = vm.rstk.pop()
         vm.appendJump("(+LOOP)", vm.rstk.popFrom(numExits) - vm.cend - 1)
         for (i in numExits downTo 1) {
@@ -191,7 +192,7 @@ object wLoops : IWordModule {
 
     /** (+LOOP): the runtime part */
 
-    fun w_parenPlusLoop(vm: ForthVM) {  // dstk is index limit incby
+    fun w_parenPlusLoop(vm: IForthVM) {  // dstk is index limit incby
         runtimeLoop(vm, incrementBy = vm.dstk.pop())
     }
 
@@ -231,11 +232,11 @@ object wLoops : IWordModule {
      *   index  <- j
      */
 
-    fun w_i(vm: ForthVM) {
+    fun w_i(vm: IForthVM) {
         vm.dstk.push(vm.rstk.getFrom(1))
     }
 
-    fun w_j(vm: ForthVM) {
+    fun w_j(vm: IForthVM) {
         vm.dstk.push(vm.rstk.getFrom(3))
     }
 
@@ -248,7 +249,7 @@ object wLoops : IWordModule {
      * fixed?" and bumps the number up.
      */
 
-    fun w_leave(vm: ForthVM) {
+    fun w_leave(vm: IForthVM) {
         // should this be a subordinate word like "(LEAVE)" ?
 //        vm.appendWord("R>")
 //        vm.appendWord("R>")
@@ -258,7 +259,7 @@ object wLoops : IWordModule {
         vm.rstk.push(vm.cend - 1, count + 1)
     }
 
-    fun w_parenLeave(vm: ForthVM) {
+    fun w_parenLeave(vm: IForthVM) {
         vm.rstk.pop()
         vm.rstk.pop()
         vm.ip = vm.ip + vm.mem[vm.ip]
@@ -277,7 +278,7 @@ object wLoops : IWordModule {
      *
      */
 
-    fun w_unloop(vm: ForthVM) {
+    fun w_unloop(vm: IForthVM) {
         vm.rstk.pop()
         vm.rstk.pop()
     }

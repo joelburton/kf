@@ -6,23 +6,19 @@ import com.github.ajalt.clikt.parameters.arguments.multiple
 import com.github.ajalt.clikt.parameters.options.*
 import com.github.ajalt.clikt.parameters.types.int
 import kf.ForthVM
-import kf.mem.MemConfig
 import kf.IntBye
 import kf.IntEOF
 import kf.VERSION_STRING
 import kf.consoles.Console
-import kf.consoles.ConsoleBase
 import kf.consoles.RecordingConsole
 import kf.gateways.GatewayHttp
 import kf.gateways.GatewayWebsocket
+import kf.interfaces.IConsole
 import kf.interps.InterpBase
 import kf.interps.InterpEval
 import kf.interps.InterpFast
 import kf.interps.InterpTraditional
-import kf.mem.largeMemConfig
-import kf.mem.medMemConfig
-import kf.mem.memConfigs
-import kf.mem.smallMemConfig
+import kf.mem.*
 import kf.words.fileaccess.wFileAccessExt
 import org.jline.terminal.TerminalBuilder
 
@@ -123,7 +119,7 @@ class ForthCLI : CliktCommand("PupForth") {
             return
         }
 
-        val io: ConsoleBase =
+        val io: IConsole =
             if (gateway != null) {
                 RecordingConsole()
             } else {

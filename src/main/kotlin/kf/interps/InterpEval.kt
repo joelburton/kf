@@ -95,10 +95,10 @@ open class InterpEval() : InterpBase() {
      * It is needed here just for bootstrapping (see above).
      * */
 
-    fun w_processToken(vm: ForthVM) {
+    fun w_processToken(vm: IForthVM) {
         val len = vm.dstk.pop()
         val addr = vm.dstk.pop()
-        var token = Pair(addr, len).strFromAddrLen(vm)
+        var token = Pair(addr, len).strFromAddrLen(vm as ForthVM)
         if (D) vm.dbg(3, "vm.w_processToken: $token")
         if (isInterpreting) interpret(token)
         else compile(token)
@@ -120,7 +120,8 @@ open class InterpEval() : InterpBase() {
             if (w.interpO)
                 throw InvalidState("Can't use in compile mode: $w")
             else if (w.imm) {
-                w(vm)
+                vm.currentWord = w
+                w.fn(vm)
             } else {
                 vm.appendCode(w.wn, CellMeta.WordNum)
             }
@@ -141,7 +142,8 @@ open class InterpEval() : InterpBase() {
 
         if (w != null) {
             if (w.compO) throw InvalidState("Compile-only: $w")
-            w(vm)
+            vm.currentWord = w
+            w.fn(vm)
         } else {
             vm.dstk.push(token.toForthInt(vm.base))
         }

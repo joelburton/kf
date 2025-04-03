@@ -3,6 +3,7 @@ package kf.words.core
 import kf.ForthVM
 import kf.interfaces.IWordModule
 import kf.dict.Word
+import kf.interfaces.IForthVM
 import kf.interfaces.IWord
 
 object wStackOps: IWordModule {
@@ -29,21 +30,21 @@ object wStackOps: IWordModule {
     /**
      * `?DUP` ( x -- 0 | x x ) Duplicate x if it is non-zero */
 
-     fun w_questionDup(vm: ForthVM) {
+     fun w_questionDup(vm: IForthVM) {
         val x = vm.dstk.peek()
         if (x != 0) vm.dstk.push(x)
     }
 
     /** `2DROP` ( x1 x2 -- ) Drop cell pair x1 x2 from the stack */
 
-     fun w_twoDrop(vm: ForthVM) {
+     fun w_twoDrop(vm: IForthVM) {
         vm.dstk.pop()
         vm.dstk.pop()
     }
 
     /** `2DUP` ( x1 x2 -- x1 x2 x1 x2 ) Duplicate cell pair x1 x2 */
 
-    fun w_twoDup(vm: ForthVM) {
+    fun w_twoDup(vm: IForthVM) {
         val x2 = vm.dstk.pop()
         val x1 = vm.dstk.pop()
         vm.dstk.push(x1, x2, x1, x2)
@@ -51,13 +52,13 @@ object wStackOps: IWordModule {
 
     /** `2OVER` ( x1 x2 x3 x4 -- x1 x2 x3 x4 x1 x2 ) Copy x1 x2 to top */
 
-     fun w_twoOver(vm: ForthVM) {
+     fun w_twoOver(vm: IForthVM) {
         vm.dstk.push(vm.dstk.getFrom(3), vm.dstk.getFrom(2))
     }
 
     /** `2SWAP` ( x1 x2 x3 x4 -- x3 x4 x1 x2 ) Exchange top two cell pairs */
 
-     fun w_twoSwap(vm: ForthVM) {
+     fun w_twoSwap(vm: IForthVM) {
         val x4: Int = vm.dstk.pop()
         val x3: Int = vm.dstk.pop()
         val x2: Int = vm.dstk.pop()
@@ -67,25 +68,25 @@ object wStackOps: IWordModule {
 
     /** `DROP` ( x -- ) Remove x from the stack */
 
-    fun w_drop(vm: ForthVM) {
+    fun w_drop(vm: IForthVM) {
         vm.dstk.pop()
     }
 
     /** `DUP` ( x -- x x ) Duplicate x */
 
-    fun w_dup(vm: ForthVM) {
+    fun w_dup(vm: IForthVM) {
         vm.dstk.push(vm.dstk.peek())
     }
 
     /** `ROT` ( x1 x2 x3 -- x2 x3 x1 ) Rotate the top three stack entries */
 
-    fun w_rot(vm: ForthVM) {
+    fun w_rot(vm: IForthVM) {
         vm.dstk.push(vm.dstk.popFrom(2))
     }
 
     /** `OVER` ( x1 x2 -- x1 x2 x1 ) Place a copy of x1 on top of the stack */
 
-    fun w_over(vm: ForthVM) {
+    fun w_over(vm: IForthVM) {
         val x2: Int = vm.dstk.pop()
         val x1: Int = vm.dstk.peek()
         vm.dstk.push(x2, x1)
@@ -93,7 +94,7 @@ object wStackOps: IWordModule {
 
     /** `SWAP` ( x1 x2 -- x2 x1 ) Exchange the top two stack items */
 
-    fun w_swap(vm: ForthVM) {
+    fun w_swap(vm: IForthVM) {
         val x2 = vm.dstk.pop()
         val x1 = vm.dstk.pop()
         vm.dstk.push(x2, x1)
@@ -101,7 +102,7 @@ object wStackOps: IWordModule {
 
     /** `DEPTH` ( -- +n ) +n cell values on data stack */
 
-    fun w_depth(vm: ForthVM) {
+    fun w_depth(vm: IForthVM) {
         vm.dstk.push(vm.dstk.size)
     }
 }

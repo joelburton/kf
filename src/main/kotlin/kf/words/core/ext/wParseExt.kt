@@ -3,6 +3,7 @@ package kf.words.core.ext
 import kf.ForthVM
 import kf.interfaces.IWordModule
 import kf.dict.Word
+import kf.interfaces.IForthVM
 import kf.interfaces.IWord
 
 object wParseExt: IWordModule {
@@ -14,7 +15,7 @@ object wParseExt: IWordModule {
     )
 
     /** `PARSE` ( char "ccc<char>" -- c-addr u ) */
-    fun w_parse(vm: ForthVM) {
+    fun w_parse(vm: IForthVM) {
         val char = vm.dstk.pop()
         val (addr, len) = vm.source.scanner.parse(char.toChar())
         vm.dstk.push(addr, len)

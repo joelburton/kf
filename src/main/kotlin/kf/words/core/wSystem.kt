@@ -4,6 +4,7 @@ import kf.ForthVM
 import kf.ForthVM.Companion.FALSE
 import kf.interfaces.IWordModule
 import kf.dict.Word
+import kf.interfaces.IForthVM
 import kf.interfaces.IWord
 import kf.strFromAddrLen
 
@@ -39,7 +40,7 @@ object wSystem: IWordModule {
     //RETURN-STACK-CELLS	n	yes	maximum size of the return stack, in cells
     //STACK-CELLS	n	yes	maximum size of the data stack, in cells
 
-    fun w_environment(vm: ForthVM) {
+    fun w_environment(vm: IForthVM) {
         val s = vm.source.scanner.parseName().strFromAddrLen(vm)
 
         when (s.lowercase()) {

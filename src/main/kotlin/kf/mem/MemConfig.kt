@@ -1,6 +1,7 @@
 package kf.mem
 
 import kf.addr
+import kf.interfaces.IMemConfig
 
 /** Sets of compatible choice for memory size and memory regions:
  *
@@ -41,7 +42,7 @@ open class MemConfig (
     override val rstackEnd: Int,
     override val upperBound: Int,
 ) : IMemConfig {
-    fun show() {
+    override fun show() {
         println("Mem start:     $0000-")
         println("Registers:     ${regsStart.addr}-${regsEnd.addr}")
         println("Scratchpad:    ${scratchStart.addr}-${scratchEnd.addr}")

@@ -3,6 +3,7 @@ package kf.words.core
 import kf.*
 import kf.interfaces.IWordModule
 import kf.dict.Word
+import kf.interfaces.IForthVM
 import kf.interfaces.IWord
 import kf.interps.InterpBase
 import kf.interps.InterpEval
@@ -33,7 +34,7 @@ object wInterp : IWordModule {
 
     /** QUIT ( -- ) ( R: i * x -- ) Empty rstk and restart interp loop. */
 
-    fun w_quit(vm: ForthVM) {
+    fun w_quit(vm: IForthVM) {
         vm.quit()
     }
 
@@ -44,7 +45,7 @@ object wInterp : IWordModule {
      *
      */
 
-    fun w_abort(vm: ForthVM) {
+    fun w_abort(vm: IForthVM) {
         vm.io.danger("${vm.source} ABORT")
         vm.abort()
     }
@@ -55,7 +56,7 @@ object wInterp : IWordModule {
      * Abort conditionally based on flag x1
      */
 
-    fun w_abortQuote(vm: ForthVM) {
+    fun w_abortQuote(vm: IForthVM) {
         if (vm.interp.isInterpreting) {
             val s = vm.source.scanner.parse('"').strFromAddrLen(vm)
             val flag = vm.dstk.pop()
@@ -73,11 +74,10 @@ object wInterp : IWordModule {
 
     /** `(ABORT")` ( c-addr len -- ) Abort with message. */
 
-    fun w_parenAbortQuote(vm: ForthVM) {
+    fun w_parenAbortQuote(vm: IForthVM) {
         val s = Pair(vm.dstk.pop(), vm.dstk.pop()).strFromLenAddr(vm)
         vm.io.danger("${vm.source} ABORT: $s")
-        vm.dstk.reset()
-        w_quit(vm)
+        vm.abort()
     }
 
     /** EVALUATE     CORE
@@ -92,13 +92,13 @@ object wInterp : IWordModule {
      *
      */
 
-    fun w_evaluate(vm: ForthVM) {
+    fun w_evaluate(vm: IForthVM) {
         val len = vm.dstk.pop()
         val addr = vm.dstk.pop()
 
         if (vm.interp !is InterpEval) throw RuntimeException("not an eval!")
         val s = Pair(addr, len).strFromAddrLen(vm)
-        vm.source.push(SourceEval(vm, s))
+        vm.source.push(SourceEval(vm as ForthVM, s))
     }
 
     /**
@@ -108,19 +108,19 @@ object wInterp : IWordModule {
      * any other vale = compiling
      * */
 
-    fun w_state(vm: ForthVM) {
+    fun w_state(vm: IForthVM) {
         vm.dstk.push(ForthVM.REG_STATE)
     }
 
     /** `[` IM CO ( -- ) Enter interp state */
 
-    fun w_leftBracket(vm: ForthVM) {
+    fun w_leftBracket(vm: IForthVM) {
         vm.interp.state = InterpBase.STATE_INTERPRETING
     }
 
     /** `]` IM ( -- ) Enter compiling state */
 
-    fun w_rightBracket(vm: ForthVM) {
+    fun w_rightBracket(vm: IForthVM) {
         vm.interp.state = InterpBase.STATE_COMPILING
     }
 }

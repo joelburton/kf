@@ -3,6 +3,7 @@ package kf.words.core.ext
 import kf.ForthVM
 import kf.interfaces.IWordModule
 import kf.dict.Word
+import kf.interfaces.IForthVM
 import kf.interfaces.IWord
 
 object wCommentsExt : IWordModule {
@@ -15,7 +16,7 @@ object wCommentsExt : IWordModule {
 
     /**  ( -- : handles backslash comments )
      */
-    fun w_backslashComment(vm: ForthVM) {
+    fun w_backslashComment(vm: IForthVM) {
         vm.source.scanner.nextLine()
     }
 }

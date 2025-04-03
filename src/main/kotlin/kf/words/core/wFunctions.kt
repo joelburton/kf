@@ -3,6 +3,7 @@ package kf.words.core
 import kf.ForthVM
 import kf.interfaces.IWordModule
 import kf.dict.Word
+import kf.interfaces.IForthVM
 import kf.interfaces.IWord
 
 
@@ -21,9 +22,11 @@ object wFunctions: IWordModule {
      *
      **/
 
-    fun w_execute(vm: ForthVM) {
+    fun w_execute(vm: IForthVM) {
         val wn = vm.dstk.pop()
-        vm.dict[wn](vm)
+        val w = vm.dict[wn]
+        vm.currentWord = w
+        w.fn(vm)
     }
 
     /** EXIT ( -- ) ( R: nest-sys -- ) Return from call
@@ -36,7 +39,7 @@ object wFunctions: IWordModule {
      * function definition.
      */
 
-    fun w_exit(vm: ForthVM) {
+    fun w_exit(vm: IForthVM) {
         vm.ip = vm.rstk.pop()
     }
 
@@ -51,7 +54,7 @@ object wFunctions: IWordModule {
      *
      **/
 
-    fun w_call(vm: ForthVM) {
+    fun w_call(vm: IForthVM) {
         vm.rstk.push(vm.ip)
         vm.ip = vm.currentWord.cpos
     }

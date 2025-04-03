@@ -3,6 +3,7 @@ package kf.words.tools
 import kf.*
 import kf.interfaces.IWordModule
 import kf.dict.Word
+import kf.interfaces.IForthVM
 import kf.interfaces.IWord
 import kf.words.custom.wToolsCustom
 
@@ -30,7 +31,7 @@ object wTools : IWordModule {
      * its use may corrupt the transient region identified by #>.
      */
 
-    fun w_dotS(vm: ForthVM) {
+    fun w_dotS(vm: IForthVM) {
         vm.dstk.simpleDump()
     }
 
@@ -45,7 +46,7 @@ object wTools : IWordModule {
      * Consequently, its use may corrupt the transient region identified by #>.
      */
 
-    fun w_words(vm: ForthVM) {
+    fun w_words(vm: IForthVM) {
         val s =
             vm.dict.words.filter { !it.hidden }.joinToString(" ") { it.name }
         vm.io.println(s.wrap(vm.io.termWidth))
@@ -61,7 +62,7 @@ object wTools : IWordModule {
      * its use may corrupt the transient region identified by #>.
      */
 
-    fun w_question(vm: ForthVM) {
+    fun w_question(vm: IForthVM) {
         val v = vm.mem[vm.dstk.pop()]
         vm.io.print(v.toString(vm.base.coerceIn(2, 36)) + " ")
     }
@@ -75,7 +76,7 @@ object wTools : IWordModule {
      * Consequently, its use may corrupt the transient region identified by #>.
      */
 
-    fun w_dump(vm: ForthVM) {
+    fun w_dump(vm: IForthVM) {
         val len: Int = vm.dstk.pop()
         val start: Int = vm.dstk.pop()
         val end = start + len - 1
@@ -109,9 +110,9 @@ object wTools : IWordModule {
      * Consequently, its use may corrupt the transient region identified by #>.
      */
 
-    fun w_see(vm: ForthVM) {
-        val w: Word = vm.dict[vm.source.scanner.parseName().strFromAddrLen(vm)]
-        wToolsCustom._see(vm, w, false)
+    fun w_see(vm: IForthVM) {
+        val w = vm.dict[vm.source.scanner.parseName().strFromAddrLen(vm)]
+        wToolsCustom._see(vm as ForthVM, w as Word, false)
     }
 
 }

@@ -14,9 +14,9 @@ interface IFStack {
     fun getAt(n: Int): Int
     fun getFrom(n:Int): Int
     fun popFrom(n: Int): Int
-    fun push(value: Int)
+    fun push(n: Int)
     fun push(a: Int, b: Int)
-    fun push(vararg values: Int)
+    fun push(vararg vs: Int)
     fun dblPush(n: Long)
     fun dblPop(): Long
     fun pop(): Int

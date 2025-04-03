@@ -42,8 +42,8 @@ class FScanner(val vm: ForthVM): IFScanner {
     override val size = end - start
 
     override var nChars = 0  // # of chars in entire buffer
-    override var tokIdx = 0  // start idx of most-recently-found token
-    override var tokLen = 0  // length of same
+    var tokIdx = 0  // start idx of most-recently-found token
+    var tokLen = 0  // length of same
 
     companion object {
         val whitespace = arrayOf(
@@ -54,7 +54,7 @@ class FScanner(val vm: ForthVM): IFScanner {
         )
     }
 
-    override val atEnd get() = vm.inPtr >= nChars
+    val atEnd get() = vm.inPtr >= nChars
 
     /** Return string of most-recently-found token. */
 

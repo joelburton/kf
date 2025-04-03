@@ -7,8 +7,8 @@ interface ISource {
     var ptr: Int
     var lineCount: Int
     var storedInPtr: Int
+    val scanner: IFScanner
     fun readLineOrNull(): String?
-    var scanner: IFScanner
     fun pop()
-    fun push(source :ISource)
+    fun push(newSrc :ISource)
 }

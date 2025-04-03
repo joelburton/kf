@@ -3,6 +3,7 @@ package kf.words.core.ext
 import kf.*
 import kf.interfaces.IWordModule
 import kf.dict.Word
+import kf.interfaces.IForthVM
 import kf.interfaces.IWord
 import kf.mem.CellMeta
 
@@ -28,12 +29,12 @@ object wValuesExt: IWordModule {
      * Execution: ( -- x ) Place x on stack
      */
 
-    fun w_value(vm: ForthVM) {
+    fun w_value(vm: IForthVM) {
         val data = vm.dstk.pop()
         val name =  vm.source.scanner.parseName().strFromAddrLen(vm)
         val w = Word(
             name,
-            cpos = Word.NO_ADDR,
+            cpos = 0xffff,
             dpos = vm.dend,
             fn = ::parenValue
         )
@@ -44,14 +45,14 @@ object wValuesExt: IWordModule {
 
     /** Return the data for the constant at currentWord */
 
-    private fun parenValue(vm: ForthVM) {
+    private fun parenValue(vm: IForthVM) {
         val data = vm.mem[vm.currentWord.dpos]
         vm.dstk.push(data)
     }
 
     /** `TO` ( in:"name" x -- ) Assign x to value */
 
-    fun w_to(vm: ForthVM) {
+    fun w_to(vm: IForthVM) {
         val name =  vm.source.scanner.parseName().strFromAddrLen(vm)
         val word = vm.dict[name]
         val x = vm.dstk.pop()

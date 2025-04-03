@@ -3,6 +3,7 @@ package kf.words.core.ext
 import kf.*
 import kf.interfaces.IWordModule
 import kf.dict.Word
+import kf.interfaces.IForthVM
 import kf.interfaces.IWord
 
 /** Deferrable words.
@@ -27,19 +28,19 @@ object wDeferExt : IWordModule {
         )
 
 
-    private fun deferred(vm: ForthVM) {
+    private fun deferred(vm: IForthVM) {
         throw ForthDeferredWordError(
             "Use of uninitialized deferred word: ${vm.currentWord}")
     }
 
     /** `defer` ( "word" -- : create word pointing to uninitialized fn ) */
 
-    fun w_defer(vm: ForthVM) {
-        val name = vm.source.scanner.parseName().strFromAddrLen(vm)
+    fun w_defer(vm: IForthVM) {
+        val name = vm.source.scanner.parseName().strFromAddrLen(vm as ForthVM)
         val w = Word(
             name,
-            cpos = Word.NO_ADDR,
-            dpos = Word.NO_ADDR,
+            cpos = 0xffff,
+            dpos = 0xffff,
             fn = ::deferred,
             deferToWn = vm.dict["(DEFERRED-WORD)"].wn
         )
@@ -48,7 +49,7 @@ object wDeferExt : IWordModule {
 
     // Internal use by other functions here
 
-    private fun changeDeferPointer(vm: ForthVM, deferW: Word, srcW: Word) {
+    private fun changeDeferPointer(vm: IForthVM, deferW: IWord, srcW: IWord) {
         deferW.cpos = srcW.cpos
         deferW.dpos = srcW.dpos
         deferW.fn = srcW.fn
@@ -57,7 +58,7 @@ object wDeferExt : IWordModule {
 
     /** `IS` ( wn "word" -- : sets "word" to use wn as its xt ) */
 
-    fun w_is(vm: ForthVM) {
+    fun w_is(vm: IForthVM) {
         val srcW = vm.dict[vm.dstk.pop()]
         val token = vm.source.scanner.parseName().strFromAddrLen(vm)
         val deferW = vm.dict[token]
@@ -66,7 +67,7 @@ object wDeferExt : IWordModule {
 
     /** `DEFER! ( xt1 xt2 -- ) Set deferred word xt2 to xt1 */
 
-    fun w_deferStore(vm: ForthVM) {
+    fun w_deferStore(vm: IForthVM) {
         val deferW = vm.dict[vm.dstk.pop()]
         val sourceWord = vm.dict[vm.dstk.pop()]
         changeDeferPointer(vm, deferW, sourceWord)
@@ -74,14 +75,14 @@ object wDeferExt : IWordModule {
 
     /** `DEFER@` ( xt -- xt ) Push wn of deferral */
 
-    fun w_deferFetch(vm: ForthVM) {
+    fun w_deferFetch(vm: IForthVM) {
         val deferW = vm.dict[vm.dstk.pop()]
         vm.dstk.push(deferW.deferToWn ?: deferW.wn)
     }
 
     /** `ACTION-OF` ( "name" -- xt ) Push wn of deferral */
 
-    fun w_actionOf(vm: ForthVM) {
+    fun w_actionOf(vm: IForthVM) {
         val s = vm.source.scanner.parseName().strFromAddrLen(vm)
         val deferW = vm.dict[s]
         vm.dstk.push(deferW.deferToWn ?: deferW.wn)

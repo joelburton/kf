@@ -3,6 +3,7 @@ package kf.words.machine
 import kf.*
 import kf.interfaces.IWordModule
 import kf.dict.Word
+import kf.interfaces.IForthVM
 import kf.interfaces.IWord
 import kf.mem.appendLit
 
@@ -32,7 +33,7 @@ object wMachine : IWordModule {
      * This what the compiler emits for `: a 65 ;` => `lit 65`. When this code
      * is being run, this functions get the 65 and pushes it onto the stack.
      */
-    fun w_lit(vm: ForthVM) {
+    fun w_lit(vm: IForthVM) {
         val v: Int = vm.mem[vm.ip++]
         vm.dstk.push(v)
     }
@@ -46,7 +47,7 @@ object wMachine : IWordModule {
      * Make sure this is the first word in the dictionary. It's useful to hit
      * `brk` if the VM starts executing in uninitialized memory.
      */
-    fun w_brk(vm: ForthVM) {
+    fun w_brk(vm: IForthVM) {
         val ipOfBrk = vm.ip - 1
         val callerOfBrk = vm.dict[vm.mem[ipOfBrk]].name
         throw IntBrk("$callerOfBrk at ${ipOfBrk.addr} ($ipOfBrk)")
@@ -58,14 +59,14 @@ object wMachine : IWordModule {
      * without having to redefine them. Plus, it wastes the computer's time,
      * and that's always fun.
      */
-    fun w_nop(vm: ForthVM) {
+    fun w_nop(vm: IForthVM) {
         if (D) vm.dbg(3, "w_nop reached")
     }
 
     // *************************************************************** branching
     /** `0branch` ( flag -- in:addr : Jump to addr if flag=0 )
      */
-    fun w_0branchAbs(vm: ForthVM) {
+    fun w_0branchAbs(vm: IForthVM) {
         val flag = vm.dstk.pop()
         if (flag == 0) {
             if (D) vm.dbg(3, "w_0branchAbs =0 --> ${vm.ip}}")
@@ -77,7 +78,7 @@ object wMachine : IWordModule {
 
     /** `branch` ( -- in:addr : Unconditional jump )
      */
-    fun w_branchAbs(vm: ForthVM) {
+    fun w_branchAbs(vm: IForthVM) {
         vm.ip = vm.mem[vm.ip]
     }
 
@@ -85,7 +86,7 @@ object wMachine : IWordModule {
      *
      * This is not a conventional Forth word, but it's useful.
      */
-    fun w_0branch(vm: ForthVM) {
+    fun w_0branch(vm: IForthVM) {
         val flag = vm.dstk.pop()
         if (flag == 0) {
             if (D) vm.dbg(3, "w_0branch =0 --> ${vm.mem[vm.ip].addr}")
@@ -99,20 +100,20 @@ object wMachine : IWordModule {
      *
      * This is not a conventional Forth word, but it's useful.
      */
-    fun w_branch(vm: ForthVM) {
+    fun w_branch(vm: IForthVM) {
         vm.ip = vm.mem[vm.ip] + vm.ip
     }
 
     /** `dolit` ( -- 'lit : push wn for 'lit' onto stack )
      */
-    fun w_doLit(vm: ForthVM) {
+    fun w_doLit(vm: IForthVM) {
         val wn: Int = vm.dict["lit"].wn
         vm.dstk.push(wn)
     }
 
     /**  `bracketLiteral` C ( n -- : write lit token & n to code area )
      */
-    fun w_bracketLiteral(vm: ForthVM) {
+    fun w_bracketLiteral(vm: IForthVM) {
         val v: Int = vm.dstk.pop()
         vm.appendLit(v)
     }
@@ -123,8 +124,8 @@ object wMachine : IWordModule {
      * This is a harsh, but conventional Forth word. It's practically the only
      * way to stop the gateway. This should not be caught or prevented.
      */
-    fun w_cold(vm: ForthVM) {
-        vm.reboot(true)
+    fun w_cold(vm: IForthVM) {
+        (vm as ForthVM).reboot(true)
     }
 
     /** `cold-raw` ( -- : Reboots machine and load minimal primitives )
@@ -134,13 +135,13 @@ object wMachine : IWordModule {
      * `include-primitives` (which, fortunately, is provided by the
      * interpreter :-)
      */
-    fun w_coldRaw(vm: ForthVM) {
-        vm.reboot(false)
+    fun w_coldRaw(vm: IForthVM) {
+        (vm as ForthVM).reboot(false)
     }
 
 
     // fixme: needs docs, test
-    fun w_litString(vm: ForthVM) {
+    fun w_litString(vm: IForthVM) {
         val len = vm.mem[vm.ip++]
         val addr = vm.ip
         vm.dstk.push(addr, len)

@@ -2,6 +2,7 @@ import kf.ForthError
 import kf.IntEOF
 import kf.ForthVM
 import kf.consoles.RecordingConsole
+import kf.interfaces.IForthVM
 import kf.interps.InterpFast
 import kf.sources.SourceTestEvalInput
 import kf.sources.SourceTestNoInput
@@ -10,7 +11,7 @@ import org.junit.jupiter.api.BeforeEach
 import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
 
-fun dummyFn(vm: ForthVM) {
+fun dummyFn(vm: IForthVM) {
     vm.ip = 2
 }
 

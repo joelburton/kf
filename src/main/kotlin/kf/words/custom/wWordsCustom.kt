@@ -1,8 +1,10 @@
 package kf.words.custom
 
 import kf.ForthVM
+import kf.dict.Dict
 import kf.interfaces.IWordModule
 import kf.dict.Word
+import kf.interfaces.IForthVM
 import kf.interfaces.IWord
 import kf.strFromAddrLen
 
@@ -21,24 +23,24 @@ object wWordsCustom : IWordModule {
 
     /**  `hide` ( in:"name" -- : hides word )
      */
-    fun w_hideWord(vm: ForthVM) {
+    fun w_hideWord(vm: IForthVM) {
         val name: String =  vm.source.scanner.parseName().strFromAddrLen(vm)
-        val w: Word = vm.dict[name]
+        val w = vm.dict[name]
         w.hidden = true
     }
 
 
     /**  `unhide` ( in:"name" -- : un-hides word )
      */
-    fun w_unhideWord(vm: ForthVM) {
+    fun w_unhideWord(vm: IForthVM) {
         val name: String =  vm.source.scanner.parseName().strFromAddrLen(vm)
-        val w: Word = vm.dict[name]
+        val w = vm.dict[name]
         w.hidden = false
     }
 
     /**  `unhide-all` ( -- : un-hides all words )
      */
-    fun w_unhideAll(vm: ForthVM) {
+    fun w_unhideAll(vm: IForthVM) {
         for (i in 0..<vm.dict.size) {
             vm.dict[i].hidden = false
         }
@@ -48,27 +50,27 @@ object wWordsCustom : IWordModule {
 
     /**  `wn-forget` ( wn -- : delete word and all following words )
      */
-    fun w_wnForget(vm: ForthVM) {
+    fun w_wnForget(vm: IForthVM) {
         val wn: Int = vm.dstk.pop()
-        val w: Word = vm.dict[wn]
-        vm.dict.truncateAt(wn)
+        val w = vm.dict[wn]
+        (vm.dict as Dict).truncateAt(wn)
         vm.cend = w.cpos
     }
 
 
     /**  `id.` ( wn -- : print name of word )
      */
-    fun w_IDDot(vm: ForthVM) {
+    fun w_IDDot(vm: IForthVM) {
         val wn: Int = vm.dstk.pop()
-        val w: Word = vm.dict[wn]
+        val w = vm.dict[wn]
         vm.io.print(w.name + " ")
     }
 
     /** `callable.` ( "word" -- : print callable addr ) */
 
-    fun w_callableDot(vm: ForthVM) {
+    fun w_callableDot(vm: IForthVM) {
         val token: String =  vm.source.scanner.parseName().strFromAddrLen(vm)
-        val w: Word = vm.dict[token]
+        val w = vm.dict[token]
         vm.io.println(w.fn.toString())
     }
 
