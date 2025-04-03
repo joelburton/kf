@@ -4,7 +4,6 @@ import kf.ForthVM
 import kf.interfaces.IWordModule
 import kf.dict.Word
 import kf.interfaces.IForthVM
-import kf.interfaces.IWord
 import kf.numToStr
 
 object wNumIO : IWordModule {
@@ -12,7 +11,7 @@ object wNumIO : IWordModule {
     override val description = "General input and output"
 
     override val words
-        get() = arrayOf<IWord>(
+        get() = arrayOf<Word>(
             Word("DECIMAL", ::w_decimal),
             Word("BASE", ::w_base),
             Word(".", ::w_dot),

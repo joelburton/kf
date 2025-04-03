@@ -1,11 +1,9 @@
 package kf.words.core
 
 import kf.D
-import kf.ForthVM
-import kf.interfaces.IWordModule
 import kf.dict.Word
 import kf.interfaces.IForthVM
-import kf.interfaces.IWord
+import kf.interfaces.IWordModule
 import kf.mem.appendLit
 import kf.strFromAddrLen
 import kf.strFromCSAddr
@@ -15,7 +13,7 @@ object wWords : IWordModule {
     override val description = "Acting on words"
 
     override val words
-        get() = arrayOf<IWord>(
+        get() = arrayOf<Word>(
             Word("[']", ::w_bracketTick, imm = true, compO = true),
             Word("'", ::w_tick),
             Word("FIND", ::w_find),

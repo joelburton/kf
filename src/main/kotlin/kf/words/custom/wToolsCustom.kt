@@ -6,7 +6,6 @@ import kf.dict.NO_ADDR
 import kf.interfaces.IWordModule
 import kf.dict.Word
 import kf.interfaces.IForthVM
-import kf.interfaces.IWord
 import kf.mem.CellMeta
 import kf.stacks.FStack
 import org.jline.utils.ExecHelper.exec
@@ -17,7 +16,7 @@ object wToolsCustom : IWordModule {
     override val name = "kf.words.custom.wToolsCustom"
     override val description = "Tools specific to KF"
     override val words
-        get() = arrayOf<IWord>(
+        get() = arrayOf<Word>(
             Word(".DSTK", ::w_dotDstk),
             Word(".RSTK", ::w_dotRstk),
             Word(".CODE", ::w_dotCode),

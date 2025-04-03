@@ -2,7 +2,6 @@ package kf.words.core
 
 import kf.dict.Word
 import kf.interfaces.IForthVM
-import kf.interfaces.IWord
 import kf.interfaces.IWordModule
 
 
@@ -11,7 +10,7 @@ object wDoubleCell : IWordModule {
     override val description = "Double-cell words"
 
     override val words
-        get() = arrayOf<IWord>(
+        get() = arrayOf<Word>(
             Word("S>D", ::w_sToD),
             Word("M*", ::w_mStar),
         )

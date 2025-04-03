@@ -1,10 +1,8 @@
 package kf.words.core.ext
 
-import kf.ForthVM
-import kf.interfaces.IWordModule
 import kf.dict.Word
 import kf.interfaces.IForthVM
-import kf.interfaces.IWord
+import kf.interfaces.IWordModule
 import kf.mem.appendCStr
 import kf.mem.appendCStrToData
 import kf.mem.appendStr
@@ -15,7 +13,7 @@ object wStringsExt: IWordModule {
     override val name = "kf.words.core.ext.wStringsExt"
     override val description = "Strings"
 
-    override val words: Array<IWord>
+    override val words: Array<Word>
         get() = arrayOf(
             Word("C\"", ::w_cQuote),
             Word("S\\\"", ::w_sBackSlashQuote),

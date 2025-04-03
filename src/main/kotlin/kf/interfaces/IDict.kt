@@ -1,14 +1,16 @@
 package kf.interfaces
 
+import kf.dict.Word
+
 interface IDict {
     val vm: IForthVM
     val capacity: Int
-    val words: List<IWord>
-    var currentlyDefining: IWord?
+    val words: List<Word>
+    var currentlyDefining: Word?
     val size: Int
-    val last: IWord
-    fun add(word: IWord)
-    operator fun get(wn: Int): IWord
-    operator fun get(name: String): IWord
-    fun getSafe(name: String): IWord?
+    val last: Word
+    fun add(word: Word)
+    operator fun get(wn: Int): Word
+    operator fun get(name: String): Word
+    fun getSafe(name: String): Word?
 }

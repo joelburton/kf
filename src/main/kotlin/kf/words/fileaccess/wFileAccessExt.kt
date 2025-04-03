@@ -1,18 +1,17 @@
 package kf.words.fileaccess
 
-import kf.sources.SourceFile
 import kf.ForthVM
-import kf.interfaces.IWordModule
 import kf.dict.Word
-import kf.strFromAddrLen
 import kf.dict.w_notImpl
 import kf.interfaces.IForthVM
-import kf.interfaces.IWord
+import kf.interfaces.IWordModule
+import kf.sources.SourceFile
+import kf.strFromAddrLen
 
 object wFileAccessExt: IWordModule {
     override val name = "kf.words.fileaccess.wFileAccessExt"
     override val description = "File access"
-    override val words = arrayOf<IWord>(
+    override val words = arrayOf<Word>(
         Word("FILE-STATUS", ::w_notImpl),
         Word("FLUSH-FILE", ::w_notImpl),
         Word("INCLUDE", ::w_include),

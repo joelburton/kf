@@ -4,14 +4,13 @@ import kf.*
 import kf.interfaces.IWordModule
 import kf.dict.Word
 import kf.interfaces.IForthVM
-import kf.interfaces.IWord
 
 object wIO : IWordModule {
     override val name = "kf.words.core.wIO"
     override val description = "General input and output"
 
     override val words
-        get() = arrayOf<IWord>(
+        get() = arrayOf<Word>(
             Word("CR", ::w_cr),
             Word("SPACE", ::w_space),
             Word("SPACES", ::w_spaces),

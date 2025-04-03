@@ -1,16 +1,14 @@
 package kf.words.facility
 
-import kf.ForthVM
-import kf.interfaces.IWordModule
 import kf.dict.Word
 import kf.interfaces.IForthVM
-import kf.interfaces.IWord
+import kf.interfaces.IWordModule
 
 object wFacility : IWordModule {
     override val name = "kf.words.facility.wFacility"
     override val description = "Facility words"
 
-    override val words: Array<IWord> = arrayOf(
+    override val words: Array<Word> = arrayOf(
         Word("AT-XY", ::w_atXY),
         Word("KEY?", ::w_keyQuestion),
         Word("PAGE", ::w_page),

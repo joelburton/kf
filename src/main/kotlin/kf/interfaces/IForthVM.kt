@@ -1,5 +1,6 @@
 package kf.interfaces
 
+import kf.dict.Word
 import kotlin.time.TimeSource
 
 interface IForthVM {
@@ -21,7 +22,7 @@ interface IForthVM {
     val dstk: IFStack
     val rstk: IFStack
 
-    var currentWord: IWord
+    var currentWord: Word
     var ip: Int
 
     val sources: ArrayList<ISource>

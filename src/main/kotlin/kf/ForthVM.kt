@@ -2,6 +2,7 @@ package kf
 
 
 import kf.dict.Dict
+import kf.dict.Word
 import kf.interfaces.*
 import kf.interps.InterpBase
 import kf.mem.*
@@ -106,7 +107,7 @@ class ForthVM(
         FStack(this, "rstk", memConfig.rstackStart, memConfig.rstackEnd)
 
     /** Current word being executed by the VM. */
-    override lateinit var currentWord: IWord
+    override lateinit var currentWord: Word
 
     /** The instruction pointer; where is the VM executing next? */
     override var ip = memConfig.codeStart

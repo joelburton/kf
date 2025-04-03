@@ -1,16 +1,14 @@
 package kf.words.core.ext
 
-import kf.ForthVM
-import kf.interfaces.IWordModule
 import kf.dict.Word
 import kf.interfaces.IForthVM
-import kf.interfaces.IWord
+import kf.interfaces.IWordModule
 
 object wCommentsExt : IWordModule {
     override val name = "kf.words.core.ext.wCommentsExt"
     override val description = "Comments Extension"
 
-    override val words: Array<IWord> get() = arrayOf(
+    override val words: Array<Word> get() = arrayOf(
         Word("\\", imm = true, fn = ::w_backslashComment),
     )
 

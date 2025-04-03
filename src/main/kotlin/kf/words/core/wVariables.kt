@@ -3,7 +3,6 @@ package kf.words.core
 import kf.dict.NO_ADDR
 import kf.dict.Word
 import kf.interfaces.IForthVM
-import kf.interfaces.IWord
 import kf.interfaces.IWordModule
 import kf.mem.CellMeta
 import kf.strFromAddrLen
@@ -13,7 +12,7 @@ object wVariables: IWordModule {
     override val description = "Variables & constants"
 
     override val words
-        get() = arrayOf<IWord>(
+        get() = arrayOf<Word>(
             Word("CONSTANT", ::w_constant),
             Word("VARIABLE", ::w_variable),
         )

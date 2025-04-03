@@ -4,7 +4,6 @@ import kf.ForthVM
 import kf.interfaces.IWordModule
 import kf.dict.Word
 import kf.interfaces.IForthVM
-import kf.interfaces.IWord
 import kf.strFromLenAddr
 import kf.words.core.wFormatting
 
@@ -13,7 +12,7 @@ object wFormattingExt: IWordModule {
     override val description = "Picture words for numbers"
 
     override val words
-        get() = arrayOf<IWord>(
+        get() = arrayOf<Word>(
             Word("HOLDS", ::w_holds),
             )
 

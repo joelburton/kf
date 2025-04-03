@@ -1,17 +1,15 @@
 package kf.words.custom
 
-import kf.ForthVM
-import kf.interfaces.IWordModule
 import kf.dict.Word
 import kf.interfaces.IForthVM
-import kf.interfaces.IWord
+import kf.interfaces.IWordModule
 import kf.strFromAddrLen
 
 object wCompilingCustom : IWordModule {
     override val name = "kf.words.custom.wCompilingCustom"
     override val description = "Compiling custom words"
 
-    override val words get() = arrayOf<IWord>(
+    override val words get() = arrayOf<Word>(
         Word("RECURSIVE", ::w_recursive, imm = true, compO = true),
     )
 

@@ -1,7 +1,11 @@
 package kf.dict
 
 import kf.interfaces.IForthVM
-import kf.interfaces.IWord
+
+// A marker to make it easy to recognize that a word doesn't have a
+// real CPOS or DPOS. In Kotlin-land, we could make this null instead,
+// but since Forth-level code doesn't know what "null" is, we use
+// this instead.
 
 const val NO_ADDR = 0xffff
 
@@ -39,13 +43,13 @@ class Word(
     name: String,
 
     /** Function to run; all words have one; pure-data words just use (ADDR) */
-    override var fn: (IForthVM) -> Unit,
+    var fn: (IForthVM) -> Unit,
 
     /** Location of code-start for colon words with code. */
-    override var cpos: Int = 0xffff,
+    var cpos: Int = 0xffff,
 
     /** Location of data-start for Forth-created words with data. */
-    override var dpos: Int = 0xffff,
+    var dpos: Int = 0xffff,
 
     /** Should this word be hidden from casual users?
      *
@@ -55,10 +59,10 @@ class Word(
      *
      * You can always see ALL words with `.DICT`
      */
-    override var hidden: Boolean = false,
+    var hidden: Boolean = false,
 
     /** Is this word IMMEDIATE (ie, executes in compilation mode) */
-    override var imm: Boolean = false,
+    var imm: Boolean = false,
 
     /** Is this word compile-only?
      *
@@ -66,14 +70,14 @@ class Word(
      * in one, like IF or ; are marked as such, so the system can throw a
      * helpful error if the user tries to use them.
      */
-    override val compO: Boolean = false,
+    val compO: Boolean = false,
 
     /** Is word interpreter-only?
      *
      * These are words that shouldn't be used in a word definition and would
      * confuse the system. Users are given an error if they try to do so.
      */
-    override val interpO: Boolean = false,
+    val interpO: Boolean = false,
 
     /** Is this word marked as recursive?
      *
@@ -84,7 +88,7 @@ class Word(
      * ANS-standard way of doing the same thing would be
      * `: a recurse 42 recurse ;`
      */
-    override var recursive: Boolean = false,
+    var recursive: Boolean = false,
 
     /** Does this word "defer" to another (if so, this is their word num)
      *
@@ -94,7 +98,7 @@ class Word(
      * Different from the standard: this support ANY word being able to be
      * deferred. That is both cool and breaks the rules.
      */
-    override var deferToWn: Int? = null,
+    var deferToWn: Int? = null,
 
     /** The unique, sequential, unchanging word number.
      *
@@ -110,12 +114,12 @@ class Word(
      *
      * Somewhere Tony Hoare is smiling.
      * */
-    override var wn: Int = 0 // look ma, not null ;-)
-) : IWord {
+    var wn: Int = 0 // look ma, not null ;-)
+) {
 
     // Everything works if this is set to uppercase or not change the case;
     // all lookups for the words are done case-insensitively.
-    override val name = name.lowercase()
+    val name = name.lowercase()
 
     override fun toString() = name
 }

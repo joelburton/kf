@@ -8,7 +8,6 @@ import kf.addr
 
 import kf.interfaces.IDict
 import kf.interfaces.IForthVM
-import kf.interfaces.IWord
 import kf.interfaces.IWordMetaModule
 import kf.interfaces.IWordModule
 import kf.wrap
@@ -56,13 +55,13 @@ class Dict(
      * overhead. It isn't needed for this project.
      *
      */
-    override val words: List<IWord> = _words
+    override val words: List<Word> = _words
 
     /** The word, if any, that is currently being defined.
      *
      * This is cleared after a definition has succeeded or failed.
      */
-    override var currentlyDefining: IWord? = null
+    override var currentlyDefining: Word? = null
 
     override val size: Int get() = _words.size
     override val last: Word get() = _words.last()
@@ -143,12 +142,12 @@ class Dict(
 
     /** Add a word to the dictionary. */
 
-    override fun add(word: IWord) {
+    override fun add(word: Word) {
         if (D) vm.dbg(3, "dict.add: ${word.name}")
         if (_words.size >= capacity) throw DictFullError()
         if (word.name.length > 32)
             throw WordLengthError("Word name too long: ${word.name}")
-        _words.add(word as Word)
+        _words.add(word)
         word.wn = _words.lastIndex
     }
 
@@ -210,7 +209,7 @@ class Dict(
     }
 
     /**  Useful for debugging and to support `w_see` and `w_simple-see`. */
-    fun getHeaderStr(w: IWord): String {
+    fun getHeaderStr(w: Word): String {
         return java.lang.String.format(
             "%s %-36s %-2s %-2s %-2s %-2s %-2s C:%-5s D:%-5s",
             String.format("(%3d)", w.wn),
@@ -234,12 +233,6 @@ class Dict(
     }
 
     companion object {
-
-        // A marker to make it easy to recognize that a word doesn't have a
-        // real CPOS or DPOS. In Kotlin-land, we could make this null instead,
-        // but since Forth-level code doesn't know what "null" is, we use
-        // this instead.
-        const val NO_ADDR: Int = 0xffff
 
         // A word to put in place where needed when "no word" is a value.
         fun noWordFn(vm: IForthVM) {

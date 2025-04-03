@@ -1,18 +1,16 @@
 package kf.words.custom
 
-import kf.ForthVM
-import kf.interfaces.IWordModule
-import kf.stacks.StackPtrInvalidError
 import kf.dict.Word
 import kf.interfaces.IForthVM
-import kf.interfaces.IWord
+import kf.interfaces.IWordModule
 import kf.stacks.FStack
+import kf.stacks.StackPtrInvalidError
 import kf.words.machine.wMachine.w_nop
 
 object wStacksCustom: IWordModule {
     override val name = "kf.words.custom.wStacksCustom"
     override val description = "Stack custom funcs"
-    override val words get() = arrayOf<IWord>(
+    override val words get() = arrayOf<Word>(
 
         Word("CLEARSTACK", ::w_clearStack ) ,
 

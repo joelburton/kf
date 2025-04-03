@@ -1,11 +1,9 @@
 package kf.words.core
 
-import kf.ForthVM
 import kf.ForthVM.Companion.FALSE
-import kf.interfaces.IWordModule
 import kf.dict.Word
 import kf.interfaces.IForthVM
-import kf.interfaces.IWord
+import kf.interfaces.IWordModule
 import kf.strFromAddrLen
 
 
@@ -14,7 +12,7 @@ object wSystem: IWordModule {
     override val description = "The system outside of the VM"
 
     override val words
-        get() = arrayOf<IWord>(
+        get() = arrayOf<Word>(
             Word("ENVIRONMENT?", ::w_environment),
         )
 

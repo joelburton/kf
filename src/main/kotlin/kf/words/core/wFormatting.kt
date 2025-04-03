@@ -4,7 +4,6 @@ import kf.ForthVM
 import kf.interfaces.IWordModule
 import kf.dict.Word
 import kf.interfaces.IForthVM
-import kf.interfaces.IWord
 import kotlin.math.absoluteValue
 
 object wFormatting: IWordModule {
@@ -13,7 +12,7 @@ object wFormatting: IWordModule {
     var pict = StringBuilder()
 
     override val words
-        get() = arrayOf<IWord>(
+        get() = arrayOf<Word>(
             Word("#", ::w_numberSign),
             Word("#>", ::w_numberSignGreater),
             Word("#S", ::w_numberSignS),

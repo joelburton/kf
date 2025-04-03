@@ -6,7 +6,6 @@ import kf.ForthVM
 import kf.interfaces.IWordModule
 import kf.dict.Word
 import kf.interfaces.IForthVM
-import kf.interfaces.IWord
 import kf.strFromAddrLen
 import kf.toForthInt
 
@@ -15,7 +14,7 @@ object wParsing : IWordModule {
     override val description = "Parsing buffers"
 
     override val words
-        get() = arrayOf<IWord>(
+        get() = arrayOf<Word>(
             Word("WORD", ::w_word),
             Word("SOURCE", ::w_source),
             Word(">IN", ::w_toIn),

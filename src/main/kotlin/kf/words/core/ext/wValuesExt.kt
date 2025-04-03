@@ -5,14 +5,13 @@ import kf.dict.NO_ADDR
 import kf.interfaces.IWordModule
 import kf.dict.Word
 import kf.interfaces.IForthVM
-import kf.interfaces.IWord
 import kf.mem.CellMeta
 
 object wValuesExt: IWordModule {
     override val name = "kf.words.core.ext.wValuesExt"
     override val description = "Flexible variables"
 
-    override val words: Array<IWord>
+    override val words: Array<Word>
         get() = arrayOf(
             Word("VALUE", ::w_value),
             Word("TO", ::w_to)

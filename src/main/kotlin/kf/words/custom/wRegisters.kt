@@ -4,12 +4,11 @@ import kf.ForthVM
 import kf.interfaces.IWordModule
 import kf.dict.Word
 import kf.interfaces.IForthVM
-import kf.interfaces.IWord
 
 object wRegisters : IWordModule {
     override val name = "kf.words.custom.wRegisters"
     override val description = "System registers"
-    override val words get() = arrayOf<IWord>(
+    override val words get() = arrayOf<Word>(
         Word("R:CSTART", ::w_cstart),
         Word("R:CEND", ::w_cend),
         Word("R:DSTART", ::w_dstart),

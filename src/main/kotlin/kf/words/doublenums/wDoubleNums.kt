@@ -1,10 +1,8 @@
 package kf.words.doublenums
 
-import kf.ForthVM
-import kf.interfaces.IWordModule
 import kf.dict.Word
 import kf.interfaces.IForthVM
-import kf.interfaces.IWord
+import kf.interfaces.IWordModule
 
 // 8.6.1.0360 2CONSTANT
 //8.6.1.0390 2LITERAL
@@ -36,7 +34,7 @@ object wDoubleNums : IWordModule {
     override val name = "kf.words.doublenums.wDoubleNums"
     override val description: String = "Double numbers"
     override val words
-        get() = arrayOf<IWord>(
+        get() = arrayOf<Word>(
             Word("D.", ::w_dDot),
         )
 

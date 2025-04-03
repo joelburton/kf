@@ -3,7 +3,6 @@ package kf.words.core
 import kf.dict.NO_ADDR
 import kf.dict.Word
 import kf.interfaces.IForthVM
-import kf.interfaces.IWord
 import kf.interfaces.IWordModule
 import kf.strFromAddrLen
 import kf.words.core.wFunctions.w_call
@@ -13,7 +12,7 @@ object wCreate: IWordModule {
     override val description = "Data allocation and DOES"
 
     override val words
-        get() = arrayOf<IWord>(
+        get() = arrayOf<Word>(
             Word("CREATE", ::w_create),
             Word("DOES>", ::w_doesAngle, imm = true, compO = true),
             Word("(DOES)", ::w_parenDoes),

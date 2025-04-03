@@ -1,17 +1,15 @@
 package kf.words.core
 
-import kf.ForthVM
-import kf.interfaces.IWordModule
 import kf.dict.Word
 import kf.interfaces.IForthVM
-import kf.interfaces.IWord
+import kf.interfaces.IWordModule
 
 object wStackOps: IWordModule {
     override val name = "kf.words.core.wStackOps"
     override val description = "Stack operations"
 
     override val words
-        get() = arrayOf<IWord>(
+        get() = arrayOf<Word>(
             Word("DUP", ::w_dup),
             Word("DROP", ::w_drop),
             Word("?DUP", ::w_questionDup),

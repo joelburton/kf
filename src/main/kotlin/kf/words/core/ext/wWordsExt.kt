@@ -3,7 +3,6 @@ package kf.words.core.ext
 import kf.dict.NO_ADDR
 import kf.dict.Word
 import kf.interfaces.IForthVM
-import kf.interfaces.IWord
 import kf.interfaces.IWordModule
 import kf.mem.appendLit
 import kf.strFromAddrLen
@@ -13,7 +12,7 @@ object wWordsExt : IWordModule {
     override val name = "kf.words.core.ext.wWordsExt"
     override val description = "Acting on words"
 
-    override val words: Array<IWord>
+    override val words: Array<Word>
         get() = arrayOf(
             Word("MARKER", ::w_marker),
         )

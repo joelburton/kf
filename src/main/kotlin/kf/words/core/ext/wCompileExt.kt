@@ -3,7 +3,6 @@ package kf.words.core.ext
 import kf.dict.NO_ADDR
 import kf.dict.Word
 import kf.interfaces.IForthVM
-import kf.interfaces.IWord
 import kf.interfaces.IWordModule
 import kf.interps.InterpBase
 import kf.strFromAddrLen
@@ -12,7 +11,7 @@ import kf.words.core.wFunctions
 object wCompileExt: IWordModule {
     override val name = "kf.words.core.ext.wCompileExt"
     override val description = "Compile Extensions"
-    override val words = arrayOf<IWord>(
+    override val words = arrayOf<Word>(
         Word("[COMPILE]", ::w_bracketCompile, imm = true, compO = true),
         Word("COMPILE,", ::w_compileComma, compO = true),
         Word(".(", ::w_dotParen, imm=true, compO = true),

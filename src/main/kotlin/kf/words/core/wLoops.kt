@@ -4,7 +4,6 @@ import kf.D
 import kf.dict.NO_ADDR
 import kf.dict.Word
 import kf.interfaces.IForthVM
-import kf.interfaces.IWord
 import kf.interfaces.IWordModule
 import kf.mem.appendJump
 
@@ -13,7 +12,7 @@ object wLoops : IWordModule {
     override val description = "Looping words"
 
     override val words
-        get() = arrayOf<IWord>(
+        get() = arrayOf<Word>(
             // BEGIN...UNTIL
             // BEGIN...WHILE...REPEAT
             // BEGIN...AGAIN (not here, "AGAIN" is in wLoopsExt)

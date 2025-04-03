@@ -6,14 +6,13 @@ import kf.ForthVM.Companion.TRUE
 import kf.interfaces.IWordModule
 import kf.dict.Word
 import kf.interfaces.IForthVM
-import kf.interfaces.IWord
 
 object wLogic : IWordModule {
     override val name = "kf.words.core.wLogic"
     override val description = "Comparison and logic words"
 
     override val words
-        get() = arrayOf<IWord>(
+        get() = arrayOf<Word>(
             Word("0<", ::w_zeroLess),
             Word("0=", ::w_zeroEquals),
             Word("<", ::w_lessThan),

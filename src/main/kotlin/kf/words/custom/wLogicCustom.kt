@@ -6,13 +6,12 @@ import kf.ForthVM.Companion.TRUE
 import kf.interfaces.IWordModule
 import kf.dict.Word
 import kf.interfaces.IForthVM
-import kf.interfaces.IWord
 import kotlin.math.sqrt
 
 object wLogicCustom : IWordModule {
     override val name = "kf.words.custom.wLogicCustom"
     override val description = "Logic Extra"
-    override val words get() = arrayOf<IWord>(
+    override val words get() = arrayOf<Word>(
         Word("NOT", ::w_not ) ,
         Word(">=", ::w_gte ) ,
         Word("<=", ::w_lte ) ,

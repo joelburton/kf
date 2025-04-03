@@ -5,7 +5,6 @@ import kf.dict.NO_ADDR
 import kf.interfaces.IWordModule
 import kf.dict.Word
 import kf.interfaces.IForthVM
-import kf.interfaces.IWord
 
 /** Deferrable words.
  *
@@ -18,7 +17,7 @@ object wDeferExt : IWordModule {
     override val name = "kf.words.core.ext.wDeferExt"
     override val description = "Deferred words"
 
-    override val words: Array<IWord>
+    override val words: Array<Word>
         get() = arrayOf(
             Word("DEFER", ::w_defer),
             Word("(DEFERRED-WORD)", ::deferred),
@@ -50,7 +49,7 @@ object wDeferExt : IWordModule {
 
     // Internal use by other functions here
 
-    private fun changeDeferPointer(vm: IForthVM, deferW: IWord, srcW: IWord) {
+    private fun changeDeferPointer(vm: IForthVM, deferW: Word, srcW: Word) {
         deferW.cpos = srcW.cpos
         deferW.dpos = srcW.dpos
         deferW.fn = srcW.fn

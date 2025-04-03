@@ -4,12 +4,11 @@ import kf.ForthVM
 import kf.interfaces.IWordModule
 import kf.dict.Word
 import kf.interfaces.IForthVM
-import kf.interfaces.IWord
 
 object wIOCustom : IWordModule {
     override val name = "kf.words.custom.wIOCustom"
     override val description = "Custom words for IO"
-    override val words = arrayOf<IWord>(
+    override val words = arrayOf<Word>(
         Word("NL", ::w_nl),
         Word(".INCLUDED-FILES", ::w_dotIncludedFiles),
         Word(".INPUT-SOURCES", ::w_dotInputSources),

@@ -4,7 +4,6 @@ import kf.*
 import kf.interfaces.IWordModule
 import kf.dict.Word
 import kf.interfaces.IForthVM
-import kf.interfaces.IWord
 import kf.interps.InterpBase
 import kf.interps.InterpEval
 import kf.mem.appendJump
@@ -16,7 +15,7 @@ object wInterp : IWordModule {
     override val description = "Interpreter"
 
     override val words
-        get() = arrayOf<IWord>(
+        get() = arrayOf<Word>(
             Word("EVALUATE", ::w_evaluate),
 
             Word("QUIT", ::w_quit),
