@@ -30,11 +30,11 @@ object wBload : IWordModule {
         }
         val mod = try {
             Class.forName(name).kotlin.objectInstance!! as IWordModule
-        } catch (e: ClassNotFoundException) {
-            throw BloadError("Can't find: $name $e")
-        } catch (e: NoSuchFieldException) {
+        } catch (_: ClassNotFoundException) {
+            throw BloadError("Can't find: $name")
+        } catch (_: NoSuchFieldException) {
             throw BloadError("Not an object")
-        } catch (e: ClassCastException) {
+        } catch (_: ClassCastException) {
             throw BloadError("Wrong interface: needs `name`, `words`")
         }
         vm.dict.addModule(mod)

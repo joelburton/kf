@@ -32,6 +32,14 @@ tasks.test { useJUnitPlatform() }
 tasks.jar {
     manifest { attributes["Main-Class"] = "kf.cli.MainKt" }
 }
+
+tasks.register<Jar>("interfacesJar") {
+    archiveClassifier.set("interfaces")
+    from(sourceSets.main.get().output) {
+        include("kf/interfaces/**")
+        include("kf/dict/Word.class")
+    }
+}
 application { mainClass.set("kf.cli.MainKt") }
 dokka {
     dokkaSourceSets.main {
