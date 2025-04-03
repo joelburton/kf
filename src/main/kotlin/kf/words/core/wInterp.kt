@@ -8,6 +8,7 @@ import kf.interps.InterpBase
 import kf.interps.InterpEval
 import kf.mem.appendJump
 import kf.mem.appendStr
+import kf.mem.appendWord
 import kf.sources.SourceEval
 
 object wInterp : IWordModule {

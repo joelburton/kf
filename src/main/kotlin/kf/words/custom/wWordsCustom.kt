@@ -51,7 +51,7 @@ object wWordsCustom : IWordModule {
     fun w_wnForget(vm: IForthVM) {
         val wn: Int = vm.dstk.pop()
         val w = vm.dict[wn]
-        (vm.dict as Dict).truncateAt(wn)
+        vm.dict.truncateAt(wn)
         vm.cend = w.cpos
     }
 

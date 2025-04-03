@@ -27,11 +27,11 @@ fun IForthVM.appendCode(v: Int, cellMetaVal: CellMeta) {
  * This is just a convenience function for "appendCode", as this can be
  * passed the word name, and it will find the wn and add the meta info.
  */
-//fun IForthVM.appendWord(s: String) {
-//    if (D) dbg(4, "vm.appendWord: $s")
-//    val wn = dict[s].wn
-//    appendCode(wn, CellMeta.WordNum)
-//}
+fun IForthVM.appendWord(s: String) {
+    if (D) dbg(4, "vm.appendWord: $s")
+    val wn = dict[s].wn
+    appendCode(wn, CellMeta.WordNum)
+}
 
 /**  Append lit string ("lit" + len + chars) to the code section */
 fun IForthVM.appendStr(s: String) {

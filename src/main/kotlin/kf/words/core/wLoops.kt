@@ -6,6 +6,7 @@ import kf.dict.Word
 import kf.interfaces.IForthVM
 import kf.interfaces.IWordModule
 import kf.mem.appendJump
+import kf.mem.appendWord
 
 object wLoops : IWordModule {
     override val name = "kf.words.core.wLoops"

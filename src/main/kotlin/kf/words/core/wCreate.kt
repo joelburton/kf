@@ -4,6 +4,7 @@ import kf.dict.NO_ADDR
 import kf.dict.Word
 import kf.interfaces.IForthVM
 import kf.interfaces.IWordModule
+import kf.mem.appendWord
 import kf.strFromAddrLen
 import kf.words.core.wFunctions.w_call
 

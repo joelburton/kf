@@ -15,18 +15,11 @@ import kf.wrap
 class WordNotFoundError(m: String) : DictError("Word not found: $m")
 class DictFullError() : DictError("Dictionary full")
 
-/** The dictionary of Forth words (sometimes called the "glossary".
- *
- * Every word is here, even though some words are very internal-facing and
- * generally hidden from users of the system. Words that are in the process
- * of being made are also added here.
- *
- * TODO: could we just not add a word until its complete?
- */
+//  TODO: could we just not add a word until its complete?
 
 class Dict(
-    override val vm: ForthVM,
-    override val capacity: Int = 1024
+    val vm: ForthVM,
+    val capacity: Int = 1024
 ) :
     IDict {
     /** The real array of words, private to this class.
@@ -57,10 +50,6 @@ class Dict(
      */
     override val words: List<Word> = _words
 
-    /** The word, if any, that is currently being defined.
-     *
-     * This is cleared after a definition has succeeded or failed.
-     */
     override var currentlyDefining: Word? = null
 
     override val size: Int get() = _words.size
@@ -71,32 +60,21 @@ class Dict(
      * Any new state added to the dictionary itself should be added here.
      * */
 
-    fun reset() {
+    internal fun reset() {
         if (D) vm.dbg(3, "dict.reset")
         _words.clear()
         currentlyDefining = null
     }
-
-    /** Get word by wn, like ```dict[wn]```. Throws error if not found. */
 
     override operator fun get(wn: Int): Word {
         if (wn < 0 || wn > _words.lastIndex) throw WordNotFoundError("$wn")
         return _words[wn]
     }
 
-    /** Get word by name, like ```dict["dup"]```. Throws err if not found. */
-
     override operator fun get(name: String): Word =
         _words.asReversed()
             .firstOrNull { it.name.equals(name, ignoreCase = true) }
             ?: throw WordNotFoundError(name)
-
-    /** Get word by name, but returns null if word-not-found.
-     *
-     * Almost always, trying to refer to a non-existant word should be an error,
-     * but there are specific use cases, like `FIND`, etc, where a missing word
-     * shouldn't be an error.
-     */
 
     override fun getSafe(name: String): Word? =
         _words.asReversed().find { it.name.equals(name, ignoreCase = true) }
@@ -156,7 +134,7 @@ class Dict(
      * Already-loaded modules are skipped unless `reloadOk` is true.
      */
 
-    fun addModule(mod: IWordModule, reloadOk: Boolean = false) {
+    internal fun addModule(mod: IWordModule, reloadOk: Boolean = false) {
         if (D) vm.dbg(3, "dict.addModule: ${mod.name}")
 
         if (!reloadOk && mod.name in vm.modulesLoaded) {
@@ -183,19 +161,14 @@ class Dict(
 
     /** Add a "meta-module", a module that just contains other modules. */
 
-    fun addMetaModule(mod: IWordMetaModule) {
+    internal fun addMetaModule(mod: IWordMetaModule) {
         val modName = mod.name.removePrefix("kf.words.")
         if (D) vm.dbg(3, "dict.addMetaModule: ${mod.name}")
         if (vm.verbosity >= 2) vm.io.success("$modName:")
         for (m in mod.modules) addModule(m, false)
     }
 
-    /**  Gets rid of all words at 'n' and after (including n).
-     *
-     * Used for "w_forget"
-     */
-
-    fun truncateAt(n: Int) {
+    override fun truncateAt(n: Int) {
         if (D) vm.dbg(3, "dict.truncateAt $n")
         if (_words.size > n) {
             _words.subList(n, _words.size).clear()
@@ -203,7 +176,7 @@ class Dict(
     }
 
     /**  Remove last word (being defined or already defined) */
-    fun removeLast() {
+    internal fun removeLast() {
         if (D) vm.dbg(3, "dict.removeLast")
         _words.removeLast()
     }

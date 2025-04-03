@@ -53,92 +53,53 @@ class ForthVM(
 
     // *************************************************************** registers
 
-    /** Base of math output (10 is for decimal and default) */
     override var base by RegisterDelegate(REG_BASE, this.mem)
-
-    /** Verbosity of system:
-     *
-     * -  4  very low-level debugging
-     * -  3  show internal msgs
-     * -  2  show all words
-     * -  1  welcome messages, user warnings, etc. (default)
-     * -  0  no banner or unimportant warnings
-     * - -1  quiet: no warnings
-     * - -2  very no prompt, no output except direct (like .)
-     *
-     *  To see any dev-debugging messages, the global variable [D] needs to
-     *  be true.
-     */
     override var verbosity by RegisterDelegate(REG_VERBOSITY, this.mem)
-
-    /** Current end of the CODE section. */
     override var cend by RegisterDelegate(REG_CEND, this.mem)
-
-    /** Current end of the DATA section. */
     override var dend by RegisterDelegate(REG_DEND, this.mem)
-
-    /** Start of the CODE section. This comes from the memory configuration
-     * passed in, and normally wouldn't ever change. However, to hack around,
-     * users *can* change this.
-     */
     override var cstart by RegisterDelegate(REG_CSTART, this.mem)
-
-    /** Start of the DATA section. See [cstart]. */
     override var dstart by RegisterDelegate(REG_DSTART, this.mem)
-
-    /** The pointer the scanner is at in a line of input. */
     override var inPtr by RegisterDelegate(REG_IN_PTR, this.mem)
 
     // *************************************************************************
 
-    /**  Word dictionary. */
     override val dict = Dict(this)
 
-    /**  This is only needed to make see/simple-see commands more helpful. */
     override val cellMeta: Array<ICellMeta> =
         Array(memConfig.upperBound + 1) { CellMeta.Unknown }
 
-    /** Data stack (the one normally used by end users) */
     override val dstk =
         FStack(this, "dstk", memConfig.dstackStart, memConfig.dstackEnd)
 
-    /** Return stack (for calling/returning from fn calls */
     override val rstk =
         FStack(this, "rstk", memConfig.rstackStart, memConfig.rstackEnd)
 
-    /** Current word being executed by the VM. */
     override lateinit var currentWord: Word
 
     /** The instruction pointer; where is the VM executing next? */
     override var ip = memConfig.codeStart
 
     /** List of {name: class} for all primitive modules loaded. */
-    val modulesLoaded: HashMap<String, IWordModule> = HashMap()
+    internal val modulesLoaded: HashMap<String, IWordModule> = HashMap()
 
     /** List of files included. */
-    val includedFiles: ArrayList<String> = ArrayList()
+    internal val includedFiles: ArrayList<String> = ArrayList()
 
-    /** Stack of input sources, with the top being the active one. */
     override val sources = arrayListOf<ISource>()
 
-    /** Convenient way to get the currently-active input source (or null)
-     *
-     * Not marking this a nullable, even though it can be for a moment when
-     * the system is shutting down and pulling the last interpreter off,
-     * or during bootstrapping when there's no interactive input source to
-     * fall back on.
-     *
-     * Making this a nullable type would require all sorts of null-safety
-     * checks everywhere that uses it, and it's fine to minimize the specific
-     * locations in the codebase that can be reached when there's no input
-     * source.
-     * */
+
+    // Not marking this a nullable, even though it can be for a moment when
+    // the system is shutting down and pulling the last interpreter off,
+    // or during bootstrapping when there's no interactive input source to
+    // fall back on.
+    //
+    // Making this a nullable type would require all sorts of null-safety
+    // checks everywhere that uses it, and it's fine to minimize the specific
+    // locations in the codebase that can be reached when there's no input
+    // source.
     override val source: ISource get() = sources.last()
 
-    /** Time mark for when VM started (the `millis` word reports # of millis
-     * since server start, since it's not possible to return millis before the
-     * 1970 epoch on a 32-bit machine.)
-     */
+
     override val timeMarkCreated = TimeSource.Monotonic.markNow()
 
     init {
@@ -182,16 +143,6 @@ class ForthVM(
         quit()
     }
 
-    /** Quit: what `QUIT` calls --- go to interactive interp and reset.
-     *
-     * The name "QUIT" is traditional in forth and tied to the QUIT word,
-     * but it doesn't really mean "quit the VM" or "quit the interpreter" or
-     * such. It means, basically, "quit reading any file or evaluating this
-     * line and go back to interactive mode and read a new line."
-     *
-     * The word to quit the interpreter is BYE.
-     * */
-
     override fun quit() {
         if (D) dbg(2, "vm.quit")
 
@@ -208,15 +159,12 @@ class ForthVM(
         interp.reset()
     }
 
-    /** Abort: this what `abort` does as well as any forth error */
-
     override fun abort() {
         if (D) dbg(2, "vm.abort")
 
         quit()
         dstk.reset()
     }
-
 
     // ************************************************** Adding primitive words
 
@@ -308,20 +256,13 @@ class ForthVM(
 //        wn.fn(this)
 //    }
 
-    /** Programmers get lonely and we love to get logs. */
     @Suppress("KotlinConstantConditions")
     override fun dbg(lvl: Int, s: String) {
-        if (!D) throw Exception("FIX THIS: DBG called when D is false")
+        if (!D) return
         when (lvl) {
             0, 1, 2 -> io.debug(s)
             else -> io.debugSubtle(s)
         }
-    }
-
-    override fun appendWord(s: String) {
-        if (D) dbg(4, "vm.appendWord: $s")
-        val wn = dict[s].wn
-        appendCode(wn, CellMeta.WordNum)
     }
 
     companion object {
@@ -335,8 +276,6 @@ class ForthVM(
         const val REG_IN_PTR = 8
 
         const val MAX_INT: Int = 0x7fffffff
-        const val TRUE: Int = -1
-        const val FALSE: Int = 0
 
         const val CHAR_SIZE: Int = 1 // apparently, we're unicode-32 ;-)
     }

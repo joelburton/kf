@@ -6,6 +6,7 @@ import kf.interfaces.IForthVM
 import kf.interfaces.IWordModule
 import kf.mem.CellMeta
 import kf.mem.appendCode
+import kf.mem.appendWord
 
 object wIfThen: IWordModule {
     override val name = "kf.words.core.wIfThen"

@@ -1,7 +1,7 @@
 package kf.words.core
 
-import kf.ForthVM.Companion.FALSE
 import kf.dict.Word
+import kf.interfaces.FALSE
 import kf.interfaces.IForthVM
 import kf.interfaces.IWordModule
 import kf.strFromAddrLen

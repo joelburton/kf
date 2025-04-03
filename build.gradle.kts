@@ -1,5 +1,3 @@
-import org.jetbrains.dokka.DokkaDefaults.documentedVisibilities
-import org.jetbrains.dokka.gradle.DokkaTask
 import org.jetbrains.dokka.gradle.engine.parameters.VisibilityModifier
 
 group = "kf"

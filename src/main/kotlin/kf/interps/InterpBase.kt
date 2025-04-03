@@ -7,6 +7,7 @@ import kf.VERSION_STRING
 import kf.interfaces.IWordMetaModule
 import kf.interfaces.IForthVM
 import kf.interfaces.IInterp
+import kf.mem.appendWord
 import kf.words.mBaseInterp
 
 

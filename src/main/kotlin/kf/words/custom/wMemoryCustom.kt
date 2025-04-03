@@ -1,9 +1,10 @@
 package kf.words.custom
 
-import kf.ForthVM
-import kf.interfaces.IWordModule
 import kf.dict.Word
+import kf.interfaces.FALSE
 import kf.interfaces.IForthVM
+import kf.interfaces.IWordModule
+import kf.interfaces.TRUE
 
 
 object wMemoryCustom : IWordModule {
@@ -28,12 +29,12 @@ object wMemoryCustom : IWordModule {
 
     // addr on  = set to true
     fun w_on(vm: IForthVM) {
-        vm.mem[vm.dstk.pop()] = ForthVM.Companion.TRUE
+        vm.mem[vm.dstk.pop()] = TRUE
     }
 
     // addr off = set to false
     fun w_off(vm: IForthVM) {
-        vm.mem[vm.dstk.pop()] = ForthVM.Companion.FALSE
+        vm.mem[vm.dstk.pop()] = FALSE
     }
 
     fun w_cellsPlus(vm: IForthVM) {

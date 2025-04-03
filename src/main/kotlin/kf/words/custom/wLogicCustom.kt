@@ -1,11 +1,11 @@
 package kf.words.custom
 
 import kf.ForthVM
-import kf.ForthVM.Companion.FALSE
-import kf.ForthVM.Companion.TRUE
-import kf.interfaces.IWordModule
 import kf.dict.Word
+import kf.interfaces.FALSE
 import kf.interfaces.IForthVM
+import kf.interfaces.IWordModule
+import kf.interfaces.TRUE
 import kotlin.math.sqrt
 
 object wLogicCustom : IWordModule {

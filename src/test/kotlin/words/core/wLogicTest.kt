@@ -1,8 +1,7 @@
 package words.core
 
+import kf.interfaces.*
 import ForthTestCase
-import kf.ForthVM.Companion.FALSE
-import kf.ForthVM.Companion.TRUE
 import kf.words.core.wLogic
 import org.junit.jupiter.api.Test
 

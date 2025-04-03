@@ -62,14 +62,12 @@ class FScanner(val vm: ForthVM): IFScanner {
 
     /** Reset */
 
-    fun reset() {
+    internal fun reset() {
         vm.inPtr = 0
         nChars = 0
         tokIdx = 0
         tokLen = 0
     }
-
-    /** Reset buffer and fill it from string. */
 
     override fun fill(str: String) {
         reset()
@@ -82,20 +80,6 @@ class FScanner(val vm: ForthVM): IFScanner {
     /** Return string of entire buffer (useful for debugging.) */
 
     override fun toString() = Pair(start, nChars).strFromAddrLen(vm)
-
-    /** Get whitespace-separated token.
-     *
-     * - skip over all whitespace at start
-     * - get all non-space chars
-     * - skip one space
-     *
-     *   ...hello...
-     *      ^     ^   = tokPtr and vm.inPtr (tokLen=5, bufLen unchanged)
-     *
-     * This should be used to "get the next token". To "get the input
-     * from this token", use `parse`.
-     *
-     **/
 
     override fun parseName(): Pair<Int, Int> {
         while (vm.inPtr < nChars && vm.mem[start + vm.inPtr] in whitespace)
@@ -111,22 +95,6 @@ class FScanner(val vm: ForthVM): IFScanner {
         return Pair(start + tokIdx, tokLen)
     }
 
-    /** General parse for a term character.
-     *
-     * - skip nothing at start
-     * - get all non-term chars
-     *
-     * with term='-'
-     *    ...hello--.
-     *    ^        ^  = tokPtr & vm.inPtr
-     *
-     * This is used to parse things like `." hi"` and such. Note that, per the
-     * specs, *it does not* consume or require any whitespace after it.
-     * So `." hi"10` could be successfully read as (string "hi", number 10)
-     * if the call to this was followed by parseName.
-     *
-     **/
-
     override fun parse(term: Char): Pair<Int, Int> {
         tokIdx = vm.inPtr
         while (vm.inPtr < nChars && vm.mem[start + vm.inPtr] != term.code)
@@ -139,19 +107,6 @@ class FScanner(val vm: ForthVM): IFScanner {
 
         return Pair(start + tokIdx, tokLen)
     }
-
-    /** General parse for an ending character, using `WORD` algo.
-     *
-     *  with term=x
-     *    xxHELLOxx.
-     *      ^     ^  = tokPtr & vm.inPtr
-     *
-     *  with term=' ', same but term=any-whitespace-character.
-     *
-     *  This is a weird algorithm, and be avoided except for the Forth word
-     *  `WORD`.
-     *
-     **/
 
     override fun wordParse(term: Char): Pair<Int, Int> {
         var terms = if (term == ' ') whitespace else arrayOf(term.code)
@@ -168,12 +123,6 @@ class FScanner(val vm: ForthVM): IFScanner {
 
         return Pair(start + tokIdx, tokLen)
     }
-
-    /** Consume rest of line.
-     *
-     * Any parsing after this will always have len=0.
-     *
-     **/
 
     override fun nextLine() {
         nChars = 0

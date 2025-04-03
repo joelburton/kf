@@ -8,7 +8,6 @@ package kf.interfaces
  */
 
 interface IInterp {
-    // var vm: IForthVM
     fun setUp(vm: IForthVM)
 
     /** Name of interpreter. Purely informational. */

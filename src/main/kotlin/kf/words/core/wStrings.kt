@@ -5,6 +5,7 @@ import kf.interfaces.IForthVM
 import kf.interfaces.IWordModule
 import kf.mem.appendStr
 import kf.mem.appendStrToData
+import kf.mem.appendWord
 import kf.strFromAddrLen
 
 object wStrings : IWordModule {

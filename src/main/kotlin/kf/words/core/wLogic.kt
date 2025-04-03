@@ -1,11 +1,11 @@
 package kf.words.core
 
 import kf.ForthVM
-import kf.ForthVM.Companion.FALSE
-import kf.ForthVM.Companion.TRUE
-import kf.interfaces.IWordModule
 import kf.dict.Word
+import kf.interfaces.FALSE
 import kf.interfaces.IForthVM
+import kf.interfaces.IWordModule
+import kf.interfaces.TRUE
 
 object wLogic : IWordModule {
     override val name = "kf.words.core.wLogic"

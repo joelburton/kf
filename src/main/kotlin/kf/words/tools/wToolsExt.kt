@@ -1,13 +1,13 @@
 package kf.words.tools
 
-import kf.ForthVM
 import kf.IntBye
-import kf.dict.Dict
 import kf.dict.NO_ADDR
 import kf.dict.Word
 import kf.dict.w_notImpl
+import kf.interfaces.FALSE
 import kf.interfaces.IForthVM
 import kf.interfaces.IWordModule
+import kf.interfaces.TRUE
 import kf.strFromAddrLen
 
 object wToolsExt: IWordModule {
@@ -45,7 +45,7 @@ object wToolsExt: IWordModule {
     private fun w_bracketDefined(vm: IForthVM) {
         val token: String =  vm.source.scanner.parseName().strFromAddrLen(vm)
         val def = vm.dict.getSafe(token) != null
-        vm.dstk.push(if (def) ForthVM.Companion.TRUE else ForthVM.Companion.FALSE)
+        vm.dstk.push(if (def) TRUE else FALSE)
     }
 
     /**  `\[undefined\]` I ( in:"name" -- f : is this word undefined? )
@@ -53,7 +53,7 @@ object wToolsExt: IWordModule {
     private fun w_bracketUndefined(vm: IForthVM) {
         val token: String =  vm.source.scanner.parseName().strFromAddrLen(vm)
         val def = vm.dict.getSafe(token) != null
-        vm.dstk.push(if (def) ForthVM.Companion.FALSE else ForthVM.Companion.TRUE)
+        vm.dstk.push(if (def) FALSE else TRUE)
     }
 
     // newname old-name
@@ -80,7 +80,7 @@ object wToolsExt: IWordModule {
     fun w_forget(vm: IForthVM) {
         val newName: String =  vm.source.scanner.parseName().strFromAddrLen(vm)
         val w = vm.dict[newName]
-        (vm.dict as Dict).truncateAt(w.wn)
+        vm.dict.truncateAt(w.wn)
         if (w.cpos != NO_ADDR) vm.cend = w.cpos
     }
 

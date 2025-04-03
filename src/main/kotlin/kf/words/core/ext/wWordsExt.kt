@@ -5,6 +5,7 @@ import kf.dict.Word
 import kf.interfaces.IForthVM
 import kf.interfaces.IWordModule
 import kf.mem.appendLit
+import kf.mem.appendWord
 import kf.strFromAddrLen
 import kf.words.core.wFunctions
 

@@ -1,11 +1,11 @@
 package kf.words.core.ext
 
 import kf.ForthVM
-import kf.ForthVM.Companion.FALSE
-import kf.ForthVM.Companion.TRUE
-import kf.interfaces.IWordModule
 import kf.dict.Word
+import kf.interfaces.FALSE
 import kf.interfaces.IForthVM
+import kf.interfaces.IWordModule
+import kf.interfaces.TRUE
 
 object wLogicExt : IWordModule {
     override val name = "kf.words.core.ext.wLogicExt"
@@ -25,17 +25,17 @@ object wLogicExt : IWordModule {
     fun w_notEquals(vm: IForthVM) {
         val a: Int = vm.dstk.pop()
         val b: Int = vm.dstk.pop()
-        vm.dstk.push(if (a == b) ForthVM.Companion.FALSE else ForthVM.Companion.TRUE)
+        vm.dstk.push(if (a == b) FALSE else TRUE)
     }
 
     /**  ( n -- true : pushes -1 {true} to stack ) */
     fun w_true(vm: IForthVM) {
-        vm.dstk.push(ForthVM.Companion.TRUE)
+        vm.dstk.push(TRUE)
     }
 
     /**  ( n -- false : pushes 0 {false} to stack ) */
     fun w_false(vm: IForthVM) {
-        vm.dstk.push(ForthVM.Companion.FALSE)
+        vm.dstk.push(FALSE)
     }
 
     /** `0>` ( n -- f ) Is n greater than zero? */
