@@ -22,7 +22,7 @@ import kf.mem.*
 import kf.words.fileaccess.wFileAccessExt
 import org.jline.terminal.TerminalBuilder
 
-class ForthCLI : CliktCommand("PupForth") {
+open class ForthCLI : CliktCommand("PupForth") {
 
     /** How verbose should it be w/messages & debugging?
      *
@@ -190,3 +190,10 @@ class ForthCLI : CliktCommand("PupForth") {
         }
     }
 }
+
+class SuperForthCLI : ForthCLI() {
+    val foozle: Int by option("--foozle").int()
+        .default(1)
+        .help("verbosity level (default: 1)")
+}
+
